@@ -5,7 +5,7 @@ export function calculateStreak(dates: string[]): {
   if (!dates.length) return { current: 0, longest: 0 }
 
   // Deduplicate and sort descending
-  const sorted = [...new Set(dates)].sort().reverse()
+  const sorted = Array.from(new Set(dates)).sort().reverse()
 
   const todayStr = new Date().toISOString().split('T')[0]
   const yesterdayStr = new Date(Date.now() - 86_400_000).toISOString().split('T')[0]
