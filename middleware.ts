@@ -30,8 +30,9 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Allow Stripe webhook through without auth
-  if (pathname.startsWith('/api/stripe/webhook')) {
+  // Public routes — never redirect, always pass through
+  const publicRoutes = ['/login', '/signup', '/api/stripe/webhook']
+  if (publicRoutes.some((r) => pathname.startsWith(r))) {
     return supabaseResponse
   }
 

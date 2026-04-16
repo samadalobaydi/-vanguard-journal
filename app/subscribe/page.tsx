@@ -124,6 +124,13 @@ export default function SubscribePage() {
               <p className="text-center text-xs text-gray-700 mt-4 tracking-wide">
                 🔒 Secure checkout via Stripe. 30-day money-back guarantee.
               </p>
+
+              <p className="text-center text-sm text-gray-600 mt-5">
+                Already have an account?{' '}
+                <Link href="/login" className="text-gold hover:text-gold-light transition-colors">
+                  Sign in
+                </Link>
+              </p>
             </div>
           </div>
 
