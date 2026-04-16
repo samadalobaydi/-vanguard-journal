@@ -25,18 +25,23 @@ export async function POST(request: Request) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        const userId = session.metadata?.userId
+        const email = session.customer_details?.email ?? session.customer_email
         const customerId = session.customer as string
-        const subscriptionId = session.subscription as string
 
-        if (!userId) break
+        if (!email) {
+          console.error('checkout.session.completed: no email found on session', session.id)
+          break
+        }
 
-        await supabase.from('profiles').upsert({
-          id: userId,
-          stripe_customer_id: customerId,
-          subscription_id: subscriptionId,
-          subscription_status: 'active',
-        })
+        const { error } = await supabase.from('profiles').upsert(
+          {
+            email,
+            stripe_customer_id: customerId,
+            subscription_status: 'active',
+          },
+          { onConflict: 'email' }
+        )
+        if (error) console.error('profiles upsert error:', error)
         break
       }
 
@@ -47,10 +52,7 @@ export async function POST(request: Request) {
 
         await supabase
           .from('profiles')
-          .update({
-            subscription_status: status,
-            subscription_id: subscription.id,
-          })
+          .update({ subscription_status: status })
           .eq('stripe_customer_id', customerId)
         break
       }
@@ -61,7 +63,7 @@ export async function POST(request: Request) {
 
         await supabase
           .from('profiles')
-          .update({ subscription_status: 'canceled', subscription_id: null })
+          .update({ subscription_status: 'canceled' })
           .eq('stripe_customer_id', customerId)
         break
       }
