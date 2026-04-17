@@ -46,7 +46,7 @@ export default function SubscribePage() {
       {/* Nav */}
       <nav className="relative z-10 border-b border-white/[0.06] px-6 py-4 flex items-center justify-between">
         <Link href="/">
-          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 48, width: 'auto', display: 'block', filter: 'invert(1)', paddingLeft: 8 }} />
+          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 40, width: 'auto', display: 'block' }} />
         </Link>
         <Link
           href="/login"
