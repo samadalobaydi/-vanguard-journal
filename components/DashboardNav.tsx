@@ -35,7 +35,7 @@ export default function DashboardNav({ email, streak }: Props) {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/dashboard">
-          <img src="/vanguard-logo.png" height={32} alt="Vanguard" style={{ height: 32, width: 'auto', display: 'block' }} />
+          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 48, width: 'auto', display: 'block', filter: 'invert(1)', paddingLeft: 8 }} />
         </Link>
 
         {/* Right side */}
