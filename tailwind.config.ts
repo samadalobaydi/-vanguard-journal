@@ -15,6 +15,12 @@ const config: Config = {
           dim: '#8a6f30',
           muted: 'rgba(201,168,76,0.12)',
         },
+        violet: {
+          DEFAULT: '#A855F7',
+          dim: '#7c3aed',
+          muted: 'rgba(168,85,247,0.12)',
+        },
+        silver: '#A9A9A9',
         dark: {
           DEFAULT: '#111111',
           2: '#1a1a1a',
@@ -22,6 +28,10 @@ const config: Config = {
           4: '#2a2a2a',
         },
         base: '#0a0a0a',
+        onyx: '#0A0A0A',
+        card: '#111111',
+        border: '#1e1e1e',
+        muted: '#555555',
       },
       fontFamily: {
         bebas: ['var(--font-bebas)', 'sans-serif'],
