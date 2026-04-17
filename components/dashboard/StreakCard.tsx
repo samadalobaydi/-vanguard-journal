@@ -38,6 +38,7 @@ export default function StreakCard({ current, longest }: Props) {
               fontWeight: 700,
               lineHeight: 1,
               display: 'block',
+              fontFamily: 'var(--font-mono), monospace',
             }}
           >
             {current}

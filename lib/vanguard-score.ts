@@ -57,36 +57,34 @@ export function getStreakData(entries: JournalEntry[]): { current: number; longe
   return { current, longest: Math.max(longest, current) }
 }
 
-export function calculateVanguardScore(entries: JournalEntry[]): number {
-  const { current } = getStreakData(entries)
-  const total_entries = entries.length
+export function calculateVanguardScore(
+  entries: JournalEntry[],
+  hasIdentityStatement: boolean,
+): number {
+  const base = hasIdentityStatement ? 100 : 0
+  const floor = hasIdentityStatement ? 100 : 0
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
   const entryDates = new Set(entries.map((e) => e.entry_date))
 
-  // Count missed days in last 30
+  // Count missed days from first entry date up to yesterday
   let missedDays = 0
-  for (let i = 1; i <= 30; i++) {
-    const d = new Date(today)
-    d.setDate(d.getDate() - i)
-    if (!entryDates.has(d.toISOString().split('T')[0])) missedDays++
-  }
+  if (entries.length > 0) {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const sortedAsc = Array.from(entryDates).sort()
+    const firstDate = new Date(sortedAsc[0])
+    firstDate.setHours(0, 0, 0, 0)
 
-  // Decay penalty for recent absence (2+ days since last entry)
-  const sortedDates = Array.from(entryDates).sort().reverse()
-  let decayPenalty = 0
-  if (sortedDates.length > 0) {
-    const last = new Date(sortedDates[0])
-    last.setHours(0, 0, 0, 0)
-    const diffDays = Math.round((today.getTime() - last.getTime()) / 86_400_000)
-    if (diffDays >= 2) {
-      decayPenalty = (diffDays - 1) * 25
+    const daysSinceFirst = Math.round((today.getTime() - firstDate.getTime()) / 86_400_000)
+    for (let i = 1; i <= daysSinceFirst; i++) {
+      const d = new Date(today)
+      d.setDate(d.getDate() - i)
+      if (!entryDates.has(d.toISOString().split('T')[0])) missedDays++
     }
   }
 
-  const raw = 500 + current * 15 + total_entries * 8 - missedDays * 12 - decayPenalty
-  return Math.min(1000, Math.max(0, raw))
+  const raw = base + entries.length * 5 - missedDays * 10
+  return Math.min(1000, Math.max(floor, raw))
 }
 
 export function getReEntryRequired(entries: JournalEntry[]): boolean {

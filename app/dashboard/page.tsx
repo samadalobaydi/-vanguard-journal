@@ -56,7 +56,7 @@ export default async function DashboardPage() {
 
   const entries = recentEntries ?? []
   const { current, longest } = getStreakData(entries)
-  const vanguardScore = calculateVanguardScore(entries)
+  const vanguardScore = calculateVanguardScore(entries, !!profile.identity_statement?.trim())
   const reEntryRequired = getReEntryRequired(entries)
   const dayGrid = getDayGrid(entries)
   const sparklineData = getSparklineData(entries)

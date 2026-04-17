@@ -47,6 +47,7 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [btnHover, setBtnHover] = useState(false)
 
   function setField(key: keyof typeof fields, value: string) {
     setFields((prev) => ({ ...prev, [key]: value }))
@@ -211,7 +212,7 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
                       background: '#0A0A0A',
                       border: '1px solid',
                       borderColor: filled ? 'rgba(168,85,247,0.3)' : '#1e1e1e',
-                      borderRadius: 8,
+                      borderRadius: 2,
                       color: '#ffffff',
                       fontSize: 13,
                       lineHeight: 1.65,
@@ -263,6 +264,8 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
           <button
             type="submit"
             disabled={saving}
+            onMouseEnter={() => setBtnHover(true)}
+            onMouseLeave={() => setBtnHover(false)}
             style={{
               background: '#A855F7',
               color: '#ffffff',
@@ -274,9 +277,12 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
               textTransform: 'uppercase',
               cursor: saving ? 'not-allowed' : 'pointer',
               opacity: saving ? 0.5 : 1,
-              borderRadius: 6,
-              transition: 'opacity 0.2s, transform 0.1s',
+              borderRadius: 4,
+              transition: 'opacity 0.2s, box-shadow 0.25s ease',
               fontFamily: 'inherit',
+              boxShadow: btnHover
+                ? '0 0 25px rgba(168, 85, 247, 0.4)'
+                : '0 0 15px rgba(168, 85, 247, 0.2)',
             }}
           >
             {saving ? 'Saving...' : saved ? 'Update Entry' : 'Commit Entry'}

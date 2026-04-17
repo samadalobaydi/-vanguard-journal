@@ -6,9 +6,9 @@ import Link from 'next/link'
 const FEATURES = [
   { icon: '◆', text: 'Daily structured journal: morning intention, evening review, tomorrow\'s target' },
   { icon: '◈', text: 'Live discipline score — 0 to 100 — based on your daily follow-through' },
-  { icon: '🔥', text: 'Streak tracking that compounds into identity-level accountability' },
+  { icon: '◉', text: 'Streak tracking that compounds into identity-level accountability' },
   { icon: '◇', text: 'Weekly performance history with 14-day visual grid' },
-  { icon: '⚡', text: 'Private Vanguard brotherhood community access' },
+  { icon: '▲', text: 'Private Vanguard brotherhood community access' },
   { icon: '★', text: '30 / 60 / 90 / 365 day mastery milestones' },
 ]
 
@@ -45,8 +45,8 @@ export default function SubscribePage() {
 
       {/* Nav */}
       <nav className="relative z-10 border-b border-white/[0.06] px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="font-bebas text-2xl tracking-widest text-gold">
-          Vanguard
+        <Link href="/">
+          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 32, width: 'auto', display: 'block' }} />
         </Link>
         <Link
           href="/login"
@@ -122,7 +122,7 @@ export default function SubscribePage() {
               </button>
 
               <p className="text-center text-xs text-gray-700 mt-4 tracking-wide">
-                🔒 Secure checkout via Stripe. 30-day money-back guarantee.
+                Secure checkout via Stripe. 30-day money-back guarantee.
               </p>
 
               <p className="text-center text-sm text-gray-600 mt-5">

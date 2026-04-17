@@ -11,7 +11,12 @@ export default function SuccessPage() {
         }}
       />
       <div className="relative z-10 max-w-md">
-        <div className="font-bebas text-7xl text-gold tracking-wider mb-4">⚡</div>
+        <div className="flex justify-center mb-4">
+          <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+            <circle cx="28" cy="28" r="27" stroke="#A855F7" strokeWidth="1.5" />
+            <path d="M28 12C22 20 18 24 18 30C18 34.42 22.58 38 28 38C33.42 38 38 34.42 38 30C38 24 34 20 28 12ZM28 34C25.79 34 24 32.21 24 30C24 27 28 23 28 23C28 23 32 27 32 30C32 32.21 30.21 34 28 34Z" fill="#A855F7" />
+          </svg>
+        </div>
         <h1 className="font-bebas text-5xl tracking-wider text-white mb-3">
           You&apos;re In.
         </h1>

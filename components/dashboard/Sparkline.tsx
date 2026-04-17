@@ -141,6 +141,7 @@ export default function Sparkline({ data, todayScore }: Props) {
               fontSize: 22,
               fontWeight: 700,
               lineHeight: 1,
+              fontFamily: 'var(--font-mono), monospace',
             }}
           >
             {gain >= 0 ? '+' : ''}
@@ -159,7 +160,7 @@ export default function Sparkline({ data, todayScore }: Props) {
           >
             Today
           </p>
-          <p style={{ color: '#ffffff', fontSize: 22, fontWeight: 700, lineHeight: 1 }}>
+          <p style={{ color: '#ffffff', fontSize: 22, fontWeight: 700, lineHeight: 1, fontFamily: 'var(--font-mono), monospace' }}>
             {todayScore}
           </p>
         </div>
@@ -175,7 +176,7 @@ export default function Sparkline({ data, todayScore }: Props) {
           >
             Last Wk Avg
           </p>
-          <p style={{ color: '#A9A9A9', fontSize: 22, fontWeight: 700, lineHeight: 1 }}>
+          <p style={{ color: '#A9A9A9', fontSize: 22, fontWeight: 700, lineHeight: 1, fontFamily: 'var(--font-mono), monospace' }}>
             {Math.round(lastWeekAvg)}
           </p>
         </div>

@@ -94,6 +94,7 @@ export default function ScoreGauge({ score }: Props) {
                 fontWeight: 700,
                 lineHeight: 1,
                 letterSpacing: '-1px',
+                fontFamily: 'var(--font-mono), monospace',
               }}
             >
               {score}
