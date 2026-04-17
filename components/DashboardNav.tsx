@@ -9,13 +9,10 @@ interface Props {
   streak: number
 }
 
-function FlameSVG() {
+function BoltSVG() {
   return (
-    <svg width="13" height="17" viewBox="0 0 13 17" fill="none">
-      <path
-        d="M6.5 0C5.1 2.3 2 5.8 2 9.5C2 12.54 4.02 15 6.5 15C8.98 15 11 12.54 11 9.5C11 5.8 7.9 2.3 6.5 0ZM6.5 12.5C5.4 12.5 4.5 11.6 4.5 10.5C4.5 8.8 6.5 6.8 6.5 6.8C6.5 6.8 8.5 8.8 8.5 10.5C8.5 11.6 7.6 12.5 6.5 12.5Z"
-        fill="#A855F7"
-      />
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <polyline points="9,1 5,7 9,7 5,13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -45,13 +42,13 @@ export default function DashboardNav({ email, streak }: Props) {
             className="hidden sm:flex items-center gap-2 px-3 py-1.5"
             style={{ border: '1px solid rgba(168,85,247,0.2)', background: 'rgba(168,85,247,0.06)' }}
           >
-            <FlameSVG />
+            <BoltSVG />
             <span
               style={{
                 color: '#A855F7',
-                fontSize: 18,
-                fontFamily: 'var(--font-bebas), sans-serif',
-                letterSpacing: '0.1em',
+                fontSize: 16,
+                fontFamily: 'var(--font-mono), monospace',
+                fontWeight: 700,
                 lineHeight: 1,
               }}
             >

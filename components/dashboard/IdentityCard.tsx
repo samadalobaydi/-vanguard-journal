@@ -38,9 +38,9 @@ export default function IdentityCard({ statement }: Props) {
         </p>
       ) : (
         <p style={{ color: '#555555', fontSize: 13 }}>
-          No identity statement set.{' '}
-          <Link href="/profile" style={{ color: '#A855F7' }}>
-            Add one in your profile →
+          CONTRACT UNSIGNED. Define your identity.{' '}
+          <Link href="/profile" style={{ color: '#A855F7', letterSpacing: '1px' }}>
+            SIGN THE CONTRACT →
           </Link>
         </p>
       )}

@@ -269,7 +269,7 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
             style={{
               background: '#A855F7',
               color: '#ffffff',
-              border: 'none',
+              border: '2px solid #A855F7',
               padding: '11px 28px',
               fontSize: 10,
               letterSpacing: '3px',
@@ -281,8 +281,8 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
               transition: 'opacity 0.2s, box-shadow 0.25s ease',
               fontFamily: 'inherit',
               boxShadow: btnHover
-                ? '0 0 25px rgba(168, 85, 247, 0.4)'
-                : '0 0 15px rgba(168, 85, 247, 0.2)',
+                ? '0 0 25px rgba(168, 85, 247, 0.5)'
+                : '0 0 12px rgba(168, 85, 247, 0.3)',
             }}
           >
             {saving ? 'Saving...' : saved ? 'Update Entry' : 'Commit Entry'}
