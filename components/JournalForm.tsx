@@ -12,7 +12,7 @@ interface Entry {
 interface Props {
   date: string
   initialEntry: Entry | null
-  onSave: (entry: Entry) => void
+  onSave?: (entry: Entry) => void
 }
 
 const FIELDS = [
@@ -76,7 +76,7 @@ export default function JournalForm({ date, initialEntry, onSave }: Props) {
 
       const data = await res.json()
       setSaved(true)
-      onSave(data.entry)
+      onSave?.(data.entry)
     } catch (err: any) {
       setError(err.message)
     } finally {

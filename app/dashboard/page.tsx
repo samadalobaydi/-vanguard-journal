@@ -107,7 +107,6 @@ export default async function DashboardPage() {
               <JournalForm
                 date={todayStr}
                 initialEntry={todayEntry ?? null}
-                onSave={() => {}}
               />
             </div>
           </div>
