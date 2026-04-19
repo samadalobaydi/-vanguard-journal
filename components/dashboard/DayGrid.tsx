@@ -37,24 +37,44 @@ export default function DayGrid({ days }: Props) {
           gap: 8,
         }}
       >
-        {days.map((day) => (
-          <div
-            key={day.date}
-            title={day.date}
-            style={{
-              aspectRatio: '1',
-              borderRadius: 8,
-              background: day.hasEntry ? '#A855F7' : '#0A0A0A',
-              border: day.isToday
-                ? '2px solid #A855F7'
-                : day.hasEntry
-                ? '2px solid #A855F7'
-                : '1px solid #1e1e1e',
-              boxShadow: day.isToday ? '0 0 10px rgba(168,85,247,0.3)' : 'none',
-              transition: 'background 0.2s',
-            }}
-          />
-        ))}
+        {days.map((day) => {
+          const dayNum = day.date.split('-')[2]
+          return (
+            <div
+              key={day.date}
+              title={day.date}
+              style={{
+                aspectRatio: '1',
+                borderRadius: 8,
+                background: day.isToday ? '#0A0A0A' : day.hasEntry ? '#A855F7' : '#0f0f0f',
+                border: day.isToday
+                  ? '2px solid #A855F7'
+                  : day.hasEntry
+                  ? 'none'
+                  : '1px solid #1e1e1e',
+                boxShadow: day.isToday ? '0 0 10px rgba(168,85,247,0.3)' : 'none',
+                transition: 'background 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {day.isToday && (
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono), monospace',
+                    fontSize: 10,
+                    color: '#A855F7',
+                    lineHeight: 1,
+                    fontWeight: 700,
+                  }}
+                >
+                  {dayNum}
+                </span>
+              )}
+            </div>
+          )
+        })}
       </div>
 
       <div style={{ display: 'flex', gap: 20, marginTop: 16 }}>
