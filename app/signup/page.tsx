@@ -166,7 +166,7 @@ export default function SignupPage() {
             src="/vanguard-logo.png"
             alt="Vanguard"
             style={{
-              height: 80,
+              height: 92,
               width: 'auto',
               animation: 'logoPulse 0.6s ease-out forwards',
             }}
