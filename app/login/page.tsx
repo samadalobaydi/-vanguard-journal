@@ -133,7 +133,7 @@ export default function LoginPage() {
               <img
                 src="/vanguard-logo.png"
                 alt="Vanguard"
-                style={{ height: 120, width: 'auto', display: 'inline-block' }}
+                style={{ height: 200, width: 'auto', display: 'inline-block' }}
               />
             </div>
 

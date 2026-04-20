@@ -101,7 +101,7 @@ export default function SignupPage() {
           <img
             src="/vanguard-logo.png"
             alt="Vanguard"
-            style={{ height: 120, width: 'auto', display: 'inline-block', marginBottom: 28 }}
+            style={{ height: 200, width: 'auto', display: 'inline-block', marginBottom: 28 }}
           />
           <h2
             style={{
@@ -208,7 +208,7 @@ export default function SignupPage() {
               <img
                 src="/vanguard-logo.png"
                 alt="Vanguard"
-                style={{ height: 120, width: 'auto', display: 'inline-block' }}
+                style={{ height: 200, width: 'auto', display: 'inline-block' }}
               />
             </div>
 
