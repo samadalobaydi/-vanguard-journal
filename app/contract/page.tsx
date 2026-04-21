@@ -246,7 +246,7 @@ export default function ContractPage() {
             r="40"
             fill="none"
             stroke="#1e1e1e"
-            strokeWidth="2"
+            strokeWidth="2.2"
           />
           {/* Progress ring */}
           <circle
@@ -255,7 +255,7 @@ export default function ContractPage() {
             r="40"
             fill="none"
             stroke={ringColor}
-            strokeWidth="2"
+            strokeWidth="2.2"
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={dashOffset}
             strokeLinecap="round"
@@ -291,6 +291,21 @@ export default function ContractPage() {
           </span>
         </div>
       </div>
+
+      {/* Hold instruction */}
+      <p
+        style={{
+          marginTop: 16,
+          fontSize: 10,
+          letterSpacing: '2px',
+          textTransform: 'uppercase',
+          fontFamily: 'inherit',
+          color: holding ? '#A855F7' : '#555555',
+          transition: 'color 0.2s',
+        }}
+      >
+        {holding ? 'Keep Holding...' : 'Hold to Seal'}
+      </p>
     </div>
   )
 }
