@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect unauthenticated users away from protected routes
-  const protectedRoutes = ['/dashboard', '/subscribe', '/profile']
+  const protectedRoutes = ['/dashboard', '/subscribe', '/profile', '/contract']
   const isProtected = protectedRoutes.some((r) => pathname.startsWith(r))
 
   if (!user && isProtected) {
@@ -51,6 +51,21 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
+  }
+
+  // If authenticated user hits /dashboard with no identity_statement → redirect to /contract
+  if (user && pathname.startsWith('/dashboard')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('identity_statement')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile?.identity_statement) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/contract'
+      return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse
