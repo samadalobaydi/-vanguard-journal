@@ -65,6 +65,32 @@ export default async function DashboardPage() {
   return (
     <div style={{ background: '#0A0A0A', minHeight: '100vh' }}>
       {!isSubscribed && <SubscriptionGate />}
+      {!profile?.identity_statement && (
+        <div style={{
+          background: '#0d0d0d',
+          borderBottom: '1px solid #1e1e1e',
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          fontFamily: 'var(--font-mono), monospace',
+        }}>
+          <p style={{ color: '#A9A9A9', fontSize: 11, letterSpacing: '1px', margin: 0 }}>
+            Your identity contract is unsigned.
+          </p>
+          <Link href="/contract" style={{
+            color: '#A855F7',
+            fontSize: 10,
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            whiteSpace: 'nowrap',
+          }}>
+            Sign Now →
+          </Link>
+        </div>
+      )}
       <DashboardNav email={user.email ?? ''} streak={current} />
 
       <main
