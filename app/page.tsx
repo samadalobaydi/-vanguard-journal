@@ -68,15 +68,19 @@ export default function GatekeeperPage() {
       `}</style>
 
       {/* Logo */}
-      <img
-        src="/vanguard-logo.png"
-        alt="Vanguard"
-        style={{
-          height: 100,
-          width: 'auto',
-          animation: 'breathe 3s ease-in-out infinite',
-        }}
-      />
+      <div style={{ background: 'transparent', lineHeight: 0 }}>
+        <img
+          src="/vanguard-logo.png"
+          alt="Vanguard"
+          style={{
+            height: 100,
+            width: 'auto',
+            background: 'transparent',
+            display: 'block',
+            animation: 'breathe 3s ease-in-out infinite',
+          }}
+        />
+      </div>
 
       {/* Advisory heading */}
       <p
