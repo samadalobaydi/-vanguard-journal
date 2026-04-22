@@ -77,6 +77,7 @@ export default function GatekeeperPage() {
             width: 'auto',
             background: 'transparent',
             display: 'block',
+            mixBlendMode: 'screen',
             animation: 'breathe 3s ease-in-out infinite',
           }}
         />
