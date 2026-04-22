@@ -40,6 +40,7 @@ export default function ContractPage() {
   const rafRef = useRef<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const sealedRef = useRef(false)
   // Keep a ref to the latest value so handleSeal never reads a stale closure
   const valueRef = useRef(value)
   useEffect(() => { valueRef.current = value }, [value])
@@ -59,14 +60,15 @@ export default function ContractPage() {
   }, [])
 
   const cancelHold = useCallback(() => {
-    if (sealed) return
+    if (sealedRef.current) return
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     holdStart.current = null
     setHolding(false)
     setProgress(0)
-  }, [sealed])
+  }, [])
 
   const handleSeal = useCallback(async () => {
+    sealedRef.current = true
     setHolding(false)
     setSealed(true)
     setSaveError(null)
@@ -87,6 +89,7 @@ export default function ContractPage() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
       setSaveError('ERROR: ' + msg)
+      sealedRef.current = false
       setSealed(false)
     }
   }, [supabase])
