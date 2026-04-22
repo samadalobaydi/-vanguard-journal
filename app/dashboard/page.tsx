@@ -18,6 +18,7 @@ import DayGrid from '@/components/dashboard/DayGrid'
 import VanguardPrinciple from '@/components/dashboard/VanguardPrinciple'
 import DashboardNav from '@/components/DashboardNav'
 import BottomNav from '@/components/BottomNav'
+import SubscriptionGate from '@/components/SubscriptionGate'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,9 +36,7 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.subscription_status !== 'active') {
-    redirect('/subscribe')
-  }
+  const isSubscribed = profile?.subscription_status === 'active'
 
   const todayStr = new Date().toISOString().split('T')[0]
 
@@ -65,6 +64,7 @@ export default async function DashboardPage() {
 
   return (
     <div style={{ background: '#0A0A0A', minHeight: '100vh' }}>
+      {!isSubscribed && <SubscriptionGate />}
       <DashboardNav email={user.email ?? ''} streak={current} />
 
       <main
