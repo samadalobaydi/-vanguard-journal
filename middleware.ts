@@ -31,8 +31,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Public routes — never redirect, always pass through
-  const publicRoutes = ['/login', '/signup', '/api/stripe/webhook']
-  if (publicRoutes.some((r) => pathname.startsWith(r))) {
+  const publicRoutes = ['/', '/login', '/signup', '/api/stripe/webhook']
+  if (publicRoutes.some((r) => pathname === r || (r !== '/' && pathname.startsWith(r)))) {
     return supabaseResponse
   }
 
