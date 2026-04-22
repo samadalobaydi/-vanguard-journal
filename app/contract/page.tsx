@@ -7,6 +7,23 @@ import { createClient } from '@/lib/supabase/client'
 const HOLD_DURATION = 3000
 const CIRCUMFERENCE = 2 * Math.PI * 40
 
+const STANDARDS = [
+  'values his integrity over his comfort.',
+  'does what is required, not what is convenient.',
+  'refuses to negotiate with his own excuses.',
+  'is the master of his impulses, not their slave.',
+  'takes absolute ownership of his failures.',
+  'seeks the struggle because it builds the man.',
+  'upholds the standard especially when he is alone.',
+  'is the man his family relies on to hold the line.',
+  'refuses to be outworked by his former self.',
+  'chooses the hard path until it becomes his nature.',
+]
+
+function wordCount(str: string) {
+  return str.trim().split(/\s+/).filter(Boolean).length
+}
+
 export default function ContractPage() {
   const router = useRouter()
   const supabase = createClient()
@@ -15,12 +32,15 @@ export default function ContractPage() {
   const [error, setError] = useState<string | null>(null)
   const [shaking, setShaking] = useState(false)
   const [holding, setHolding] = useState(false)
-  const [progress, setProgress] = useState(0) // 0–1
+  const [progress, setProgress] = useState(0)
   const [sealed, setSealed] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const holdStart = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const isReady = wordCount(value) >= 3
 
   const cancelHold = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -42,18 +62,12 @@ export default function ContractPage() {
   }, [value]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const startHold = useCallback(() => {
-    if (sealed) return
-    if (!value || value.trim().length < 3) {
-      setError('DEFINE YOUR IDENTITY FIRST')
-      setShaking(true)
-      setTimeout(() => setShaking(false), 500)
-      return
-    }
+    if (sealed || !isReady) return
     setError(null)
     holdStart.current = Date.now()
     setHolding(true)
     rafRef.current = requestAnimationFrame(tick)
-  }, [value, sealed, tick])
+  }, [isReady, sealed, tick])
 
   async function handleSeal() {
     setHolding(false)
@@ -70,11 +84,18 @@ export default function ContractPage() {
     router.push('/dashboard')
   }
 
-  // Clean up on unmount
   useEffect(() => () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }, [])
 
+  function selectStandard(s: string) {
+    setValue(s)
+    setDrawerOpen(false)
+    setError(null)
+    setTimeout(() => inputRef.current?.focus(), 50)
+  }
+
   const dashOffset = CIRCUMFERENCE * (1 - progress)
-  const ringColor = holding || progress > 0 ? '#A855F7' : '#1e1e1e'
+  const ringColor = holding ? '#A855F7' : '#1e1e1e'
+  const btnColor = isReady ? '#A9A9A9' : '#333333'
 
   return (
     <div
@@ -86,7 +107,7 @@ export default function ContractPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '40px 24px',
-        fontFamily: "'JetBrains Mono', 'var(--font-mono)', monospace",
+        fontFamily: "'JetBrains Mono', var(--font-mono), monospace",
       }}
     >
       <style>{`
@@ -105,6 +126,11 @@ export default function ContractPage() {
           border-bottom-color: #A855F7 !important;
         }
 
+        .contract-input::placeholder {
+          color: #333333;
+          opacity: 1;
+        }
+
         .hold-btn {
           user-select: none;
           -webkit-user-select: none;
@@ -112,126 +138,178 @@ export default function ContractPage() {
           touch-action: none;
         }
 
-        .hold-btn:active { opacity: 0.9; }
+        .standard-item {
+          padding: 10px 0;
+          border-bottom: 1px solid #111111;
+          color: #555555;
+          font-size: 12px;
+          font-family: inherit;
+          cursor: pointer;
+          transition: color 0.15s;
+          text-align: left;
+          letter-spacing: 0.5px;
+          line-height: 1.5;
+        }
+
+        .standard-item:hover {
+          color: #A9A9A9;
+        }
+
+        .standard-item:last-child {
+          border-bottom: none;
+        }
+
+        .drawer-toggle {
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
+          font-size: 10px;
+          letter-spacing: 3px;
+          color: #555555;
+          padding: 0;
+          text-transform: uppercase;
+          transition: color 0.2s;
+        }
+
+        .drawer-toggle:hover {
+          color: #A9A9A9;
+        }
       `}</style>
 
-      {/* Label */}
-      <p
-        style={{
-          color: '#555555',
-          fontSize: 10,
-          letterSpacing: '4px',
-          textTransform: 'uppercase',
-          margin: 0,
-          marginBottom: 32,
-        }}
-      >
+      {/* Page label */}
+      <p style={{
+        color: '#333333',
+        fontSize: 10,
+        letterSpacing: '4px',
+        textTransform: 'uppercase',
+        margin: '0 0 40px',
+      }}>
         Contract Initialization
       </p>
 
-      {/* Instruction */}
-      <p
-        style={{
-          color: '#A9A9A9',
-          fontSize: 13,
-          lineHeight: 1.8,
-          maxWidth: 360,
-          textAlign: 'center',
-          margin: 0,
-          marginBottom: 40,
-        }}
-      >
-        Define your identity. This is not a goal. It is your new standard. Choose your words with intent.
-      </p>
+      {/* Input section */}
+      <div style={{ width: '100%', maxWidth: 440 }}>
 
-      {/* Lead-in */}
-      <p
-        style={{
+        {/* Lead-in label */}
+        <p style={{
           color: '#A9A9A9',
-          fontSize: 14,
-          letterSpacing: '2px',
+          fontSize: 11,
+          letterSpacing: '3px',
           textTransform: 'uppercase',
-          margin: 0,
-          marginBottom: 16,
-        }}
-      >
-        I am the man who...
-      </p>
+          margin: '0 0 12px',
+        }}>
+          I am the man who...
+        </p>
 
-      {/* Input + counter */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 400,
+        {/* Input + counter */}
+        <div style={{
           position: 'relative',
           marginBottom: 8,
           animation: shaking ? 'shake 0.5s ease' : 'none',
-        }}
-      >
-        <input
-          ref={inputRef}
-          className="contract-input"
-          type="text"
-          maxLength={80}
-          value={value}
-          onChange={(e) => { setValue(e.target.value); setError(null) }}
-          placeholder="never quits"
-          style={{
-            width: '100%',
-            background: 'transparent',
-            border: 'none',
-            borderBottom: `1px solid ${error ? '#7f1d1d' : '#333333'}`,
-            color: '#ffffff',
-            fontSize: 20,
-            fontWeight: 700,
-            fontFamily: 'inherit',
-            textAlign: 'center',
-            padding: '8px 0',
-            boxSizing: 'border-box',
-            transition: 'border-bottom-color 0.2s',
-          }}
-        />
-        <span
-          style={{
+        }}>
+          <input
+            ref={inputRef}
+            className="contract-input"
+            type="text"
+            maxLength={80}
+            value={value}
+            onChange={(e) => { setValue(e.target.value); setError(null) }}
+            placeholder="[ TYPE YOUR CODE... ]"
+            style={{
+              width: '100%',
+              background: 'transparent',
+              border: 'none',
+              borderBottom: `1px solid ${error ? '#7f1d1d' : '#A9A9A9'}`,
+              color: '#ffffff',
+              fontSize: 18,
+              fontWeight: 700,
+              fontFamily: 'inherit',
+              padding: '10px 0',
+              boxSizing: 'border-box',
+              transition: 'border-bottom-color 0.2s',
+            }}
+          />
+          <span style={{
             position: 'absolute',
             right: 0,
-            bottom: -20,
+            bottom: -18,
             fontSize: 10,
-            color: '#555555',
+            color: '#333333',
             fontFamily: 'inherit',
-          }}
-        >
-          {value.length}/80
-        </span>
-      </div>
+          }}>
+            {value.length}/80
+          </span>
+        </div>
 
-      {/* Error */}
-      <div style={{ height: 28, marginBottom: 40, marginTop: 16, textAlign: 'center' }}>
-        {error && (
-          <p
-            style={{
+        {/* Error */}
+        <div style={{ height: 24, marginTop: 20 }}>
+          {error && (
+            <p style={{
               color: '#fca5a5',
-              fontSize: 11,
+              fontSize: 10,
               letterSpacing: '2px',
               textTransform: 'uppercase',
               margin: 0,
               fontFamily: 'inherit',
-            }}
+            }}>
+              {error}
+            </p>
+          )}
+        </div>
+
+        {/* Drawer toggle */}
+        <div style={{ marginTop: 8, marginBottom: 0 }}>
+          <button
+            className="drawer-toggle"
+            onClick={() => setDrawerOpen((o) => !o)}
           >
-            {error}
-          </p>
+            {drawerOpen ? '[ CLOSE ]' : '[ VIEW THE CODE ]'}
+          </button>
+        </div>
+
+        {/* Inspiration drawer */}
+        {drawerOpen && (
+          <div style={{
+            marginTop: 12,
+            maxHeight: 280,
+            overflowY: 'auto',
+            borderTop: '1px solid #111111',
+          }}>
+            {STANDARDS.map((s, i) => (
+              <button
+                key={i}
+                className="standard-item"
+                style={{ display: 'block', width: '100%', background: 'none', border: 'none' }}
+                onClick={() => selectStandard(s)}
+              >
+                <span style={{ color: '#333333', marginRight: 10 }}>{String(i + 1).padStart(2, '0')}.</span>
+                ...{s}
+              </button>
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Hold to sign button with ring */}
+      {/* Spacer */}
+      <div style={{ height: 48 }} />
+
+      {/* Hold to seal button */}
       <div
-        className="hold-btn"
-        style={{ position: 'relative', width: 100, height: 100 }}
-        onMouseDown={startHold}
-        onMouseUp={cancelHold}
-        onMouseLeave={cancelHold}
-        onTouchStart={(e) => { e.preventDefault(); startHold() }}
-        onTouchEnd={cancelHold}
+        className={isReady ? 'hold-btn' : ''}
+        style={{
+          position: 'relative',
+          width: 100,
+          height: 100,
+          cursor: isReady ? 'pointer' : 'not-allowed',
+          opacity: isReady ? 1 : 0.4,
+          transition: 'opacity 0.3s',
+        }}
+        onMouseDown={isReady ? startHold : undefined}
+        onMouseUp={isReady ? cancelHold : undefined}
+        onMouseLeave={isReady ? cancelHold : undefined}
+        onTouchStart={isReady ? (e) => { e.preventDefault(); startHold() } : undefined}
+        onTouchEnd={isReady ? cancelHold : undefined}
       >
         {/* SVG ring */}
         <svg
@@ -239,16 +317,7 @@ export default function ContractPage() {
           height="100"
           style={{ position: 'absolute', top: 0, left: 0, transform: 'rotate(-90deg)' }}
         >
-          {/* Track */}
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="none"
-            stroke="#1e1e1e"
-            strokeWidth="2.2"
-          />
-          {/* Progress ring */}
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#1e1e1e" strokeWidth="2.2" />
           <circle
             cx="50"
             cy="50"
@@ -263,47 +332,41 @@ export default function ContractPage() {
           />
         </svg>
 
-        {/* Button label */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            padding: '0 10px',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 9,
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              fontFamily: 'inherit',
-              color: holding ? '#A855F7' : '#A9A9A9',
-              lineHeight: 1.4,
-              transition: 'color 0.2s',
-              pointerEvents: 'none',
-            }}
-          >
+        {/* Label */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '0 10px',
+        }}>
+          <span style={{
+            fontSize: 9,
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            fontFamily: 'inherit',
+            color: holding ? '#A855F7' : btnColor,
+            lineHeight: 1.4,
+            transition: 'color 0.2s',
+            pointerEvents: 'none',
+          }}>
             {holding ? 'HOLDING...' : 'SEAL THE\nCONTRACT'}
           </span>
         </div>
       </div>
 
       {/* Hold instruction */}
-      <p
-        style={{
-          marginTop: 16,
-          fontSize: 10,
-          letterSpacing: '2px',
-          textTransform: 'uppercase',
-          fontFamily: 'inherit',
-          color: holding ? '#A855F7' : '#555555',
-          transition: 'color 0.2s',
-        }}
-      >
+      <p style={{
+        marginTop: 16,
+        fontSize: 10,
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
+        fontFamily: 'inherit',
+        color: holding ? '#A855F7' : '#333333',
+        transition: 'color 0.2s',
+      }}>
         {holding ? 'Keep Holding...' : 'Hold to Seal'}
       </p>
     </div>
