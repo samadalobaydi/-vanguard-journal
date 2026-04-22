@@ -85,6 +85,8 @@ export default function ContractPage() {
         .update({ identity_statement: valueRef.current.trim() })
         .eq('id', user.id)
 
+      // Small delay to ensure the write is committed before middleware re-checks the profile
+      await new Promise((resolve) => setTimeout(resolve, 500))
       window.location.href = '/dashboard'
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
