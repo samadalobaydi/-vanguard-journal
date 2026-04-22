@@ -66,40 +66,30 @@ export default function ContractPage() {
   }, [])
 
   const handleSeal = useCallback(async () => {
-    console.log('[handleSeal] called — value:', valueRef.current)
+    alert('hold complete')
     setHolding(false)
     setSealed(true)
     setSaveError(null)
 
     try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser()
-      if (authError || !user) {
-        console.error('[handleSeal] auth error or no user:', authError)
-        router.push('/login')
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        window.location.href = '/login'
         return
       }
-      console.log('[handleSeal] user found:', user.id, '— saving identity_statement...')
 
-      const { error: updateError } = await supabase
+      await supabase
         .from('profiles')
         .update({ identity_statement: valueRef.current.trim() })
         .eq('id', user.id)
 
-      if (updateError) {
-        console.error('[handleSeal] Supabase update error:', updateError)
-        setSaveError('SAVE FAILED — ' + updateError.message)
-        setSealed(false)
-        return
-      }
-
-      console.log('[handleSeal] save successful — navigating to /dashboard')
-      router.push('/dashboard')
-    } catch (err) {
-      console.error('[handleSeal] unexpected error:', err)
-      setSaveError('UNEXPECTED ERROR — CHECK CONSOLE')
+      window.location.href = '/dashboard'
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      setSaveError('ERROR: ' + msg)
       setSealed(false)
     }
-  }, [router, supabase])
+  }, [supabase])
 
   const tick = useCallback(() => {
     if (holdStart.current === null) return
