@@ -56,7 +56,7 @@ export default async function DashboardPage() {
 
   const entries = recentEntries ?? []
   const { current, longest } = getStreakData(entries)
-  const vanguardScore = calculateVanguardScore(entries, !!profile.identity_statement?.trim())
+  const vanguardScore = calculateVanguardScore(entries, !!profile?.identity_statement?.trim())
   const reEntryRequired = getReEntryRequired(entries)
   const dayGrid = getDayGrid(entries)
   const sparklineData = getSparklineData(entries)
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* 1. Identity Contract — full width */}
-          <IdentityCard statement={profile.identity_statement ?? null} />
+          <IdentityCard statement={profile?.identity_statement ?? null} />
 
           {/* 2. Score + Streak — 50/50 */}
           <div
