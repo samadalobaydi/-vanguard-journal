@@ -34,11 +34,15 @@ export default function ContractPage() {
   const [holding, setHolding] = useState(false)
   const [progress, setProgress] = useState(0)
   const [sealed, setSealed] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const holdStart = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  // Keep a ref to the latest value so handleSeal never reads a stale closure
+  const valueRef = useRef(value)
+  useEffect(() => { valueRef.current = value }, [value])
 
   const isReady = wordCount(value) >= 3
   const showSuggestions = focused && !userTyped
@@ -61,6 +65,42 @@ export default function ContractPage() {
     setProgress(0)
   }, [])
 
+  const handleSeal = useCallback(async () => {
+    console.log('[handleSeal] called — value:', valueRef.current)
+    setHolding(false)
+    setSealed(true)
+    setSaveError(null)
+
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError || !user) {
+        console.error('[handleSeal] auth error or no user:', authError)
+        router.push('/login')
+        return
+      }
+      console.log('[handleSeal] user found:', user.id, '— saving identity_statement...')
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ identity_statement: valueRef.current.trim() })
+        .eq('id', user.id)
+
+      if (updateError) {
+        console.error('[handleSeal] Supabase update error:', updateError)
+        setSaveError('SAVE FAILED — ' + updateError.message)
+        setSealed(false)
+        return
+      }
+
+      console.log('[handleSeal] save successful — navigating to /dashboard')
+      router.push('/dashboard')
+    } catch (err) {
+      console.error('[handleSeal] unexpected error:', err)
+      setSaveError('UNEXPECTED ERROR — CHECK CONSOLE')
+      setSealed(false)
+    }
+  }, [router, supabase])
+
   const tick = useCallback(() => {
     if (holdStart.current === null) return
     const elapsed = Date.now() - holdStart.current
@@ -71,26 +111,15 @@ export default function ContractPage() {
     } else {
       handleSeal()
     }
-  }, [value]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [handleSeal])
 
   const startHold = useCallback(() => {
     if (sealed || !isReady) return
+    setSaveError(null)
     holdStart.current = Date.now()
     setHolding(true)
     rafRef.current = requestAnimationFrame(tick)
   }, [isReady, sealed, tick])
-
-  async function handleSeal() {
-    setHolding(false)
-    setSealed(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push('/login'); return }
-    await supabase
-      .from('profiles')
-      .update({ identity_statement: value.trim() })
-      .eq('id', user.id)
-    router.push('/dashboard')
-  }
 
   useEffect(() => () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }, [])
 
@@ -346,6 +375,22 @@ export default function ContractPage() {
       }}>
         {holding ? 'Keep Holding...' : 'Hold to Seal'}
       </p>
+
+      {/* Save error */}
+      {saveError && (
+        <p style={{
+          marginTop: 16,
+          color: '#fca5a5',
+          fontSize: 10,
+          letterSpacing: '2px',
+          textTransform: 'uppercase',
+          fontFamily: 'inherit',
+          textAlign: 'center',
+          maxWidth: 360,
+        }}>
+          {saveError}
+        </p>
+      )}
     </div>
   )
 }
