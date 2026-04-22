@@ -41,12 +41,6 @@ export default function GatekeeperPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
-        @keyframes breathe {
-          0%   { box-shadow: 0 0 0px rgba(168,85,247,0); }
-          50%  { box-shadow: 0 0 30px rgba(168,85,247,0.5); }
-          100% { box-shadow: 0 0 0px rgba(168,85,247,0); }
-        }
-
         .accept-btn {
           border: 1px solid #A9A9A9;
           background: transparent;
@@ -78,7 +72,6 @@ export default function GatekeeperPage() {
             background: 'transparent',
             display: 'block',
             mixBlendMode: 'screen',
-            animation: 'breathe 3s ease-in-out infinite',
           }}
         />
       </div>
