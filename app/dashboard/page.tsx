@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import {
   calculateVanguardScore,
@@ -109,6 +110,24 @@ export default async function DashboardPage() {
       </main>
 
       <BottomNav />
+
+      {/* Emergency protocol */}
+      <Link
+        href="/hold-the-line"
+        style={{
+          position: 'fixed',
+          bottom: 20,
+          left: 20,
+          fontSize: 10,
+          letterSpacing: '2px',
+          color: '#333333',
+          textDecoration: 'none',
+          fontFamily: 'var(--font-mono), monospace',
+          zIndex: 50,
+        }}
+      >
+        HOLD THE LINE
+      </Link>
     </div>
   )
 }
