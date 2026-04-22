@@ -59,14 +59,14 @@ export default function ContractPage() {
   }, [])
 
   const cancelHold = useCallback(() => {
+    if (sealed) return
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     holdStart.current = null
     setHolding(false)
     setProgress(0)
-  }, [])
+  }, [sealed])
 
   const handleSeal = useCallback(async () => {
-    alert('hold complete')
     setHolding(false)
     setSealed(true)
     setSaveError(null)
