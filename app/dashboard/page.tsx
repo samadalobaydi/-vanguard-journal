@@ -18,7 +18,7 @@ import DayGrid from '@/components/dashboard/DayGrid'
 import VanguardPrinciple from '@/components/dashboard/VanguardPrinciple'
 import DashboardNav from '@/components/DashboardNav'
 import BottomNav from '@/components/BottomNav'
-import SubscriptionGate from '@/components/SubscriptionGate'
+import DashboardInterceptor from '@/components/DashboardInterceptor'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,7 +64,6 @@ export default async function DashboardPage() {
 
   return (
     <div style={{ background: '#0A0A0A', minHeight: '100vh' }}>
-      {!isSubscribed && <SubscriptionGate />}
       {!profile?.identity_statement && (
         <div style={{
           background: '#0d0d0d',
@@ -93,49 +92,51 @@ export default async function DashboardPage() {
       )}
       <DashboardNav email={user.email ?? ''} streak={current} />
 
-      <main
-        style={{ maxWidth: 900, margin: '0 auto', padding: '32px 16px 96px' }}
-        className="sm:px-6 sm:pb-12"
-      >
-        {/* Bento grid */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <DashboardInterceptor isSubscribed={isSubscribed}>
+        <main
+          style={{ maxWidth: 900, margin: '0 auto', padding: '32px 16px 96px' }}
+          className="sm:px-6 sm:pb-12"
+        >
+          {/* Bento grid */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-          {/* 1. Identity Contract — full width */}
-          <IdentityCard statement={profile?.identity_statement ?? null} />
+            {/* 1. Identity Contract — full width */}
+            <IdentityCard statement={profile?.identity_statement ?? null} />
 
-          {/* 2. Score + Streak — 50/50 */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 12,
-            }}
-            className="grid-cols-1 sm:grid-cols-2"
-          >
-            <ScoreGauge score={vanguardScore} />
-            <StreakCard current={current} longest={longest} />
+            {/* 2. Score + Streak — 50/50 */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 12,
+              }}
+              className="grid-cols-1 sm:grid-cols-2"
+            >
+              <ScoreGauge score={vanguardScore} />
+              <StreakCard current={current} longest={longest} />
+            </div>
+
+            {/* 3. 14-Day Sparkline — full width */}
+            <Sparkline data={sparklineData} todayScore={todayScore} />
+
+            {/* 4. 60-Second Reckoning — full width */}
+            <ReckoningCard
+              date={todayStr}
+              initialEntry={todayEntry ?? null}
+              reEntryRequired={reEntryRequired}
+            />
+
+            {/* 5. 14-Day Grid — full width */}
+            <DayGrid days={dayGrid} />
+
+            {/* 6. Vanguard Principle — full width */}
+            <VanguardPrinciple />
+
           </div>
+        </main>
 
-          {/* 3. 14-Day Sparkline — full width */}
-          <Sparkline data={sparklineData} todayScore={todayScore} />
-
-          {/* 4. 60-Second Reckoning — full width */}
-          <ReckoningCard
-            date={todayStr}
-            initialEntry={todayEntry ?? null}
-            reEntryRequired={reEntryRequired}
-          />
-
-          {/* 5. 14-Day Grid — full width */}
-          <DayGrid days={dayGrid} />
-
-          {/* 6. Vanguard Principle — full width */}
-          <VanguardPrinciple />
-
-        </div>
-      </main>
-
-      <BottomNav />
+        <BottomNav />
+      </DashboardInterceptor>
 
       {/* Emergency protocol */}
       <Link
