@@ -1,38 +1,122 @@
-import Link from 'next/link'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function SuccessPage() {
+  const router = useRouter()
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    const start = Date.now()
+    const duration = 3000
+
+    const raf = () => {
+      const p = Math.min((Date.now() - start) / duration, 1)
+      setProgress(p)
+      if (p < 1) {
+        requestAnimationFrame(raf)
+      } else {
+        router.push('/dashboard')
+      }
+    }
+    requestAnimationFrame(raf)
+  }, [router])
+
   return (
-    <div className="min-h-screen bg-base flex flex-col items-center justify-center px-4 text-center">
-      <div
-        className="pointer-events-none fixed inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse 50% 50% at 50% 50%, rgba(201,168,76,0.08) 0%, transparent 70%)',
-        }}
+    <div
+      style={{
+        background: '#000000',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 24px',
+        fontFamily: "'JetBrains Mono', var(--font-mono), monospace",
+      }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0; }
+        }
+      `}</style>
+
+      <img
+        src="/vanguard-logo.png"
+        alt="Vanguard"
+        style={{ height: 72, width: 'auto', mixBlendMode: 'screen', marginBottom: 36 }}
       />
-      <div className="relative z-10 max-w-md">
-        <div className="flex justify-center mb-4">
-          <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-            <circle cx="28" cy="28" r="27" stroke="#A855F7" strokeWidth="1.5" />
-            <path d="M28 12C22 20 18 24 18 30C18 34.42 22.58 38 28 38C33.42 38 38 34.42 38 30C38 24 34 20 28 12ZM28 34C25.79 34 24 32.21 24 30C24 27 28 23 28 23C28 23 32 27 32 30C32 32.21 30.21 34 28 34Z" fill="#A855F7" />
-          </svg>
+
+      <p style={{
+        color: '#ffffff',
+        fontSize: 13,
+        fontWeight: 700,
+        letterSpacing: '5px',
+        textTransform: 'uppercase',
+        margin: '0 0 8px',
+        textAlign: 'center',
+      }}>
+        Operator Status Authorized
+      </p>
+
+      <p style={{
+        color: '#A9A9A9',
+        fontSize: 11,
+        letterSpacing: '2px',
+        margin: '0 0 40px',
+        textAlign: 'center',
+      }}>
+        Welcome to Vanguard.
+      </p>
+
+      {/* Loading bar */}
+      <div style={{ width: '100%', maxWidth: 360 }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: 8,
+        }}>
+          <span style={{ color: '#555555', fontSize: 10, letterSpacing: '2px' }}>
+            SYSTEM INITIALIZING
+          </span>
+          <span style={{ color: '#A855F7', fontSize: 10, letterSpacing: '1px', animation: 'blink 1s infinite' }}>
+            {Math.round(progress * 100)}%
+          </span>
         </div>
-        <h1 className="font-bebas text-5xl tracking-wider text-white mb-3">
-          You&apos;re In.
-        </h1>
-        <p className="text-gray-400 text-sm leading-relaxed mb-8">
-          Your subscription is active. The journal is ready. There are no more excuses — only
-          choices. Start your first entry now.
-        </p>
-        <Link
-          href="/dashboard"
-          className="inline-block bg-gold text-black font-bold text-sm tracking-widest uppercase px-10 py-4 hover:bg-gold-light transition-colors"
-        >
-          Open My Journal
-        </Link>
-        <p className="mt-6 text-xs text-gray-700 tracking-wide">
-          A receipt has been sent to your email. Manage your subscription anytime from the
-          dashboard.
+
+        {/* Track */}
+        <div style={{
+          width: '100%',
+          height: 2,
+          background: '#111111',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Fill */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: `${progress * 100}%`,
+            background: '#A855F7',
+            boxShadow: '0 0 8px rgba(168,85,247,0.6)',
+            transition: 'none',
+          }} />
+        </div>
+
+        <p style={{
+          color: '#333333',
+          fontSize: 10,
+          letterSpacing: '1px',
+          marginTop: 16,
+          textAlign: 'center',
+        }}>
+          Loading your terminal...
         </p>
       </div>
     </div>

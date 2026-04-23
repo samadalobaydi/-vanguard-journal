@@ -1,16 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
-
-const FEATURES = [
-  { icon: '◆', text: 'Daily structured journal: morning intention, evening review, tomorrow\'s target' },
-  { icon: '◈', text: 'Live discipline score — 0 to 100 — based on your daily follow-through' },
-  { icon: '◉', text: 'Streak tracking that compounds into identity-level accountability' },
-  { icon: '◇', text: 'Weekly performance history with 14-day visual grid' },
-  { icon: '▲', text: 'Private Vanguard brotherhood community access' },
-  { icon: '★', text: '30 / 60 / 90 / 365 day mastery milestones' },
-]
+import { createClient } from '@/lib/supabase/client'
 
 export default function SubscribePage() {
   const [loading, setLoading] = useState(false)
@@ -19,136 +10,203 @@ export default function SubscribePage() {
   async function handleSubscribe() {
     setLoading(true)
     setError(null)
-
     try {
       const res = await fetch('/api/stripe/checkout', { method: 'POST' })
       const data = await res.json()
-
       if (!res.ok) throw new Error(data.error ?? 'Failed to create checkout session.')
       if (data.url) window.location.href = data.url
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred.')
       setLoading(false)
     }
   }
 
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/login'
+  }
+
   return (
-    <div className="min-h-screen bg-base flex flex-col">
-      {/* Background */}
-      <div
-        className="pointer-events-none fixed inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse 70% 50% at 50% 100%, rgba(201,168,76,0.06) 0%, transparent 70%)',
-        }}
-      />
+    <div
+      style={{
+        background: '#000000',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '48px 24px',
+        fontFamily: "'JetBrains Mono', var(--font-mono), monospace",
+      }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
-      {/* Nav */}
-      <nav className="relative z-10 border-b border-white/[0.06] px-6 py-4 flex items-center justify-between">
-        <Link href="/">
-          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 80, width: 'auto', display: 'block' }} />
-        </Link>
-        <Link
-          href="/login"
-          className="text-xs tracking-widest uppercase text-gray-600 hover:text-white transition-colors"
-        >
-          Sign In
-        </Link>
-      </nav>
+        .activate-btn {
+          width: 100%;
+          background: transparent;
+          border: 1px solid #A9A9A9;
+          color: #A9A9A9;
+          font-family: inherit;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          padding: 16px 24px;
+          cursor: pointer;
+          transition: border-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
 
-      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-16">
-        <div className="max-w-2xl w-full">
-          {/* Header */}
-          <div className="text-center mb-10">
-            <span className="inline-block border border-gold/30 text-gold text-xs tracking-widest uppercase px-4 py-1.5 mb-6">
-              Discipline Journal App
-            </span>
-            <h1 className="font-bebas text-5xl sm:text-6xl tracking-wider text-white leading-none mb-4">
-              Unlock Your
-              <br />
-              <span className="text-gold">Daily Arsenal</span>
-            </h1>
-            <p className="text-gray-400 text-sm leading-relaxed max-w-md mx-auto">
-              One subscription. Every tool you need to hold yourself to the standard most men will
-              never reach.
-            </p>
-          </div>
+        .activate-btn:hover:not(:disabled) {
+          border-color: #A855F7;
+          color: #A855F7;
+          box-shadow: 0 0 18px rgba(168,85,247,0.35), inset 0 0 18px rgba(168,85,247,0.05);
+        }
 
-          {/* Pricing card */}
-          <div
-            className="border border-gold/20 relative"
-            style={{ background: 'rgba(201,168,76,0.02)', boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}
-          >
-            {/* Corner accents */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-gold/40" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-gold/40" />
+        .activate-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
 
-            <div className="p-8 sm:p-10">
-              {/* Price */}
-              <div className="flex items-baseline gap-2 mb-1">
-                <span className="font-bebas text-6xl text-gold tracking-wider leading-none">£9.99</span>
-                <span className="text-gray-500 text-sm tracking-widest uppercase">/ month</span>
-              </div>
-              <p className="text-xs text-gray-600 mb-8 tracking-wide">
-                Cancel anytime. No contracts. No compromise.
-              </p>
+        .signout-btn {
+          background: none;
+          border: none;
+          color: #333333;
+          font-family: inherit;
+          font-size: 10px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: color 0.2s;
+          padding: 0;
+        }
 
-              {/* Features */}
-              <ul className="space-y-3 mb-8">
-                {FEATURES.map((f) => (
-                  <li key={f.text} className="flex items-start gap-3 text-sm text-gray-300">
-                    <span className="text-gold mt-0.5 flex-shrink-0">{f.icon}</span>
-                    <span>{f.text}</span>
-                  </li>
-                ))}
-              </ul>
+        .signout-btn:hover {
+          color: #A9A9A9;
+        }
+      `}</style>
 
-              {/* Divider */}
-              <div className="border-t border-white/[0.06] mb-8" />
+      <div style={{ width: '100%', maxWidth: 520 }}>
 
-              {/* CTA */}
-              {error && (
-                <div className="border border-red-900/50 bg-red-950/30 text-red-400 text-sm px-4 py-3 mb-4">
-                  {error}
-                </div>
-              )}
-
-              <button
-                onClick={handleSubscribe}
-                disabled={loading}
-                className="w-full bg-gold text-black font-bold text-sm tracking-widest uppercase py-4 hover:bg-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Redirecting to Checkout...' : 'Start for £9.99 / Month'}
-              </button>
-
-              <p className="text-center text-xs text-gray-700 mt-4 tracking-wide">
-                Secure checkout via Stripe. 30-day money-back guarantee.
-              </p>
-
-              <p className="text-center text-sm text-gray-600 mt-5">
-                Already have an account?{' '}
-                <Link href="/login" className="text-gold hover:text-gold-light transition-colors">
-                  Sign in
-                </Link>
-              </p>
-            </div>
-          </div>
-
-          {/* Social proof */}
-          <div className="grid grid-cols-3 gap-4 mt-8 text-center">
-            {[
-              { n: '14,000+', l: 'Members' },
-              { n: '87%', l: '90-Day Streak Rate' },
-              { n: '4.9★', l: 'Average Rating' },
-            ].map((s) => (
-              <div key={s.l} className="border border-white/[0.05] bg-dark py-4">
-                <div className="font-bebas text-2xl text-gold tracking-wider">{s.n}</div>
-                <div className="text-xs text-gray-600 tracking-wider uppercase mt-0.5">{s.l}</div>
-              </div>
-            ))}
-          </div>
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <img
+            src="/vanguard-logo.png"
+            alt="Vanguard"
+            style={{ height: 80, width: 'auto', display: 'inline-block', mixBlendMode: 'screen' }}
+          />
         </div>
-      </main>
+
+        {/* Title */}
+        <p style={{
+          color: '#ffffff',
+          fontSize: 13,
+          fontWeight: 700,
+          letterSpacing: '5px',
+          textTransform: 'uppercase',
+          textAlign: 'center',
+          margin: '0 0 40px',
+        }}>
+          Authorize Operator Status
+        </p>
+
+        {/* The Challenge */}
+        <p style={{
+          color: '#A9A9A9',
+          fontSize: 13,
+          lineHeight: 1.9,
+          textAlign: 'center',
+          margin: '0 0 36px',
+        }}>
+          A code without a cost is a fantasy. To enter the Vanguard circle, you must have skin in
+          the game. This is your first act of discipline — a physical commitment to the standard
+          you just signed.
+        </p>
+
+        {/* Terminal Specs card */}
+        <div style={{
+          border: '1px solid #1e1e1e',
+          background: 'rgba(255,255,255,0.02)',
+          padding: '24px 28px',
+          marginBottom: 32,
+        }}>
+          <p style={{
+            color: '#555555',
+            fontSize: 10,
+            letterSpacing: '3px',
+            textTransform: 'uppercase',
+            margin: '0 0 20px',
+          }}>
+            [ Terminal Specifications ]
+          </p>
+
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {[
+              { label: 'Zero-Knowledge Privacy', detail: 'We cannot see your logs. Total data autonomy.' },
+              { label: 'No External Tracking', detail: 'Zero advertisers. Zero data brokers.' },
+              { label: 'Full Tactical Arsenal', detail: 'AI Auditor, 60-Second Reckonings, and Global Tribal Boards.' },
+            ].map(({ label, detail }) => (
+              <li key={label} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                <span style={{ color: '#A855F7', fontSize: 10, marginTop: 2, flexShrink: 0 }}>▸</span>
+                <span style={{ color: '#A9A9A9', fontSize: 12, lineHeight: 1.6 }}>
+                  <span style={{ color: '#ffffff', fontWeight: 700 }}>{label}:</span>{' '}{detail}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Price line */}
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <span style={{ color: '#ffffff', fontSize: 28, fontWeight: 700, letterSpacing: '2px' }}>
+            £9.99
+          </span>
+          <span style={{ color: '#555555', fontSize: 11, letterSpacing: '2px', marginLeft: 8 }}>
+            / MONTH
+          </span>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div style={{
+            border: '1px solid rgba(127,29,29,0.6)',
+            background: 'rgba(127,29,29,0.1)',
+            color: '#fca5a5',
+            fontSize: 11,
+            padding: '10px 14px',
+            marginBottom: 16,
+            letterSpacing: '1px',
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* CTA */}
+        <button className="activate-btn" onClick={handleSubscribe} disabled={loading}>
+          {loading ? '[ Connecting to Stripe... ]' : '[ Activate Full Terminal — £9.99/Month ]'}
+        </button>
+
+        {/* Legal */}
+        <p style={{
+          color: '#333333',
+          fontSize: 10,
+          letterSpacing: '1px',
+          textAlign: 'center',
+          margin: '20px 0 32px',
+          lineHeight: 1.7,
+        }}>
+          Verify your intent. Secure your legacy. Cancel anytime.
+        </p>
+
+        {/* Sign out */}
+        <div style={{ textAlign: 'center' }}>
+          <button className="signout-btn" onClick={handleSignOut}>
+            Sign Out
+          </button>
+        </div>
+
+      </div>
     </div>
   )
 }
