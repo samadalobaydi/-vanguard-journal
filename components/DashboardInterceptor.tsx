@@ -30,7 +30,7 @@ export default function DashboardInterceptor({ isSubscribed, children }: Props) 
       )}
 
       {/* Gate overlay */}
-      {!isSubscribed && showGate && <SubscriptionGate />}
+      {!isSubscribed && showGate && <SubscriptionGate onDismiss={() => setShowGate(false)} />}
     </div>
   )
 }

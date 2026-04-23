@@ -3,7 +3,11 @@
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-export default function SubscriptionGate() {
+interface Props {
+  onDismiss?: () => void
+}
+
+export default function SubscriptionGate({ onDismiss }: Props) {
   const router = useRouter()
   const supabase = createClient()
 
@@ -73,6 +77,32 @@ export default function SubscriptionGate() {
           color: #A9A9A9;
         }
       `}</style>
+
+      {/* X dismiss button */}
+      {onDismiss && (
+        <button
+          onClick={onDismiss}
+          style={{
+            position: 'absolute',
+            top: 20,
+            right: 20,
+            background: 'none',
+            border: 'none',
+            color: '#555555',
+            fontSize: 18,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            lineHeight: 1,
+            padding: '4px 8px',
+            transition: 'color 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#A9A9A9' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#555555' }}
+          aria-label="Dismiss"
+        >
+          ×
+        </button>
+      )}
 
       <div style={{ width: '100%', maxWidth: 520 }}>
 
