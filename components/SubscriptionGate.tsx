@@ -176,7 +176,7 @@ export default function SubscriptionGate({ onDismiss }: Props) {
         </div>
 
         {/* CTA */}
-        <a href="/subscribe" className="gate-btn">
+        <a href="/payment" className="gate-btn">
           [ Activate Full Terminal — £9.99/Month ]
         </a>
 

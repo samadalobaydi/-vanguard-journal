@@ -63,7 +63,18 @@ export async function POST(request: Request) {
 
         await supabase
           .from('profiles')
-          .update({ subscription_status: 'canceled' })
+          .update({ subscription_status: 'inactive' })
+          .eq('stripe_customer_id', customerId)
+        break
+      }
+
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as Stripe.Invoice
+        const customerId = invoice.customer as string
+
+        await supabase
+          .from('profiles')
+          .update({ subscription_status: 'active' })
           .eq('stripe_customer_id', customerId)
         break
       }
