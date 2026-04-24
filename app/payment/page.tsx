@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { loadStripe } from '@stripe/stripe-js'
 import {
   Elements,
@@ -17,7 +17,6 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 function PaymentForm() {
   const stripe = useStripe()
   const elements = useElements()
-  const router = useRouter()
 
   const [status, setStatus] = useState<'idle' | 'processing' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -29,7 +28,7 @@ function PaymentForm() {
     setStatus('processing')
     setErrorMsg(null)
 
-    const { error } = await stripe.confirmPayment({
+    const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/dashboard`,
@@ -37,13 +36,27 @@ function PaymentForm() {
       redirect: 'if_required',
     })
 
-    if (error) {
-      setErrorMsg(error.message ?? 'Payment failed. Please try again.')
+    if (result.error) {
+      setErrorMsg(result.error.message ?? 'Payment failed. Please try again.')
       setStatus('error')
-    } else {
-      // Payment succeeded — Stripe will redirect or we do it manually
-      router.push('/dashboard')
+      return
     }
+
+    // Payment confirmed — update subscription_status optimistically in case webhook is slow
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase
+          .from('profiles')
+          .update({ subscription_status: 'active' })
+          .eq('id', user.id)
+      }
+    } catch {
+      // Non-fatal — webhook will catch it
+    }
+
+    window.location.href = '/dashboard'
   }
 
   return (
@@ -54,6 +67,9 @@ function PaymentForm() {
           options={{
             layout: 'tabs',
             fields: { billingDetails: { email: 'never' } },
+            defaultValues: {},
+            wallets: { applePay: 'auto', googlePay: 'auto' },
+            terms: { card: 'never' },
           }}
         />
       </div>
@@ -132,6 +148,7 @@ function PaymentLoader() {
       stripe={stripePromise}
       options={{
         clientSecret,
+        locale: 'en-GB',
         appearance: {
           theme: 'night',
           variables: {
