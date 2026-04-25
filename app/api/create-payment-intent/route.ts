@@ -33,28 +33,12 @@ export async function POST() {
       .upsert({ id: user.id, email: user.email, stripe_customer_id: customerId })
   }
 
-  // Create a SetupIntent for subscription — we collect the payment method
-  // then create the subscription on the webhook after payment succeeds.
-  // To embed Stripe Payment Element for a subscription we use a subscription
-  // with payment_behavior: 'default_incomplete' which gives us a PaymentIntent client_secret.
-  const subscription = await stripe.subscriptions.create({
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: 999,
+    currency: 'gbp',
     customer: customerId,
-    items: [{ price: process.env.STRIPE_PRICE_ID! }],
-    payment_behavior: 'default_incomplete',
-    payment_settings: { save_default_payment_method: 'on_subscription' },
-    expand: ['latest_invoice.payment_intent'],
-    metadata: { supabase_user_id: user.id },
+    metadata: { userId: user.id, priceId: process.env.STRIPE_PRICE_ID! },
   })
 
-  const invoice = subscription.latest_invoice as any
-  const paymentIntent = invoice?.payment_intent
-
-  if (!paymentIntent?.client_secret) {
-    return NextResponse.json({ error: 'Could not create payment intent' }, { status: 500 })
-  }
-
-  return NextResponse.json({
-    clientSecret: paymentIntent.client_secret,
-    subscriptionId: subscription.id,
-  })
+  return NextResponse.json({ clientSecret: paymentIntent.client_secret })
 }

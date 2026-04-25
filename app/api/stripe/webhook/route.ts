@@ -68,6 +68,30 @@ export async function POST(request: Request) {
         break
       }
 
+      case 'payment_intent.succeeded': {
+        const pi = event.data.object as Stripe.PaymentIntent
+        const userId = pi.metadata?.userId
+        const priceId = pi.metadata?.priceId
+        const customerId = pi.customer as string
+
+        if (userId && priceId) {
+          // Create the subscription now that payment is confirmed
+          await stripe.subscriptions.create({
+            customer: customerId,
+            items: [{ price: priceId }],
+            metadata: { supabase_user_id: userId },
+          })
+        }
+
+        if (customerId) {
+          await supabase
+            .from('profiles')
+            .update({ subscription_status: 'active' })
+            .eq('stripe_customer_id', customerId)
+        }
+        break
+      }
+
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice
         const customerId = invoice.customer as string
