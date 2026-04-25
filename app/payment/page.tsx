@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { loadStripe } from '@stripe/stripe-js'
 import {
   Elements,
@@ -21,42 +20,22 @@ function PaymentForm() {
   const [status, setStatus] = useState<'idle' | 'processing' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!stripe || !elements) return
-
     setStatus('processing')
-    setErrorMsg(null)
 
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/dashboard`,
+        return_url: 'https://vanguardglobal.co/dashboard',
       },
-      redirect: 'if_required',
     })
 
     if (result.error) {
-      setErrorMsg(result.error.message ?? 'Payment failed. Please try again.')
+      setErrorMsg(result.error.message ?? 'Payment failed')
       setStatus('error')
-      return
     }
-
-    // Payment confirmed — update subscription_status optimistically in case webhook is slow
-    try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        await supabase
-          .from('profiles')
-          .update({ subscription_status: 'active' })
-          .eq('id', user.id)
-      }
-    } catch {
-      // Non-fatal — webhook will catch it
-    }
-
-    window.location.href = '/dashboard'
   }
 
   return (
