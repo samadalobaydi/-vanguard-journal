@@ -1,186 +1,34 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
-import {
-  Elements,
-  PaymentElement,
-  useStripe,
-  useElements,
-} from '@stripe/react-stripe-js'
+import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
-
-// ─── Inner form (needs Stripe context) ──────────────────────────────────────
-
-function PaymentForm() {
-  const stripe = useStripe()
-  const elements = useElements()
-
-  const [status, setStatus] = useState<'idle' | 'processing' | 'error'>('idle')
+export default function PaymentPage() {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!stripe || !elements) return
-    setStatus('processing')
+  async function handleActivate() {
+    setStatus('loading')
+    setErrorMsg(null)
 
-    const result = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: 'https://vanguardglobal.co/dashboard',
-      },
-    })
+    try {
+      const res = await fetch('/api/create-checkout-session', { method: 'POST' })
+      const data = await res.json()
 
-    if (result.error) {
-      setErrorMsg(result.error.message ?? 'Payment failed')
+      if (!res.ok) throw new Error(data.error ?? 'Failed to create checkout session.')
+      if (data.url) window.location.href = data.url
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'An error occurred.')
       setStatus('error')
     }
   }
 
-  return (
-    <form onSubmit={handleSubmit}>
-      {/* Stripe Payment Element — handles card, Apple Pay, Google Pay */}
-      <div style={{ marginBottom: 24 }}>
-        <PaymentElement
-          options={{
-            layout: 'tabs',
-            fields: { billingDetails: { email: 'never' } },
-            defaultValues: {},
-            wallets: { applePay: 'auto', googlePay: 'auto' },
-            terms: { card: 'never' },
-          }}
-        />
-      </div>
-
-      {errorMsg && (
-        <div style={{
-          border: '1px solid rgba(127,29,29,0.6)',
-          background: 'rgba(127,29,29,0.1)',
-          color: '#fca5a5',
-          fontSize: 11,
-          letterSpacing: '1px',
-          padding: '10px 14px',
-          marginBottom: 16,
-          fontFamily: 'inherit',
-        }}>
-          {errorMsg}
-        </div>
-      )}
-
-      <button
-        type="submit"
-        disabled={!stripe || status === 'processing'}
-        className="confirm-btn"
-      >
-        {status === 'processing' ? '[ PROCESSING... ]' : '[ CONFIRM ACTIVATION ]'}
-      </button>
-    </form>
-  )
-}
-
-// ─── Loader — fetches client secret then mounts Elements ────────────────────
-
-function PaymentLoader() {
-  const [clientSecret, setClientSecret] = useState<string | null>(null)
-  const [fetchError, setFetchError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetch('/api/create-payment-intent', { method: 'POST' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.clientSecret) {
-          setClientSecret(data.clientSecret)
-        } else {
-          setFetchError(data.error ?? 'Failed to initialise payment.')
-        }
-      })
-      .catch(() => setFetchError('Network error. Please refresh.'))
-  }, [])
-
-  if (fetchError) {
-    return (
-      <div style={{
-        border: '1px solid rgba(127,29,29,0.6)',
-        background: 'rgba(127,29,29,0.1)',
-        color: '#fca5a5',
-        fontSize: 11,
-        letterSpacing: '1px',
-        padding: '12px 16px',
-        fontFamily: 'inherit',
-      }}>
-        {fetchError}
-      </div>
-    )
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/login'
   }
 
-  if (!clientSecret) {
-    return (
-      <div style={{ color: '#555555', fontSize: 11, letterSpacing: '3px', textAlign: 'center', padding: '32px 0' }}>
-        INITIALISING SECURE CONNECTION...
-      </div>
-    )
-  }
-
-  return (
-    <Elements
-      stripe={stripePromise}
-      options={{
-        clientSecret,
-        locale: 'en-GB',
-        appearance: {
-          theme: 'night',
-          variables: {
-            colorPrimary: '#A855F7',
-            colorBackground: '#0a0a0a',
-            colorText: '#ffffff',
-            colorTextSecondary: '#A9A9A9',
-            colorDanger: '#fca5a5',
-            fontFamily: "'JetBrains Mono', monospace",
-            borderRadius: '0px',
-            colorIcon: '#A9A9A9',
-          },
-          rules: {
-            '.Input': {
-              border: '1px solid #1e1e1e',
-              backgroundColor: '#000000',
-              color: '#ffffff',
-              outline: 'none',
-            },
-            '.Input:focus': {
-              border: '1px solid #A855F7',
-              boxShadow: '0 0 12px rgba(168,85,247,0.25)',
-            },
-            '.Label': {
-              color: '#555555',
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-              fontSize: '10px',
-            },
-            '.Tab': {
-              border: '1px solid #1e1e1e',
-              backgroundColor: '#000000',
-              color: '#A9A9A9',
-            },
-            '.Tab--selected': {
-              border: '1px solid #A855F7',
-              color: '#ffffff',
-            },
-            '.Tab:hover': {
-              color: '#ffffff',
-            },
-          },
-        },
-      }}
-    >
-      <PaymentForm />
-    </Elements>
-  )
-}
-
-// ─── Page ────────────────────────────────────────────────────────────────────
-
-export default function PaymentPage() {
   return (
     <div
       style={{
@@ -197,7 +45,7 @@ export default function PaymentPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
-        .confirm-btn {
+        .activate-btn {
           width: 100%;
           background: transparent;
           border: 1px solid #A855F7;
@@ -212,14 +60,31 @@ export default function PaymentPage() {
           transition: box-shadow 0.3s, background 0.3s;
         }
 
-        .confirm-btn:hover:not(:disabled) {
+        .activate-btn:hover:not(:disabled) {
           background: rgba(168,85,247,0.08);
           box-shadow: 0 0 24px rgba(168,85,247,0.4), inset 0 0 24px rgba(168,85,247,0.06);
         }
 
-        .confirm-btn:disabled {
+        .activate-btn:disabled {
           opacity: 0.5;
           cursor: not-allowed;
+        }
+
+        .signout-btn {
+          background: none;
+          border: none;
+          color: #333333;
+          font-family: inherit;
+          font-size: 10px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: color 0.2s;
+          padding: 0;
+        }
+
+        .signout-btn:hover {
+          color: #A9A9A9;
         }
       `}</style>
 
@@ -259,24 +124,62 @@ export default function PaymentPage() {
           £9.99 / MONTH · CANCEL ANYTIME
         </p>
 
-        {/* Payment card */}
+        {/* Specs card */}
         <div style={{
           border: '1px solid #1e1e1e',
           background: 'rgba(255,255,255,0.02)',
-          padding: '32px 28px',
+          padding: '24px 28px',
+          marginBottom: 32,
         }}>
           <p style={{
             color: '#555555',
             fontSize: 10,
             letterSpacing: '3px',
             textTransform: 'uppercase',
-            margin: '0 0 24px',
+            margin: '0 0 20px',
           }}>
-            [ Secure Payment ]
+            [ Terminal Specifications ]
           </p>
 
-          <PaymentLoader />
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {[
+              { label: 'Zero-Knowledge Privacy', detail: 'We cannot see your logs. Total data autonomy.' },
+              { label: 'No External Tracking', detail: 'Zero advertisers. Zero data brokers.' },
+              { label: 'Full Tactical Arsenal', detail: 'AI Auditor, 60-Second Reckonings, and Global Tribal Boards.' },
+            ].map(({ label, detail }) => (
+              <li key={label} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                <span style={{ color: '#A855F7', fontSize: 10, marginTop: 2, flexShrink: 0 }}>▸</span>
+                <span style={{ color: '#A9A9A9', fontSize: 12, lineHeight: 1.6 }}>
+                  <span style={{ color: '#ffffff', fontWeight: 700 }}>{label}:</span>{' '}{detail}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        {/* Error */}
+        {errorMsg && (
+          <div style={{
+            border: '1px solid rgba(127,29,29,0.6)',
+            background: 'rgba(127,29,29,0.1)',
+            color: '#fca5a5',
+            fontSize: 11,
+            letterSpacing: '1px',
+            padding: '10px 14px',
+            marginBottom: 16,
+          }}>
+            {errorMsg}
+          </div>
+        )}
+
+        {/* CTA */}
+        <button
+          className="activate-btn"
+          onClick={handleActivate}
+          disabled={status === 'loading'}
+        >
+          {status === 'loading' ? '[ CONNECTING TO STRIPE... ]' : '[ CONFIRM ACTIVATION ]'}
+        </button>
 
         {/* Legal */}
         <p style={{
@@ -284,11 +187,18 @@ export default function PaymentPage() {
           fontSize: 10,
           letterSpacing: '1px',
           textAlign: 'center',
-          margin: '20px 0 0',
+          margin: '20px 0 32px',
           lineHeight: 1.7,
         }}>
           Encrypted by Stripe. We never store your card details.
         </p>
+
+        {/* Sign out */}
+        <div style={{ textAlign: 'center' }}>
+          <button className="signout-btn" onClick={handleSignOut}>
+            Sign Out
+          </button>
+        </div>
 
       </div>
     </div>
