@@ -3,6 +3,9 @@ import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/server'
 
+// Disable body parsing — Stripe requires the raw body for signature verification
+export const config = { api: { bodyParser: false } }
+
 export async function POST(request: Request) {
   const body = await request.text()
   const sig = request.headers.get('stripe-signature')
@@ -11,9 +14,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 })
   }
 
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('STRIPE_WEBHOOK_SECRET is not set')
+    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 })
+  }
+
   let event: Stripe.Event
   try {
-    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!)
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET)
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message)
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
@@ -23,65 +31,45 @@ export async function POST(request: Request) {
 
   try {
     switch (event.type) {
-      case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.Checkout.Session
-        const email = session.customer_details?.email ?? session.customer_email
-        const customerId = session.customer as string
-
-        if (!email) {
-          console.error('checkout.session.completed: no email found on session', session.id)
-          break
-        }
-
-        const { error } = await supabase.from('profiles').upsert(
-          {
-            email,
-            stripe_customer_id: customerId,
-            subscription_status: 'active',
-          },
-          { onConflict: 'email' }
-        )
-        if (error) console.error('profiles upsert error:', error)
-        break
-      }
-
-      case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription
-        const customerId = subscription.customer as string
-        const status = subscription.status // 'active' | 'past_due' | 'canceled' | etc.
-
-        await supabase
-          .from('profiles')
-          .update({ subscription_status: status })
-          .eq('stripe_customer_id', customerId)
-        break
-      }
-
-      case 'customer.subscription.deleted': {
-        const subscription = event.data.object as Stripe.Subscription
-        const customerId = subscription.customer as string
-
-        await supabase
-          .from('profiles')
-          .update({ subscription_status: 'inactive' })
-          .eq('stripe_customer_id', customerId)
-        break
-      }
-
+      // ── Primary payment confirmation ────────────────────────────────────────
       case 'payment_intent.succeeded': {
-        const pi = event.data.object as Stripe.PaymentIntent
+        // v2 thin events: event.data.object only has {id, object} — retrieve the full object
+        const thin = event.data.object as { id: string }
+        const pi = await stripe.paymentIntents.retrieve(thin.id)
+
         const userId = pi.metadata?.userId
         const priceId = pi.metadata?.priceId
-        const customerId = pi.customer as string
+        const customerId = typeof pi.customer === 'string' ? pi.customer : pi.customer?.id
 
-        if (userId && priceId) {
-          // Create the subscription now that payment is confirmed
+        // Update profile by userId (most reliable) or fall back to stripe_customer_id
+        if (userId) {
+          await supabase
+            .from('profiles')
+            .update({ subscription_status: 'active' })
+            .eq('id', userId)
+        } else if (customerId) {
+          await supabase
+            .from('profiles')
+            .update({ subscription_status: 'active' })
+            .eq('stripe_customer_id', customerId)
+        }
+
+        // Create the subscription now that payment is confirmed
+        if (priceId && customerId) {
           await stripe.subscriptions.create({
             customer: customerId,
             items: [{ price: priceId }],
-            metadata: { supabase_user_id: userId },
+            metadata: { supabase_user_id: userId ?? '' },
           })
         }
+        break
+      }
+
+      // ── Recurring invoice paid (subscription renewal) ───────────────────────
+      case 'invoice.payment_succeeded': {
+        const thin = event.data.object as { id: string }
+        const invoice = await stripe.invoices.retrieve(thin.id)
+        const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id
 
         if (customerId) {
           await supabase
@@ -92,30 +80,47 @@ export async function POST(request: Request) {
         break
       }
 
-      case 'invoice.payment_succeeded': {
-        const invoice = event.data.object as Stripe.Invoice
-        const customerId = invoice.customer as string
+      // ── Subscription lifecycle ──────────────────────────────────────────────
+      case 'customer.subscription.updated': {
+        const thin = event.data.object as { id: string }
+        const subscription = await stripe.subscriptions.retrieve(thin.id)
+        const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id
 
         await supabase
           .from('profiles')
-          .update({ subscription_status: 'active' })
+          .update({ subscription_status: subscription.status })
           .eq('stripe_customer_id', customerId)
         break
       }
 
-      case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice
-        const customerId = invoice.customer as string
+      case 'customer.subscription.deleted': {
+        const thin = event.data.object as { id: string }
+        const subscription = await stripe.subscriptions.retrieve(thin.id)
+        const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id
 
         await supabase
           .from('profiles')
-          .update({ subscription_status: 'past_due' })
+          .update({ subscription_status: 'inactive' })
           .eq('stripe_customer_id', customerId)
+        break
+      }
+
+      // ── Failed payment ──────────────────────────────────────────────────────
+      case 'invoice.payment_failed': {
+        const thin = event.data.object as { id: string }
+        const invoice = await stripe.invoices.retrieve(thin.id)
+        const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id
+
+        if (customerId) {
+          await supabase
+            .from('profiles')
+            .update({ subscription_status: 'past_due' })
+            .eq('stripe_customer_id', customerId)
+        }
         break
       }
 
       default:
-        // Ignore unhandled event types
         break
     }
   } catch (err) {
