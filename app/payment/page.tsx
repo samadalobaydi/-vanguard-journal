@@ -228,7 +228,7 @@ export default function PaymentPage() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <img
-            src="/vanguard-logo.png.png"
+            src="/vanguard-logo.png"
             alt="Vanguard"
             style={{ height: 80, width: 'auto', display: 'inline-block', mixBlendMode: 'screen' }}
           />

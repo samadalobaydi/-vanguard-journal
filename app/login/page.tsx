@@ -92,6 +92,7 @@ export default function LoginPage() {
             style={{
               height: 92,
               width: 'auto',
+              mixBlendMode: 'screen',
               animation: 'logoPulse 0.6s ease-out forwards',
             }}
           />
@@ -133,7 +134,7 @@ export default function LoginPage() {
               <img
                 src="/vanguard-logo.png"
                 alt="Vanguard"
-                style={{ height: 200, width: 'auto', display: 'inline-block' }}
+                style={{ height: 200, width: 'auto', display: 'inline-block', mixBlendMode: 'screen' }}
               />
             </div>
 
