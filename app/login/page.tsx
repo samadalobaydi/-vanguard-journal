@@ -203,7 +203,7 @@ export default function LoginPage() {
                     marginBottom: 8,
                   }}
                 >
-                  Passcode
+                  Password
                 </label>
                 <input
                   type="password"
