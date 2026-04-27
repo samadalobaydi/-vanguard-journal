@@ -20,7 +20,7 @@ export default function GatekeeperPage() {
   function handleAccept() {
     sessionStorage.setItem('vanguard_cleared', 'true')
     setFading(true)
-    setTimeout(() => router.push('/login'), 500)
+    setTimeout(() => router.push('/contract'), 500)
   }
 
   if (!checked) return null
