@@ -70,13 +70,8 @@ export default function SignupPage() {
     if (data.user) {
       await supabase.from('profiles').upsert({ id: data.user.id, email })
     }
-    if (data.session) {
-      router.push('/subscribe')
-      router.refresh()
-    } else {
-      setSuccess(true)
-      setLoading(false)
-    }
+    setSuccess(true)
+    setLoading(false)
   }
 
   function onInputFocus(e: React.FocusEvent<HTMLInputElement>) {
