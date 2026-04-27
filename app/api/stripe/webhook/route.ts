@@ -28,6 +28,26 @@ export async function POST(request: Request) {
 
   try {
     switch (event.type) {
+      // ── Checkout completed (first-time subscription) ────────────────────────
+      case 'checkout.session.completed': {
+        const thin = event.data.object as { id: string }
+        const session = await stripe.checkout.sessions.retrieve(thin.id)
+
+        const userId = session.metadata?.userId
+        const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
+        const customerEmail = session.customer_details?.email ?? undefined
+
+        if (userId) {
+          await supabase.from('profiles').upsert({
+            id: userId,
+            email: customerEmail,
+            subscription_status: 'active',
+            stripe_customer_id: customerId,
+          })
+        }
+        break
+      }
+
       // ── Primary payment confirmation ────────────────────────────────────────
       case 'payment_intent.succeeded': {
         // v2 thin events: event.data.object only has {id, object} — retrieve the full object

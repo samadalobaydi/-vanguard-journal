@@ -67,6 +67,9 @@ export default function SignupPage() {
       setLoading(false)
       return
     }
+    if (data.user) {
+      await supabase.from('profiles').upsert({ id: data.user.id, email })
+    }
     if (data.session) {
       router.push('/subscribe')
       router.refresh()
@@ -271,7 +274,7 @@ export default function SignupPage() {
                     marginBottom: 8,
                   }}
                 >
-                  Passcode
+                  Password
                 </label>
                 <input
                   type="password"
@@ -297,7 +300,7 @@ export default function SignupPage() {
                     marginBottom: 8,
                   }}
                 >
-                  Confirm Passcode
+                  Confirm Password
                 </label>
                 <input
                   type="password"
