@@ -5,7 +5,6 @@ import {
   calculateVanguardScore,
   getStreakData,
   getReEntryRequired,
-  getDayGrid,
   getSparklineData,
   getDisciplineScore,
 } from '@/lib/vanguard-score'
@@ -58,7 +57,6 @@ export default async function DashboardPage() {
   const { current, longest } = getStreakData(entries)
   const vanguardScore = calculateVanguardScore(entries, !!profile?.identity_statement?.trim())
   const reEntryRequired = getReEntryRequired(entries)
-  const dayGrid = getDayGrid(entries)
   const sparklineData = getSparklineData(entries)
   const todayScore = todayEntry ? getDisciplineScore(todayEntry) : 0
 
@@ -126,8 +124,8 @@ export default async function DashboardPage() {
               reEntryRequired={reEntryRequired}
             />
 
-            {/* 5. 14-Day Grid — full width */}
-            <DayGrid days={dayGrid} />
+            {/* 5. Monthly Calendar — full width */}
+            <DayGrid entryDates={entries.map((e) => e.entry_date)} />
 
             {/* 6. Vanguard Principle — full width */}
             <VanguardPrinciple />
