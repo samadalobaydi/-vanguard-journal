@@ -8,7 +8,7 @@ const HEADING = '[ ENTRY PROTOCOL: SELECTION ]'
 const LINES: { text: string; highlight?: string }[] = [
   { text: '"This terminal serves as a mirror, not a shield."' },
   {
-    text: '"You are here because you have failed to hold the line on your own. Vanguard is the final intervention."',
+    text: '"You\'ve tried willpower. You\'ve tried motivation. This is what comes after."',
   },
   { text: '"If you seek an ally in your weakness, look elsewhere."' },
   {
