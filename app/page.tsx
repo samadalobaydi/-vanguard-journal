@@ -136,8 +136,8 @@ export default function GatekeeperPage() {
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
         @keyframes breathe {
-          0%, 100% { filter: drop-shadow(0 0 6px rgba(168,85,247,0.25)); }
-          50%       { filter: drop-shadow(0 0 32px rgba(168,85,247,0.85)); }
+          0%, 100% { filter: drop-shadow(0 0 0px rgba(168,85,247,0)); }
+          50%       { filter: drop-shadow(0 0 40px #A855F7) drop-shadow(0 0 80px rgba(168,85,247,0.5)); }
         }
 
         @keyframes glitchFrame {
@@ -248,7 +248,7 @@ export default function GatekeeperPage() {
           src="/vanguard-logo.png"
           alt="Vanguard"
           style={{
-            height: 96,
+            height: 120,
             width: 'auto',
             display: 'block',
             mixBlendMode: 'screen',
@@ -257,7 +257,7 @@ export default function GatekeeperPage() {
         />
       </div>
 
-      <div style={{ width: '100%', maxWidth: 580 }}>
+      <div style={{ width: '100%', maxWidth: 560, margin: '0 auto', padding: '0 24px' }}>
 
         {/* Heading */}
         <p style={{
