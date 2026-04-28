@@ -267,6 +267,7 @@ export default function GatekeeperPage() {
           textTransform: 'uppercase',
           margin: '0 0 36px',
           minHeight: '1.5em',
+          textAlign: 'center',
         }}>
           {headingText}
           {!headingDone && <span className="cursor" />}
