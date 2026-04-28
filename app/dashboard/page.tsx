@@ -1,20 +1,35 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import {
-  calculateVanguardScore,
-  getStreakData,
-} from '@/lib/vanguard-score'
-import ScoreGauge from '@/components/dashboard/ScoreGauge'
-import IdentityCard from '@/components/dashboard/IdentityCard'
-import DayGrid from '@/components/dashboard/DayGrid'
+import { calculateVanguardScore, getStreakData } from '@/lib/vanguard-score'
 import BottomNav from '@/components/BottomNav'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
 
 export const dynamic = 'force-dynamic'
 
-function formatDate(d: Date) {
-  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+// SVG icon paths
+const ICONS = {
+  commit: 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
+  journal: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+  reckon: 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z',
+  profile: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',
+}
+
+const CARD: React.CSSProperties = {
+  borderRadius: 20,
+  background: 'linear-gradient(145deg, #120028, #080015)',
+  border: '1px solid rgba(168,85,247,0.15)',
+  padding: '16px',
+  overflow: 'hidden',
+}
+
+const CARD_LABEL: React.CSSProperties = {
+  color: 'rgba(168,85,247,0.55)',
+  fontSize: 9,
+  letterSpacing: '0.2em',
+  textTransform: 'uppercase',
+  fontFamily: 'var(--font-mono), monospace',
+  marginBottom: 12,
 }
 
 export default async function DashboardPage() {
@@ -53,17 +68,21 @@ export default async function DashboardPage() {
   const entries = recentEntries ?? []
   const { current: streak } = getStreakData(entries)
   const vanguardScore = calculateVanguardScore(entries, !!profile?.identity_statement?.trim())
-
   const isCommitted = !!todayEntry
 
-  // Greeting
-  const hour = today.getUTCHours()
-  const greeting =
-    hour < 12 ? 'Good Morning' :
-    hour < 18 ? 'Good Afternoon' : 'Good Evening'
-
-  // Recent activity — last 3 entries
-  const recent = entries.slice(0, 3)
+  // 14-day trail
+  const entrySet = new Set(entries.map((e) => e.entry_date))
+  const trail14 = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(today)
+    d.setDate(today.getDate() - 13 + i)
+    const dateStr = d.toISOString().split('T')[0]
+    return {
+      dateStr,
+      isToday: dateStr === todayStr,
+      hasEntry: entrySet.has(dateStr),
+      isFuture: dateStr > todayStr,
+    }
+  })
 
   return (
     <div
@@ -71,65 +90,74 @@ export default async function DashboardPage() {
         background: '#08000f',
         minHeight: '100vh',
         fontFamily: 'var(--font-mono), monospace',
+        position: 'relative',
+        overflowX: 'hidden',
       }}
     >
-      {/* Header */}
+      <style>{`
+        @keyframes ringPulse {
+          0%, 100% { transform: scale(0.96); opacity: 0.3; filter: drop-shadow(0 0 6px #A855F7); }
+          50%       { transform: scale(1.04); opacity: 0.9; filter: drop-shadow(0 0 22px #A855F7) drop-shadow(0 0 40px rgba(168,85,247,0.4)); }
+        }
+        @keyframes dotPulse {
+          0%, 100% { box-shadow: 0 0 4px rgba(168,85,247,0.5); }
+          50%       { box-shadow: 0 0 10px #A855F7, 0 0 20px rgba(168,85,247,0.35); }
+        }
+      `}</style>
+
+      {/* Grain overlay */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: '200px 200px',
+          opacity: 0.03,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
+      {/* ── HEADER ── */}
       <header
         style={{
-          padding: '20px 16px 14px',
-          borderBottom: '1px solid rgba(168,85,247,0.07)',
+          position: 'relative',
+          zIndex: 1,
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           justifyContent: 'space-between',
+          padding: '16px 16px 12px',
         }}
       >
-        <div>
-          <p
-            style={{
-              color: 'rgba(168,85,247,0.3)',
-              fontSize: 9,
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              marginBottom: 4,
-            }}
-          >
-            vanguard
-          </p>
-          <h1
-            style={{
-              color: '#ffffff',
-              fontSize: 17,
-              fontWeight: 700,
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              marginBottom: 3,
-            }}
-          >
-            {greeting}, Operator
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, letterSpacing: '0.5px' }}>
-            {formatDate(today)}
-          </p>
-        </div>
+        <span
+          style={{
+            color: 'rgba(168,85,247,0.3)',
+            fontSize: 10,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+          }}
+        >
+          VANGUARD
+        </span>
 
-        {/* Status dot */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <div
             style={{
-              width: 8,
-              height: 8,
+              width: 7,
+              height: 7,
               borderRadius: '50%',
               background: isCommitted ? '#4ade80' : '#fbbf24',
               boxShadow: isCommitted
-                ? '0 0 6px rgba(74,222,128,0.6)'
-                : '0 0 6px rgba(251,191,36,0.6)',
+                ? '0 0 5px rgba(74,222,128,0.7)'
+                : '0 0 5px rgba(251,191,36,0.7)',
             }}
           />
           <span
             style={{
-              color: 'rgba(255,255,255,0.25)',
-              fontSize: 9,
-              letterSpacing: '1.5px',
+              color: isCommitted ? 'rgba(74,222,128,0.7)' : 'rgba(251,191,36,0.7)',
+              fontSize: 10,
+              letterSpacing: '0.1em',
               textTransform: 'uppercase',
             }}
           >
@@ -141,76 +169,181 @@ export default async function DashboardPage() {
       <DashboardInterceptor isSubscribed={isSubscribed}>
         <main
           style={{
-            padding: '12px 16px',
+            position: 'relative',
+            zIndex: 1,
+            padding: '0 16px',
             paddingBottom: 96,
             display: 'flex',
             flexDirection: 'column',
             gap: 12,
           }}
         >
-          {/* 1. Vanguard Score */}
-          <ScoreGauge score={vanguardScore} streak={streak} />
 
-          {/* 2. Identity Contract */}
-          <IdentityCard statement={profile?.identity_statement ?? null} />
-
-          {/* 3. Today's Action */}
+          {/* ── STREAK HERO ── */}
           <div
             style={{
-              background: 'linear-gradient(145deg, #120028, #080015)',
-              border: '1px solid rgba(168,85,247,0.15)',
-              borderRadius: 16,
-              padding: '16px',
-              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: '32px 0 28px',
             }}
           >
+            {/* Ring + number */}
+            <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {/* Pulsing glow ring */}
+              <svg
+                width="200"
+                height="200"
+                viewBox="0 0 200 200"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  animation: 'ringPulse 3s ease-in-out infinite',
+                }}
+              >
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="88"
+                  fill="none"
+                  stroke="#A855F7"
+                  strokeWidth="1.5"
+                />
+              </svg>
+              {/* Streak number */}
+              <span
+                style={{
+                  color: '#ffffff',
+                  fontSize: 96,
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  fontFamily: 'var(--font-mono), monospace',
+                  position: 'relative',
+                  zIndex: 1,
+                }}
+              >
+                {streak}
+              </span>
+            </div>
+
+            {/* Labels */}
             <p
               style={{
-                color: 'rgba(255,255,255,0.3)',
-                fontSize: 9,
-                letterSpacing: '3px',
+                color: 'rgba(168,85,247,0.5)',
+                fontSize: 10,
+                letterSpacing: '0.2em',
                 textTransform: 'uppercase',
-                marginBottom: 14,
+                marginTop: 12,
+                marginBottom: 8,
               }}
             >
-              Today&apos;s Action
+              DAYS UNDER COMMAND
             </p>
+            <p
+              style={{
+                color: isCommitted ? '#4ade80' : '#fbbf24',
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                marginBottom: 6,
+              }}
+            >
+              {isCommitted ? 'COMMITTED' : 'UNTESTED'}
+            </p>
+            <p
+              style={{
+                color: 'rgba(255,255,255,0.4)',
+                fontSize: 11,
+                letterSpacing: '0.05em',
+              }}
+            >
+              SCORE: {vanguardScore} / 1000
+            </p>
+          </div>
+
+          {/* ── QUICK ACTION ROW ── */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              alignItems: 'flex-start',
+              padding: '0 4px',
+            }}
+          >
+            {[
+              { label: 'COMMIT',  href: '/journal',  icon: ICONS.commit  },
+              { label: 'JOURNAL', href: '/journal',  icon: ICONS.journal },
+              { label: 'RECKON',  href: '/journal',  icon: ICONS.reckon  },
+              { label: 'PROFILE', href: '/profile',  icon: ICONS.profile },
+            ].map(({ label, href, icon }) => (
+              <Link
+                key={label}
+                href={href}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 8,
+                  textDecoration: 'none',
+                  minWidth: 56,
+                }}
+              >
+                <div
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #1a0533, #0d0020)',
+                    border: '1px solid rgba(168,85,247,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(168,85,247,0.8)">
+                    <path d={icon} />
+                  </svg>
+                </div>
+                <span
+                  style={{
+                    color: 'rgba(255,255,255,0.5)',
+                    fontSize: 8,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    fontFamily: 'var(--font-mono), monospace',
+                  }}
+                >
+                  {label}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          {/* ── TODAY'S COMMAND ── */}
+          <div style={CARD}>
+            <p style={CARD_LABEL}>TODAY&apos;S COMMAND</p>
 
             {isCommitted ? (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: '50%',
-                      background: 'rgba(74,222,128,0.1)',
-                      border: '1px solid rgba(74,222,128,0.3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span style={{ color: '#4ade80', fontSize: 14 }}>✓</span>
-                  </div>
-                  <div>
-                    <p style={{ color: '#4ade80', fontSize: 11, fontWeight: 700, letterSpacing: '1px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                  <span style={{ color: '#4ade80', fontSize: 16, flexShrink: 0 }}>✓</span>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ color: '#4ade80', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', marginBottom: 3 }}>
                       COMMITTED
                     </p>
                     {todayEntry?.morning_intention && (
                       <p
                         style={{
-                          color: 'rgba(255,255,255,0.3)',
-                          fontSize: 10,
-                          marginTop: 2,
+                          color: 'rgba(255,255,255,0.35)',
+                          fontSize: 11,
                           overflow: 'hidden',
                           whiteSpace: 'nowrap',
                           textOverflow: 'ellipsis',
-                          maxWidth: 180,
+                          fontFamily: 'var(--font-mono), monospace',
                         }}
                       >
-                        {todayEntry.morning_intention}
+                        {todayEntry.morning_intention.slice(0, 40)}
                       </p>
                     )}
                   </div>
@@ -218,10 +351,11 @@ export default async function DashboardPage() {
                 <Link
                   href="/journal"
                   style={{
-                    color: 'rgba(168,85,247,0.6)',
+                    color: 'rgba(168,85,247,0.55)',
                     fontSize: 10,
-                    letterSpacing: '1px',
+                    letterSpacing: '0.05em',
                     textDecoration: 'none',
+                    flexShrink: 0,
                   }}
                 >
                   Edit →
@@ -234,117 +368,97 @@ export default async function DashboardPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  minHeight: 56,
-                  background: 'rgba(168,85,247,0.12)',
-                  border: '1px solid rgba(168,85,247,0.3)',
+                  height: 52,
+                  background: '#A855F7',
                   borderRadius: 12,
-                  color: '#A855F7',
+                  color: '#000000',
                   fontSize: 11,
                   fontWeight: 700,
-                  letterSpacing: '3px',
+                  letterSpacing: '0.15em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
                   fontFamily: 'var(--font-mono), monospace',
                 }}
               >
-                [ WRITE TODAY&apos;S ENTRY ]
+                [ COMMIT TODAY ]
               </Link>
             )}
           </div>
 
-          {/* 4. 30-Day Calendar */}
-          <DayGrid entryDates={entries.map((e) => e.entry_date)} />
+          {/* ── IDENTITY CONTRACT ── */}
+          <div style={CARD}>
+            <p style={CARD_LABEL}>IDENTITY CONTRACT</p>
 
-          {/* 5. Recent Activity */}
-          {recent.length > 0 && (
-            <div
-              style={{
-                background: 'linear-gradient(145deg, #120028, #080015)',
-                border: '1px solid rgba(168,85,247,0.15)',
-                borderRadius: 16,
-                padding: '16px',
-                overflow: 'hidden',
-              }}
-            >
+            {profile?.identity_statement?.trim() ? (
               <p
                 style={{
-                  color: 'rgba(255,255,255,0.3)',
-                  fontSize: 9,
-                  letterSpacing: '3px',
-                  textTransform: 'uppercase',
-                  marginBottom: 14,
+                  color: 'rgba(255,255,255,0.65)',
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  fontStyle: 'italic',
+                  fontFamily: 'var(--font-mono), monospace',
                 }}
               >
-                Recent Activity
+                &ldquo;{profile.identity_statement}&rdquo;
               </p>
+            ) : (
+              <Link
+                href="/contract"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: 52,
+                  background: 'rgba(168,85,247,0.1)',
+                  border: '1px solid rgba(168,85,247,0.3)',
+                  borderRadius: 12,
+                  color: '#A855F7',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  fontFamily: 'var(--font-mono), monospace',
+                }}
+              >
+                [ SIGN CONTRACT ]
+              </Link>
+            )}
+          </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                {recent.map((entry, i) => {
-                  const d = new Date(entry.entry_date + 'T00:00:00')
-                  const label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-                  const filledCount = [
-                    entry.morning_intention,
-                    entry.evening_review,
-                    entry.tomorrow_target,
-                  ].filter((v) => v?.trim()).length
-                  const pct = Math.round((filledCount / 3) * 100)
-                  const isLast = i === recent.length - 1
+          {/* ── 14-DAY STREAK TRAIL ── */}
+          <div style={CARD}>
+            <p style={CARD_LABEL}>14-DAY TRAIL</p>
 
-                  return (
-                    <div
-                      key={entry.entry_date}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        paddingTop: i === 0 ? 0 : 12,
-                        paddingBottom: isLast ? 0 : 12,
-                        borderBottom: isLast ? 'none' : '1px solid rgba(168,85,247,0.07)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
-                        <span
-                          style={{
-                            color: 'rgba(255,255,255,0.35)',
-                            fontSize: 10,
-                            letterSpacing: '1px',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {label}
-                        </span>
-                        <p
-                          style={{
-                            color: 'rgba(255,255,255,0.55)',
-                            fontSize: 11,
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                            textOverflow: 'ellipsis',
-                            margin: 0,
-                          }}
-                        >
-                          {entry.morning_intention?.trim()
-                            ? entry.morning_intention.slice(0, 50)
-                            : '—'}
-                        </p>
-                      </div>
-                      <span
-                        style={{
-                          color: pct === 100 ? '#4ade80' : pct >= 66 ? '#A855F7' : 'rgba(255,255,255,0.3)',
-                          fontSize: 10,
-                          fontWeight: 700,
-                          flexShrink: 0,
-                          marginLeft: 8,
-                        }}
-                      >
-                        {pct}%
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {trail14.map(({ dateStr, isToday, hasEntry, isFuture }) => (
+                <div
+                  key={dateStr}
+                  title={dateStr}
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    background: hasEntry
+                      ? '#A855F7'
+                      : 'rgba(168,85,247,0.12)',
+                    border: isToday
+                      ? '1px solid #A855F7'
+                      : hasEntry
+                        ? 'none'
+                        : '1px solid rgba(168,85,247,0.2)',
+                    boxShadow: hasEntry && !isToday
+                      ? '0 0 6px #A855F7'
+                      : 'none',
+                    opacity: isFuture ? 0.2 : 1,
+                    animation: isToday ? 'dotPulse 3s ease-in-out infinite' : 'none',
+                    flexShrink: 0,
+                  }}
+                />
+              ))}
             </div>
-          )}
+          </div>
+
         </main>
 
         <BottomNav />
