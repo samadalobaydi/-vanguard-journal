@@ -263,13 +263,31 @@ export default function LoginPage() {
               textAlign: 'center',
               marginTop: 20,
               fontSize: 12,
-              color: '#555555',
-              letterSpacing: '1px',
+              fontFamily: 'var(--font-mono), monospace',
             }}
           >
-            Unregistered?{' '}
-            <Link href="/signup" style={{ color: '#A855F7', textDecoration: 'none' }}>
-              Start the Contract.
+            <span style={{ color: '#A9A9A9', opacity: 0.5 }}>Unregistered?</span>{' '}
+            <Link
+              href="/signup"
+              style={{
+                color: '#A855F7',
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono), monospace',
+                textDecoration: 'none',
+                transition: 'filter 0.2s',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLAnchorElement
+                el.style.filter = 'brightness(1.3)'
+                el.style.textDecoration = 'underline'
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLAnchorElement
+                el.style.filter = 'none'
+                el.style.textDecoration = 'none'
+              }}
+            >
+              Sign Up.
             </Link>
           </p>
         </div>
