@@ -21,19 +21,21 @@ export default function AccountCard({ email, memberSince }: Props) {
   return (
     <div
       style={{
-        background: '#111111',
-        border: '1px solid #1e1e1e',
+        background: 'linear-gradient(145deg, #120028, #080015)',
+        border: '1px solid rgba(168,85,247,0.15)',
         borderRadius: 16,
-        padding: '24px 28px',
+        padding: '20px',
+        overflow: 'hidden',
       }}
     >
       <p
         style={{
-          color: '#555555',
+          color: 'rgba(255,255,255,0.3)',
           letterSpacing: '3px',
-          fontSize: 10,
+          fontSize: 9,
           textTransform: 'uppercase',
-          marginBottom: 20,
+          marginBottom: 16,
+          fontFamily: 'var(--font-mono), monospace',
         }}
       >
         Account
@@ -89,32 +91,24 @@ export default function AccountCard({ email, memberSince }: Props) {
         </div>
 
         {/* Divider */}
-        <div style={{ borderTop: '1px solid #1e1e1e', paddingTop: 16 }}>
+        <div style={{ borderTop: '1px solid rgba(168,85,247,0.08)', paddingTop: 16 }}>
           <button
             onClick={handleBilling}
             disabled={loading}
             style={{
-              background: 'transparent',
-              color: '#A9A9A9',
-              border: '1px solid #1e1e1e',
-              padding: '10px 24px',
+              width: '100%',
+              minHeight: 52,
+              background: 'rgba(168,85,247,0.08)',
+              color: 'rgba(255,255,255,0.6)',
+              border: '1px solid rgba(168,85,247,0.2)',
               fontSize: 10,
               letterSpacing: '3px',
               fontWeight: 600,
               textTransform: 'uppercase',
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.5 : 1,
-              borderRadius: 4,
-              transition: 'border-color 0.2s, color 0.2s',
-              fontFamily: 'inherit',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#A855F7'
-              e.currentTarget.style.color = '#ffffff'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#1e1e1e'
-              e.currentTarget.style.color = '#A9A9A9'
+              borderRadius: 12,
+              fontFamily: 'var(--font-mono), monospace',
             }}
           >
             {loading ? 'Redirecting...' : 'Manage Billing'}

@@ -47,15 +47,13 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [btnHover, setBtnHover] = useState(false)
 
   function setField(key: keyof typeof fields, value: string) {
     setFields((prev) => ({ ...prev, [key]: value }))
     setSaved(false)
   }
 
-  const isFilled = (key: keyof typeof fields) =>
-    (fields[key] ?? '').trim().length > 0
+  const isFilled = (key: keyof typeof fields) => (fields[key] ?? '').trim().length > 0
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -83,27 +81,24 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
   return (
     <div
       style={{
-        background: '#111111',
-        border: reEntryRequired ? '1px solid rgba(127,29,29,0.8)' : '1px solid #1e1e1e',
+        background: 'linear-gradient(145deg, #1a0533, #0d0020)',
+        border: reEntryRequired
+          ? '1px solid rgba(127,29,29,0.8)'
+          : '1px solid rgba(168,85,247,0.2)',
         borderRadius: 16,
-        padding: '24px',
+        padding: '20px',
+        overflow: 'hidden',
       }}
     >
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 20,
-        }}
-      >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <p
           style={{
-            color: '#555555',
+            color: 'rgba(255,255,255,0.35)',
+            fontSize: 9,
             letterSpacing: '3px',
-            fontSize: 10,
             textTransform: 'uppercase',
+            fontFamily: 'var(--font-mono), monospace',
           }}
         >
           60-Second Reckoning
@@ -119,56 +114,46 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
               letterSpacing: '2px',
               textTransform: 'uppercase',
               border: '1px solid rgba(127,29,29,0.6)',
+              fontFamily: 'var(--font-mono), monospace',
             }}
           >
-            Reckoning Required
+            Required
           </span>
         )}
       </div>
 
-      {/* Re-entry warning */}
       {reEntryRequired && (
         <div
           style={{
             border: '1px solid rgba(127,29,29,0.6)',
             background: 'rgba(127,29,29,0.08)',
             borderRadius: 8,
-            padding: '12px 16px',
-            marginBottom: 24,
+            padding: '12px 14px',
+            marginBottom: 20,
           }}
         >
-          <p style={{ color: '#fca5a5', fontSize: 13, lineHeight: 1.65 }}>
-            The standard slipped. The man doesn&apos;t. Complete your reckoning entry to restore
-            your streak.
+          <p style={{ color: '#fca5a5', fontSize: 12, lineHeight: 1.65, fontFamily: 'var(--font-mono), monospace' }}>
+            The standard slipped. Complete your reckoning entry to restore your streak.
           </p>
         </div>
       )}
 
-      {/* Fields */}
       <form onSubmit={handleSave}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {FIELDS.map(({ key, label, placeholder }, idx) => {
             const filled = isFilled(key)
             const isLast = idx === FIELDS.length - 1
             return (
-              <div key={key} style={{ display: 'flex', gap: 16 }}>
+              <div key={key} style={{ display: 'flex', gap: 14 }}>
                 {/* Dot + connector */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    paddingTop: 2,
-                    flexShrink: 0,
-                  }}
-                >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 2, flexShrink: 0 }}>
                   <div
                     style={{
-                      width: 12,
-                      height: 12,
+                      width: 11,
+                      height: 11,
                       borderRadius: '50%',
                       background: filled ? '#A855F7' : 'transparent',
-                      border: filled ? '2px solid #A855F7' : '2px solid #1e1e1e',
+                      border: filled ? '2px solid #A855F7' : '2px solid rgba(168,85,247,0.2)',
                       transition: 'all 0.35s ease',
                       flexShrink: 0,
                       boxShadow: filled ? '0 0 8px rgba(168,85,247,0.4)' : 'none',
@@ -179,10 +164,10 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
                       style={{
                         width: 1,
                         flex: 1,
-                        background: '#1e1e1e',
-                        marginTop: 6,
-                        marginBottom: 6,
-                        minHeight: 16,
+                        background: 'rgba(168,85,247,0.15)',
+                        marginTop: 5,
+                        marginBottom: 5,
+                        minHeight: 14,
                       }}
                     />
                   )}
@@ -193,11 +178,12 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
                   <label
                     style={{
                       display: 'block',
-                      color: '#A9A9A9',
+                      color: 'rgba(255,255,255,0.4)',
                       letterSpacing: '2px',
                       fontSize: 9,
                       textTransform: 'uppercase',
                       marginBottom: 8,
+                      fontFamily: 'var(--font-mono), monospace',
                     }}
                   >
                     {label}
@@ -209,27 +195,21 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
                     rows={3}
                     style={{
                       width: '100%',
-                      background: '#0A0A0A',
+                      background: 'rgba(0,0,0,0.3)',
                       border: '1px solid',
-                      borderColor: filled ? 'rgba(168,85,247,0.3)' : '#1e1e1e',
-                      borderRadius: 2,
+                      borderColor: filled ? 'rgba(168,85,247,0.4)' : 'rgba(168,85,247,0.1)',
+                      borderRadius: 8,
                       color: '#ffffff',
                       fontSize: 13,
                       lineHeight: 1.65,
-                      padding: '10px 14px',
+                      padding: '12px 14px',
                       resize: 'none',
                       outline: 'none',
-                      transition: 'border-color 0.35s ease',
-                      fontFamily: 'inherit',
+                      transition: 'border-color 0.3s ease',
+                      fontFamily: 'var(--font-mono), monospace',
                     }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(168,85,247,0.5)'
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = filled
-                        ? 'rgba(168,85,247,0.3)'
-                        : '#1e1e1e'
-                    }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(168,85,247,0.6)' }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = filled ? 'rgba(168,85,247,0.4)' : 'rgba(168,85,247,0.1)' }}
                   />
                 </div>
               </div>
@@ -238,51 +218,49 @@ export default function ReckoningCard({ date, initialEntry, reEntryRequired }: P
         </div>
 
         {error && (
-          <p style={{ color: '#ef4444', fontSize: 12, marginTop: 12 }}>{error}</p>
+          <p style={{ color: '#ef4444', fontSize: 12, marginTop: 12, fontFamily: 'var(--font-mono), monospace' }}>{error}</p>
         )}
 
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
             marginTop: 20,
             paddingTop: 20,
-            borderTop: '1px solid #1e1e1e',
+            borderTop: '1px solid rgba(168,85,247,0.1)',
           }}
         >
-          <p
-            style={{
-              fontSize: 11,
-              color: saved ? '#A855F7' : '#555555',
-              letterSpacing: '1px',
-              transition: 'color 0.3s',
-            }}
-          >
-            {saved ? 'Entry committed. The record stands.' : 'Not yet committed.'}
-          </p>
+          {saved && (
+            <p
+              style={{
+                color: '#A855F7',
+                fontSize: 10,
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                marginBottom: 12,
+                textAlign: 'center',
+                fontFamily: 'var(--font-mono), monospace',
+              }}
+            >
+              Entry committed. The record stands.
+            </p>
+          )}
           <button
             type="submit"
             disabled={saving}
-            onMouseEnter={() => setBtnHover(true)}
-            onMouseLeave={() => setBtnHover(false)}
             style={{
-              background: '#A855F7',
-              color: '#ffffff',
-              border: '2px solid #A855F7',
-              padding: '11px 28px',
-              fontSize: 10,
+              width: '100%',
+              minHeight: 52,
+              background: saving || saved ? 'rgba(168,85,247,0.15)' : '#A855F7',
+              color: saving || saved ? '#A855F7' : '#ffffff',
+              border: '1px solid rgba(168,85,247,0.5)',
+              borderRadius: 12,
+              fontSize: 11,
               letterSpacing: '3px',
               fontWeight: 700,
               textTransform: 'uppercase',
               cursor: saving ? 'not-allowed' : 'pointer',
-              opacity: saving ? 0.5 : 1,
-              borderRadius: 4,
-              transition: 'opacity 0.2s, box-shadow 0.25s ease',
-              fontFamily: 'inherit',
-              boxShadow: btnHover
-                ? '0 0 25px rgba(168, 85, 247, 0.5)'
-                : '0 0 12px rgba(168, 85, 247, 0.3)',
+              opacity: saving ? 0.6 : 1,
+              fontFamily: 'var(--font-mono), monospace',
+              boxShadow: saved ? 'none' : '0 0 20px rgba(168,85,247,0.25)',
             }}
           >
             {saving ? 'Saving...' : saved ? 'Update Entry' : 'Commit Entry'}

@@ -1,11 +1,10 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import DashboardNav from '@/components/DashboardNav'
 import BottomNav from '@/components/BottomNav'
+import SignOutButton from '@/components/SignOutButton'
 import IdentityContractCard from '@/components/profile/IdentityContractCard'
 import AccountCard from '@/components/profile/AccountCard'
 import DangerZone from '@/components/profile/DangerZone'
-import { getStreakData } from '@/lib/vanguard-score'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,16 +26,6 @@ export default async function ProfilePage() {
     redirect('/subscribe')
   }
 
-  // Fetch entries for streak count in nav
-  const { data: recentEntries } = await supabase
-    .from('journal_entries')
-    .select('entry_date')
-    .eq('user_id', user.id)
-    .order('entry_date', { ascending: false })
-    .limit(60)
-
-  const { current } = getStreakData(recentEntries ?? [])
-
   const memberSince = new Date(user.created_at).toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'long',
@@ -44,48 +33,51 @@ export default async function ProfilePage() {
   })
 
   return (
-    <div style={{ background: '#0A0A0A', minHeight: '100vh' }}>
-      <DashboardNav email={user.email ?? ''} streak={current} />
-
-      <main
-        style={{ maxWidth: 900, margin: '0 auto', padding: '32px 16px 96px' }}
-        className="sm:px-6 sm:pb-12"
+    <div style={{ background: '#08000f', minHeight: '100vh', fontFamily: 'var(--font-mono), monospace' }}>
+      {/* Header */}
+      <header
+        style={{
+          padding: '20px 16px 14px',
+          borderBottom: '1px solid rgba(168,85,247,0.07)',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+        }}
       >
-        {/* Page header */}
-        <div style={{ marginBottom: 28 }}>
+        <div>
           <p
             style={{
-              color: '#555555',
-              letterSpacing: '4px',
-              fontSize: 10,
+              color: 'rgba(168,85,247,0.3)',
+              fontSize: 9,
+              letterSpacing: '3px',
               textTransform: 'uppercase',
-              marginBottom: 6,
+              marginBottom: 4,
             }}
           >
-            Settings
+            vanguard
           </p>
           <h1
             style={{
               color: '#ffffff',
-              fontSize: 28,
+              fontSize: 17,
               fontWeight: 700,
-              lineHeight: 1,
-              fontFamily: 'var(--font-bebas), sans-serif',
-              letterSpacing: '3px',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
             }}
           >
             Profile
           </h1>
         </div>
+        <SignOutButton />
+      </header>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <IdentityContractCard
-            userId={user.id}
-            initialStatement={profile.identity_statement ?? null}
-          />
-          <AccountCard email={user.email ?? ''} memberSince={memberSince} />
-          <DangerZone />
-        </div>
+      <main style={{ padding: '16px 16px 96px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <IdentityContractCard
+          userId={user.id}
+          initialStatement={profile.identity_statement ?? null}
+        />
+        <AccountCard email={user.email ?? ''} memberSince={memberSince} />
+        <DangerZone />
       </main>
 
       <BottomNav />

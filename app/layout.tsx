@@ -29,7 +29,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${bebasNeue.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-base font-sans antialiased">{children}</body>
+      <body>
+        <div className="app-shell">{children}</div>
+      </body>
     </html>
   )
 }

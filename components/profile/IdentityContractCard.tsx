@@ -13,7 +13,6 @@ export default function IdentityContractCard({ userId, initialStatement }: Props
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [btnHover, setBtnHover] = useState(false)
   const MAX = 150
 
   async function handleSave(e: React.FormEvent) {
@@ -39,10 +38,11 @@ export default function IdentityContractCard({ userId, initialStatement }: Props
   return (
     <div
       style={{
-        background: '#111111',
-        border: '1px solid #1e1e1e',
+        background: 'linear-gradient(145deg, #1a0533, #0d0020)',
+        border: '1px solid rgba(168,85,247,0.25)',
         borderRadius: 16,
-        padding: '24px 28px',
+        padding: '20px',
+        overflow: 'hidden',
       }}
     >
       <p
@@ -130,25 +130,21 @@ export default function IdentityContractCard({ userId, initialStatement }: Props
           <button
             type="submit"
             disabled={saving}
-            onMouseEnter={() => setBtnHover(true)}
-            onMouseLeave={() => setBtnHover(false)}
             style={{
+              width: '100%',
+              minHeight: 52,
               background: '#A855F7',
               color: '#ffffff',
-              border: '2px solid #A855F7',
-              padding: '11px 28px',
+              border: '1px solid rgba(168,85,247,0.5)',
               fontSize: 10,
               letterSpacing: '3px',
               fontWeight: 700,
               textTransform: 'uppercase',
               cursor: saving ? 'not-allowed' : 'pointer',
               opacity: saving ? 0.5 : 1,
-              borderRadius: 4,
-              transition: 'opacity 0.2s, box-shadow 0.25s ease',
-              fontFamily: 'inherit',
-              boxShadow: btnHover
-                ? '0 0 25px rgba(168, 85, 247, 0.5)'
-                : '0 0 12px rgba(168, 85, 247, 0.3)',
+              borderRadius: 12,
+              fontFamily: 'var(--font-mono), monospace',
+              boxShadow: '0 0 20px rgba(168,85,247,0.25)',
             }}
           >
             {saving ? 'Saving...' : saved ? 'Update Contract' : 'Sign The Contract'}

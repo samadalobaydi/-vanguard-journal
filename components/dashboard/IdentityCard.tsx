@@ -8,41 +8,54 @@ export default function IdentityCard({ statement }: Props) {
   return (
     <div
       style={{
-        background: '#111111',
-        border: '1px solid #1e1e1e',
+        background: 'linear-gradient(145deg, #120028, #080015)',
+        border: '1px solid rgba(168,85,247,0.15)',
         borderRadius: 16,
-        padding: '24px 28px',
+        padding: '16px 18px',
+        overflow: 'hidden',
       }}
     >
       <p
         style={{
-          color: '#555555',
+          color: 'rgba(255,255,255,0.3)',
+          fontSize: 9,
           letterSpacing: '3px',
-          fontSize: 10,
           textTransform: 'uppercase',
-          marginBottom: 12,
+          marginBottom: 8,
+          fontFamily: 'var(--font-mono), monospace',
         }}
       >
-        Identity Contract
+        identity contract
       </p>
       {statement ? (
         <p
           style={{
-            color: '#ffffff',
-            fontSize: 16,
-            lineHeight: 1.65,
+            color: 'rgba(255,255,255,0.75)',
+            fontSize: 12,
+            lineHeight: 1.6,
             fontStyle: 'italic',
+            fontFamily: 'var(--font-mono), monospace',
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
           }}
         >
           &ldquo;{statement}&rdquo;
         </p>
       ) : (
-        <p style={{ color: '#555555', fontSize: 13 }}>
-          CONTRACT UNSIGNED. Define your identity.{' '}
-          <Link href="/profile" style={{ color: '#A855F7', letterSpacing: '1px' }}>
-            SIGN THE CONTRACT →
-          </Link>
-        </p>
+        <Link
+          href="/contract"
+          style={{
+            color: '#A855F7',
+            fontSize: 11,
+            letterSpacing: '1px',
+            fontFamily: 'var(--font-mono), monospace',
+            textDecoration: 'none',
+          }}
+        >
+          CONTRACT UNSIGNED — SIGN NOW →
+        </Link>
       )}
     </div>
   )
