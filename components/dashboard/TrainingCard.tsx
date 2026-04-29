@@ -98,6 +98,10 @@ export default function TrainingCard({ onModalChange }: Props) {
         }}
         onClick={openModal}
       >
+        <span style={{ color: '#F8FAFC', fontSize: 18, fontWeight: 700, lineHeight: 1, ...MONO }}>
+          {displayValue}
+        </span>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
             width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
@@ -116,10 +120,7 @@ export default function TrainingCard({ onModalChange }: Props) {
             </p>
           </div>
         </div>
-
-        <span style={{ color: '#F8FAFC', fontSize: 18, fontWeight: 700, lineHeight: 1, ...MONO }}>
-          {displayValue}
-        </span>
+      </div>
       </div>
 
       {/* ── BOTTOM SHEET MODAL ── */}
