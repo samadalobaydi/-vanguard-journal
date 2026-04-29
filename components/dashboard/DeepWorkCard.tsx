@@ -31,7 +31,11 @@ function formatDuration(minutes: number): string {
   return `${minutes}m`
 }
 
-export default function DeepWorkCard() {
+interface Props {
+  onModalChange: (isOpen: boolean) => void
+}
+
+export default function DeepWorkCard({ onModalChange }: Props) {
   const [modalOpen, setModalOpen]       = useState(false)
   const [selectedMinutes, setSelected]  = useState(60)
   const [isCustom, setIsCustom]         = useState(false)
@@ -44,16 +48,6 @@ export default function DeepWorkCard() {
   const [sessionMins,   setSessionMins]   = useState(60)
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  // Body attribute to hide BottomNav
-  useEffect(() => {
-    if (modalOpen) {
-      document.body.setAttribute('data-modal-open', 'true')
-    } else {
-      document.body.removeAttribute('data-modal-open')
-    }
-    return () => { document.body.removeAttribute('data-modal-open') }
-  }, [modalOpen])
 
   // Countdown
   useEffect(() => {
@@ -77,10 +71,16 @@ export default function DeepWorkCard() {
   }, [timerActive, timerPaused])
 
   function openModal() {
-    if (!timerActive && !timerComplete) setModalOpen(true)
+    if (!timerActive && !timerComplete) {
+      setModalOpen(true)
+      onModalChange(true)
+    }
   }
 
-  function closeModal() { setModalOpen(false) }
+  function closeModal() {
+    setModalOpen(false)
+    onModalChange(false)
+  }
 
   function startTimer() {
     const mins = isCustom ? customMinutes : selectedMinutes
@@ -90,6 +90,7 @@ export default function DeepWorkCard() {
     setTimerPaused(false)
     setTimerComplete(false)
     setModalOpen(false)
+    onModalChange(false)
   }
 
   function endTimer() {
@@ -177,9 +178,9 @@ export default function DeepWorkCard() {
           <div
             style={{
               position: 'fixed', inset: 0,
-              background: 'rgba(0,0,0,0.8)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
+              background: 'rgba(0,0,0,0.45)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
               zIndex: 200,
             }}
             onClick={closeModal}
@@ -190,10 +191,12 @@ export default function DeepWorkCard() {
             style={{
               position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
               width: 'min(390px, 100vw)',
+              maxHeight: '85vh',
+              overflowY: 'auto',
               background: 'linear-gradient(145deg, #2A2A30, #1B1B20)',
               borderRadius: '24px 24px 0 0',
               borderTop: '1px solid rgba(255,255,255,0.08)',
-              padding: `20px 20px max(32px, env(safe-area-inset-bottom))`,
+              padding: `20px 20px max(40px, env(safe-area-inset-bottom))`,
               zIndex: 201,
             }}
             onClick={(e) => e.stopPropagation()}
@@ -283,7 +286,7 @@ export default function DeepWorkCard() {
             <button
               onClick={startTimer}
               style={{
-                width: '100%', height: 52, marginTop: 16,
+                width: '100%', height: 52, marginTop: 16, marginBottom: 8,
                 background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
                 border: 'none', borderRadius: 16,
                 color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer',

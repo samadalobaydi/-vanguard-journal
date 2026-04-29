@@ -2,9 +2,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { calculateVanguardScore, getStreakData } from '@/lib/vanguard-score'
-import BottomNav from '@/components/BottomNav'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
-import DeepWorkCard from '@/components/dashboard/DeepWorkCard'
+import DeepWorkSection from '@/components/dashboard/DeepWorkSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -456,7 +455,7 @@ export default async function DashboardPage() {
             }}
           >
             {/* Deep Work timer replaces Commit Entry */}
-            <DeepWorkCard />
+            <DeepWorkSection />
 
             {[
               { label: 'Journal',    sub: 'Write & reflect', href: '/journal', icon: ICONS.journal },
@@ -648,7 +647,6 @@ export default async function DashboardPage() {
 
         </main>
 
-        <BottomNav />
       </DashboardInterceptor>
     </div>
   )

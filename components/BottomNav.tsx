@@ -26,8 +26,14 @@ const NAV_ITEMS = [
   },
 ]
 
-export default function BottomNav() {
+interface Props {
+  hidden?: boolean
+}
+
+export default function BottomNav({ hidden }: Props) {
   const pathname = usePathname()
+
+  if (hidden) return null
 
   return (
     <nav
