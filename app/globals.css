@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --gold: #c9a84c;
-  --gold-light: #e8c96a;
-  --gold-dim: #8a6f30;
+  --accent: #8B5CF6;
+  --accent-dim: #6366F1;
+  --accent-glow: rgba(139,92,246,0.25);
 }
 
 * {
@@ -17,8 +17,8 @@ html {
 }
 
 body {
-  background-color: #09090B;
-  color: #F4F1E8;
+  background-color: #111113;
+  color: #F8FAFC;
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -28,43 +28,27 @@ body {
   max-width: 390px;
   margin: 0 auto;
   min-height: 100vh;
-  background: #09090B;
+  background: linear-gradient(180deg, #151518, #0B0B0D);
   position: relative;
-}
-
-.app-shell::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(390px, 100vw);
-  height: 100vh;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-  opacity: 0.03;
-  pointer-events: none;
-  z-index: 999;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-track { background: #111113; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #c9a84c44; }
+::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.3); }
 
-/* Gold border focus ring */
-.focus-gold:focus {
+/* Focus ring */
+.focus-accent:focus {
   outline: none;
-  border-color: var(--gold-dim);
-  box-shadow: 0 0 0 1px var(--gold-dim);
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 0 1px var(--accent-dim);
 }
 
-/* Textarea resize handle gold tint */
 textarea { resize: vertical; }
 
 @layer utilities {
-  .text-gold { color: var(--gold); }
-  .border-gold-muted { border-color: rgba(201,168,76,0.2); }
-  .bg-gold-muted { background-color: rgba(201,168,76,0.06); }
+  .text-accent { color: var(--accent); }
+  .border-accent-muted { border-color: rgba(139,92,246,0.2); }
+  .bg-accent-muted { background-color: rgba(139,92,246,0.08); }
 }

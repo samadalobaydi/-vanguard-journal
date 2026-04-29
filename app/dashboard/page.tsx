@@ -9,15 +9,15 @@ export const dynamic = 'force-dynamic'
 
 const CARD: React.CSSProperties = {
   borderRadius: 20,
-  background: 'linear-gradient(145deg, #181820, #101014)',
-  border: '1px solid rgba(255,255,255,0.07)',
+  background: 'linear-gradient(145deg, #2A2A30, #1B1B20)',
+  border: '1px solid rgba(255,255,255,0.08)',
   boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
   padding: '18px',
   marginBottom: 12,
 }
 
 const CARD_TITLE: React.CSSProperties = {
-  color: '#9CA3AF',
+  color: '#A1A1AA',
   fontSize: 13,
   fontWeight: 600,
   fontFamily: 'system-ui, -apple-system, sans-serif',
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
   return (
     <div
       style={{
-        background: '#09090B',
+        background: 'linear-gradient(180deg, #151518 0%, #0B0B0D 100%)',
         minHeight: '100vh',
         fontFamily: 'system-ui, -apple-system, sans-serif',
         position: 'relative',
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
       <style>{`
         @keyframes trailPulse {
           0%, 100% { box-shadow: 0 0 4px rgba(139,92,246,0.4); opacity: 0.7; }
-          50%       { box-shadow: 0 0 10px rgba(139,92,246,0.8), 0 0 20px rgba(139,92,246,0.3); opacity: 1; }
+          50%       { box-shadow: 0 0 12px rgba(139,92,246,0.8), 0 0 24px rgba(139,92,246,0.3); opacity: 1; }
         }
       `}</style>
 
@@ -117,7 +117,8 @@ export default async function DashboardPage() {
       >
         <span
           style={{
-            color: '#9E8145',
+            color: '#6366F1',
+            opacity: 0.7,
             fontSize: 14,
             fontWeight: 600,
             fontFamily: 'system-ui, -apple-system, sans-serif',
@@ -131,8 +132,8 @@ export default async function DashboardPage() {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
-            background: isCommitted ? 'rgba(74,222,128,0.1)' : 'rgba(156,163,175,0.1)',
-            border: `1px solid ${isCommitted ? 'rgba(74,222,128,0.2)' : 'rgba(156,163,175,0.2)'}`,
+            background: isCommitted ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.05)',
+            border: `1px solid ${isCommitted ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.1)'}`,
             borderRadius: 20,
             padding: '4px 10px',
           }}
@@ -142,12 +143,12 @@ export default async function DashboardPage() {
               width: 6,
               height: 6,
               borderRadius: '50%',
-              background: isCommitted ? '#4ADE80' : '#9CA3AF',
+              background: isCommitted ? '#8B5CF6' : '#71717A',
             }}
           />
           <span
             style={{
-              color: isCommitted ? '#4ADE80' : '#9CA3AF',
+              color: isCommitted ? '#8B5CF6' : '#A1A1AA',
               fontSize: 12,
               fontWeight: 500,
             }}
@@ -189,7 +190,7 @@ export default async function DashboardPage() {
                 transform: 'translate(-50%, -50%)',
                 width: 260,
                 height: 260,
-                background: 'radial-gradient(circle, rgba(214,178,94,0.12) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
                 pointerEvents: 'none',
               }}
             />
@@ -208,8 +209,9 @@ export default async function DashboardPage() {
               <svg width="180" height="180" viewBox="0 0 180 180" style={{ position: 'absolute', inset: 0 }}>
                 <defs>
                   <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#D6B25E" />
-                    <stop offset="100%" stopColor="#9E8145" />
+                    <stop offset="0%" stopColor="#6366F1" />
+                    <stop offset="50%" stopColor="#8B5CF6" />
+                    <stop offset="100%" stopColor="#D946EF" />
                   </linearGradient>
                 </defs>
                 {/* Track */}
@@ -237,7 +239,7 @@ export default async function DashboardPage() {
               </svg>
               <span
                 style={{
-                  color: '#F4F1E8',
+                  color: '#F8FAFC',
                   fontSize: 88,
                   fontWeight: 700,
                   lineHeight: 1,
@@ -252,7 +254,7 @@ export default async function DashboardPage() {
 
             <p
               style={{
-                color: '#9CA3AF',
+                color: '#A1A1AA',
                 fontSize: 10,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -260,34 +262,28 @@ export default async function DashboardPage() {
                 marginBottom: 10,
               }}
             >
-              Days Under Command
+              Day Streak
             </p>
 
             <div
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                background: isCommitted ? 'rgba(214,178,94,0.1)' : 'rgba(214,178,94,0.06)',
-                border: `1px solid ${isCommitted ? 'rgba(214,178,94,0.3)' : 'rgba(214,178,94,0.15)'}`,
+                background: 'rgba(139,92,246,0.12)',
+                border: '1px solid rgba(139,92,246,0.2)',
                 borderRadius: 20,
                 padding: '4px 12px',
                 marginBottom: 10,
               }}
             >
-              <span
-                style={{
-                  color: '#D6B25E',
-                  fontSize: 11,
-                  fontWeight: 600,
-                }}
-              >
+              <span style={{ color: '#8B5CF6', fontSize: 11, fontWeight: 600 }}>
                 {isCommitted ? 'Committed' : 'Untested'}
               </span>
             </div>
 
-            <p style={{ color: '#9CA3AF', fontSize: 12 }}>
+            <p style={{ color: '#A1A1AA', fontSize: 12 }}>
               Score:{' '}
-              <span style={{ ...MONO, color: '#9CA3AF' }}>{vanguardScore}</span>
+              <span style={{ ...MONO, color: '#F8FAFC' }}>{vanguardScore}</span>
               {' '}/ 1000
             </p>
           </div>
@@ -309,8 +305,8 @@ export default async function DashboardPage() {
               <div
                 key={label}
                 style={{
-                  background: '#1C1C22',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  background: '#25252A',
+                  border: '1px solid rgba(255,255,255,0.08)',
                   borderRadius: 16,
                   padding: '12px 10px',
                   display: 'flex',
@@ -318,10 +314,10 @@ export default async function DashboardPage() {
                   gap: 4,
                 }}
               >
-                <span style={{ color: '#F4F1E8', fontSize: 22, fontWeight: 700, ...MONO }}>
+                <span style={{ color: '#F8FAFC', fontSize: 22, fontWeight: 700, ...MONO }}>
                   {value}
                 </span>
-                <span style={{ color: '#9CA3AF', fontSize: 11, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                <span style={{ color: '#A1A1AA', fontSize: 11, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                   {label}
                 </span>
               </div>
@@ -374,21 +370,33 @@ export default async function DashboardPage() {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 10,
-                  background: '#1C1C22',
-                  border: `1px solid ${primary ? 'rgba(214,178,94,0.25)' : 'rgba(255,255,255,0.07)'}`,
+                  background: '#1C1C20',
+                  border: `1px solid ${primary ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.08)'}`,
                   borderRadius: 20,
                   padding: '16px',
                   textDecoration: 'none',
                 }}
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill={primary ? '#D6B25E' : '#9CA3AF'}>
-                  <path d={icon} />
-                </svg>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 12,
+                    background: primary ? 'rgba(139,92,246,0.12)' : 'rgba(99,102,241,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill={primary ? '#8B5CF6' : '#6366F1'}>
+                    <path d={icon} />
+                  </svg>
+                </div>
                 <div>
-                  <p style={{ color: '#F4F1E8', fontSize: 13, fontWeight: 500, marginBottom: 2 }}>
+                  <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 500, marginBottom: 2 }}>
                     {label}
                   </p>
-                  <p style={{ color: '#9CA3AF', fontSize: 11 }}>
+                  <p style={{ color: '#A1A1AA', fontSize: 11 }}>
                     {sub}
                   </p>
                 </div>
@@ -397,21 +405,30 @@ export default async function DashboardPage() {
           </div>
 
           {/* ── TODAY'S COMMAND ── */}
-          <div style={CARD}>
+          <div style={{ ...CARD, borderLeft: '2px solid linear-gradient(180deg, #8B5CF6, transparent)' }}>
             <p style={CARD_TITLE}>Today&apos;s Command</p>
 
             {isCommitted ? (
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
-                  <span style={{ color: '#4ADE80', fontSize: 20, flexShrink: 0, lineHeight: 1 }}>✓</span>
+                  <span
+                    style={{
+                      color: 'rgba(167,243,208,0.75)',
+                      fontSize: 20,
+                      flexShrink: 0,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ✓
+                  </span>
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ color: '#4ADE80', fontSize: 16, fontWeight: 700, marginBottom: 4 }}>
+                    <p style={{ color: '#F8FAFC', fontSize: 16, fontWeight: 700, marginBottom: 4 }}>
                       Committed
                     </p>
                     {todayEntry?.morning_intention && (
                       <p
                         style={{
-                          color: '#9CA3AF',
+                          color: '#A1A1AA',
                           fontSize: 13,
                           overflow: 'hidden',
                           whiteSpace: 'nowrap',
@@ -426,7 +443,7 @@ export default async function DashboardPage() {
                 <Link
                   href="/journal"
                   style={{
-                    color: '#9E8145',
+                    color: '#6366F1',
                     fontSize: 12,
                     fontWeight: 500,
                     textDecoration: 'none',
@@ -438,7 +455,7 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <>
-                <p style={{ color: '#9CA3AF', fontSize: 13, marginBottom: 14, lineHeight: 1.5 }}>
+                <p style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 14, lineHeight: 1.5 }}>
                   No entry yet today. Set your intention and commit to the standard.
                 </p>
                 <Link
@@ -448,12 +465,13 @@ export default async function DashboardPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     height: 52,
-                    background: 'linear-gradient(135deg, #D6B25E, #9E8145)',
+                    background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
                     borderRadius: 14,
-                    color: '#09090B',
+                    color: '#fff',
                     fontSize: 15,
                     fontWeight: 700,
                     textDecoration: 'none',
+                    boxShadow: '0 4px 20px rgba(99,102,241,0.3)',
                   }}
                 >
                   Commit Today
@@ -463,13 +481,13 @@ export default async function DashboardPage() {
           </div>
 
           {/* ── IDENTITY CONTRACT ── */}
-          <div style={{ ...CARD, borderLeft: '2px solid rgba(214,178,94,0.35)' }}>
+          <div style={{ ...CARD, borderLeft: '2px solid rgba(139,92,246,0.4)' }}>
             <p style={CARD_TITLE}>Identity Contract</p>
 
             {profile?.identity_statement?.trim() ? (
               <p
                 style={{
-                  color: '#F4F1E8',
+                  color: '#F8FAFC',
                   fontSize: 16,
                   lineHeight: 1.6,
                   fontStyle: 'italic',
@@ -486,9 +504,9 @@ export default async function DashboardPage() {
                   justifyContent: 'center',
                   height: 52,
                   background: 'transparent',
-                  border: '1px solid rgba(214,178,94,0.35)',
+                  border: '1px solid #8B5CF6',
                   borderRadius: 14,
-                  color: '#D6B25E',
+                  color: '#8B5CF6',
                   fontSize: 15,
                   fontWeight: 600,
                   textDecoration: 'none',
@@ -518,7 +536,7 @@ export default async function DashboardPage() {
                       ? 'transparent'
                       : 'rgba(255,255,255,0.08)',
                     border: isToday ? '1.5px solid #8B5CF6' : 'none',
-                    boxShadow: hasEntry ? '0 0 8px rgba(139,92,246,0.5)' : 'none',
+                    boxShadow: hasEntry ? '0 0 8px rgba(139,92,246,0.4)' : 'none',
                     opacity: isFuture ? 0.2 : 1,
                     animation: isToday ? 'trailPulse 2.5s ease-in-out infinite' : 'none',
                     flexShrink: 0,

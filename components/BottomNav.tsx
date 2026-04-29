@@ -38,9 +38,9 @@ export default function BottomNav() {
         transform: 'translateX(-50%)',
         width: 'calc(100% - 48px)',
         maxWidth: 342,
-        background: 'rgba(20,20,24,0.9)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        background: 'rgba(17,17,19,0.92)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
         borderRadius: 28,
         border: '1px solid rgba(255,255,255,0.08)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
@@ -63,8 +63,9 @@ export default function BottomNav() {
               alignItems: 'center',
               gap: 4,
               textDecoration: 'none',
-              color: active ? '#D6B25E' : '#9CA3AF',
+              color: active ? '#8B5CF6' : '#71717A',
               padding: '4px 8px',
+              position: 'relative',
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -79,6 +80,20 @@ export default function BottomNav() {
             >
               {label}
             </span>
+            {active && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: -2,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 4,
+                  height: 4,
+                  borderRadius: '50%',
+                  background: '#8B5CF6',
+                }}
+              />
+            )}
           </Link>
         )
       })}
