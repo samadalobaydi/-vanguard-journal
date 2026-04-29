@@ -114,7 +114,8 @@ export default function DeepWorkCard({ onModalChange }: Props) {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 8,
+          justifyContent: 'space-between',
+          height: '100%',
           background: 'linear-gradient(145deg, #2A2A30, #1B1B20)',
           border: timerActive
             ? '1px solid rgba(139,92,246,0.35)'
@@ -123,51 +124,113 @@ export default function DeepWorkCard({ onModalChange }: Props) {
             : '1px solid rgba(255,255,255,0.08)',
           boxShadow: timerActive ? '0 0 16px rgba(139,92,246,0.15)' : undefined,
           borderRadius: 20,
-          padding: '16px',
+          padding: '14px',
           cursor: timerActive || timerComplete ? 'default' : 'pointer',
         }}
         onClick={openModal}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div
-            style={{
-              width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
-              background: timerComplete ? 'rgba(139,92,246,0.15)' : 'rgba(139,92,246,0.12)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              animation: timerActive ? 'deepWorkPulse 2s ease-in-out infinite' : 'none',
-            }}
-          >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="#8B5CF6">
-              <path d={timerComplete ? CHECK_PATH : CLOCK_PATH} />
-            </svg>
-          </div>
-          <div style={{ minWidth: 0 }}>
-            <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Deep Work</p>
-            <p style={{ color: timerActive ? '#8B5CF6' : '#A1A1AA', fontSize: 11 }}>
-              {timerActive ? 'Session running' : timerComplete ? 'Session completed today' : 'Start focused session'}
-            </p>
-          </div>
-        </div>
+        {/* ── IDLE STATE ── */}
+        {!timerActive && !timerComplete && (
+          <>
+            {/* Top row: icon + label/sub */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+                background: 'rgba(139,92,246,0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="#8B5CF6">
+                  <path d={CLOCK_PATH} />
+                </svg>
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Deep Work</p>
+                <p style={{ color: '#A1A1AA', fontSize: 11 }}>Start focused session</p>
+              </div>
+            </div>
 
-        <span style={{ color: timerComplete ? '#8B5CF6' : '#F8FAFC', fontSize: 18, fontWeight: 700, lineHeight: 1, ...MONO }}>
-          {timerActive ? formatTime(remaining) : timerComplete ? formatDuration(sessionMins) : '1h'}
-        </span>
+            {/* Bottom row: value + decorative arc */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+              <span style={{ color: '#F8FAFC', fontSize: 26, fontWeight: 700, lineHeight: 1, ...MONO }}>1h</span>
+              <svg width="40" height="40" viewBox="0 0 40 40" style={{ opacity: 0.6, flexShrink: 0 }}>
+                {/* Track */}
+                <circle cx="20" cy="20" r="16" fill="none"
+                  stroke="rgba(255,255,255,0.06)" strokeWidth="3"
+                  strokeDasharray={`${Math.PI * 16} ${Math.PI * 16}`}
+                  transform="rotate(-180 20 20)"
+                />
+                {/* Fill ~30% */}
+                <circle cx="20" cy="20" r="16" fill="none"
+                  stroke="rgba(99,102,241,0.35)" strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={`${Math.PI * 16 * 0.3} ${Math.PI * 16 * 2}`}
+                  transform="rotate(-180 20 20)"
+                />
+              </svg>
+            </div>
+          </>
+        )}
 
+        {/* ── ACTIVE STATE ── */}
         {timerActive && (
-          <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
-            <button
-              onClick={(e) => { e.stopPropagation(); setTimerPaused((p) => !p) }}
-              style={{ fontSize: 11, background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, padding: '3px 8px', color: '#A1A1AA', cursor: 'pointer', ...SYS }}
-            >
-              {timerPaused ? 'Resume' : 'Pause'}
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); endTimer() }}
-              style={{ fontSize: 11, background: 'rgba(239,68,68,0.08)', border: 'none', borderRadius: 8, padding: '3px 8px', color: 'rgba(239,68,68,0.7)', cursor: 'pointer', ...SYS }}
-            >
-              End
-            </button>
-          </div>
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+                background: 'rgba(139,92,246,0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                animation: 'deepWorkPulse 2s ease-in-out infinite',
+              }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="#8B5CF6">
+                  <path d={CLOCK_PATH} />
+                </svg>
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Deep Work</p>
+                <p style={{ color: '#8B5CF6', fontSize: 11 }}>Session running</p>
+              </div>
+            </div>
+            <span style={{ color: '#F8FAFC', fontSize: 26, fontWeight: 700, lineHeight: 1, ...MONO }}>
+              {formatTime(remaining)}
+            </span>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setTimerPaused((p) => !p) }}
+                style={{ fontSize: 11, background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, padding: '3px 8px', color: '#A1A1AA', cursor: 'pointer', ...SYS }}
+              >
+                {timerPaused ? 'Resume' : 'Pause'}
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); endTimer() }}
+                style={{ fontSize: 11, background: 'rgba(239,68,68,0.08)', border: 'none', borderRadius: 8, padding: '3px 8px', color: 'rgba(239,68,68,0.7)', cursor: 'pointer', ...SYS }}
+              >
+                End
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ── COMPLETE STATE ── */}
+        {timerComplete && (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+                background: 'rgba(139,92,246,0.15)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="#8B5CF6">
+                  <path d={CHECK_PATH} />
+                </svg>
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Deep Work</p>
+                <p style={{ color: '#A1A1AA', fontSize: 11 }}>Session completed today</p>
+              </div>
+            </div>
+            <span style={{ color: '#8B5CF6', fontSize: 26, fontWeight: 700, lineHeight: 1, ...MONO }}>
+              {formatDuration(sessionMins)}
+            </span>
+          </>
         )}
       </div>
 
