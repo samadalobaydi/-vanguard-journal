@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { calculateVanguardScore, getStreakData } from '@/lib/vanguard-score'
 import BottomNav from '@/components/BottomNav'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
+import DeepWorkCard from '@/components/dashboard/DeepWorkCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -454,12 +455,14 @@ export default async function DashboardPage() {
               marginBottom: 16,
             }}
           >
+            {/* Deep Work timer replaces Commit Entry */}
+            <DeepWorkCard />
+
             {[
-              { label: 'Commit Entry', sub: 'Daily command',   href: '/journal', icon: ICONS.commit,  primary: true  },
-              { label: 'Journal',      sub: 'Write & reflect', href: '/journal', icon: ICONS.journal, primary: false },
-              { label: '60s Reckon',   sub: 'Quick check-in',  href: '/journal', icon: ICONS.reckon,  primary: false },
-              { label: 'Profile',      sub: 'Settings & stats',href: '/profile', icon: ICONS.profile, primary: false },
-            ].map(({ label, sub, href, icon, primary }) => (
+              { label: 'Journal',    sub: 'Write & reflect', href: '/journal', icon: ICONS.journal },
+              { label: '60s Reckon', sub: 'Quick check-in',  href: '/journal', icon: ICONS.reckon  },
+              { label: 'Profile',    sub: 'Settings & stats',href: '/profile', icon: ICONS.profile },
+            ].map(({ label, sub, href, icon }) => (
               <Link
                 key={label}
                 href={href}
@@ -468,7 +471,7 @@ export default async function DashboardPage() {
                   flexDirection: 'column',
                   gap: 10,
                   background: '#1C1C20',
-                  border: `1px solid ${primary ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.08)'}`,
+                  border: '1px solid rgba(255,255,255,0.08)',
                   borderRadius: 20,
                   padding: '16px',
                   textDecoration: 'none',
@@ -477,11 +480,11 @@ export default async function DashboardPage() {
                 <div
                   style={{
                     width: 40, height: 40, borderRadius: 12,
-                    background: primary ? 'rgba(139,92,246,0.12)' : 'rgba(99,102,241,0.1)',
+                    background: 'rgba(99,102,241,0.1)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill={primary ? '#8B5CF6' : '#6366F1'}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#6366F1">
                     <path d={icon} />
                   </svg>
                 </div>
