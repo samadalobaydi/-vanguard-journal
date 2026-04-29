@@ -7,28 +7,32 @@ import DashboardInterceptor from '@/components/DashboardInterceptor'
 
 export const dynamic = 'force-dynamic'
 
+const CARD: React.CSSProperties = {
+  borderRadius: 20,
+  background: 'linear-gradient(145deg, #181820, #101014)',
+  border: '1px solid rgba(255,255,255,0.07)',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
+  padding: '18px',
+  marginBottom: 12,
+}
+
+const CARD_TITLE: React.CSSProperties = {
+  color: '#9CA3AF',
+  fontSize: 13,
+  fontWeight: 600,
+  fontFamily: 'system-ui, -apple-system, sans-serif',
+  marginBottom: 14,
+}
+
+const MONO: React.CSSProperties = {
+  fontFamily: 'var(--font-mono), monospace',
+}
+
 const ICONS = {
   commit:  'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
   journal: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
   reckon:  'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z',
   profile: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',
-}
-
-const CARD: React.CSSProperties = {
-  borderRadius: 20,
-  background: '#111014',
-  border: '1px solid #2A2233',
-  padding: '16px',
-  overflow: 'hidden',
-}
-
-const CARD_LABEL: React.CSSProperties = {
-  color: '#8F7440',
-  fontSize: 9,
-  letterSpacing: '0.2em',
-  textTransform: 'uppercase',
-  fontFamily: 'var(--font-mono), monospace',
-  marginBottom: 12,
 }
 
 export default async function DashboardPage() {
@@ -65,7 +69,7 @@ export default async function DashboardPage() {
     .limit(60)
 
   const entries = recentEntries ?? []
-  const { current: streak } = getStreakData(entries)
+  const { current: streak, longest: bestStreak } = getStreakData(entries)
   const vanguardScore = calculateVanguardScore(entries, !!profile?.identity_statement?.trim())
   const isCommitted = !!todayEntry
 
@@ -86,37 +90,19 @@ export default async function DashboardPage() {
   return (
     <div
       style={{
-        background: '#050506',
+        background: '#09090B',
         minHeight: '100vh',
-        fontFamily: 'var(--font-mono), monospace',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
         position: 'relative',
         overflowX: 'hidden',
       }}
     >
       <style>{`
-        @keyframes ringPulse {
-          0%, 100% { transform: scale(0.96); opacity: 0.35; filter: drop-shadow(0 0 6px #8F7440); }
-          50%       { transform: scale(1.04); opacity: 0.9;  filter: drop-shadow(0 0 22px #8F7440) drop-shadow(0 0 40px rgba(143,116,64,0.35)); }
-        }
-        @keyframes dotPulse {
-          0%, 100% { box-shadow: 0 0 4px rgba(139,92,246,0.5); }
-          50%       { box-shadow: 0 0 10px #8B5CF6, 0 0 20px rgba(139,92,246,0.35); }
+        @keyframes trailPulse {
+          0%, 100% { box-shadow: 0 0 4px rgba(139,92,246,0.4); opacity: 0.7; }
+          50%       { box-shadow: 0 0 10px rgba(139,92,246,0.8), 0 0 20px rgba(139,92,246,0.3); opacity: 1; }
         }
       `}</style>
-
-      {/* Grain overlay */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundSize: '200px 200px',
-          opacity: 0.03,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
 
       {/* ── HEADER ── */}
       <header
@@ -126,40 +112,47 @@ export default async function DashboardPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '16px 16px 12px',
+          padding: '12px 16px',
         }}
       >
         <span
           style={{
-            color: '#8F7440',
-            opacity: 0.6,
-            fontSize: 10,
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
+            color: '#9E8145',
+            fontSize: 14,
+            fontWeight: 600,
+            fontFamily: 'system-ui, -apple-system, sans-serif',
           }}
         >
-          VANGUARD
+          Vanguard
         </span>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            background: isCommitted ? 'rgba(74,222,128,0.1)' : 'rgba(156,163,175,0.1)',
+            border: `1px solid ${isCommitted ? 'rgba(74,222,128,0.2)' : 'rgba(156,163,175,0.2)'}`,
+            borderRadius: 20,
+            padding: '4px 10px',
+          }}
+        >
           <div
             style={{
-              width: 7,
-              height: 7,
+              width: 6,
+              height: 6,
               borderRadius: '50%',
-              background: isCommitted ? '#4ADE80' : '#8D8794',
-              boxShadow: isCommitted ? '0 0 5px rgba(74,222,128,0.6)' : 'none',
+              background: isCommitted ? '#4ADE80' : '#9CA3AF',
             }}
           />
           <span
             style={{
-              color: isCommitted ? '#C9A45C' : '#8D8794',
-              fontSize: 10,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
+              color: isCommitted ? '#4ADE80' : '#9CA3AF',
+              fontSize: 12,
+              fontWeight: 500,
             }}
           >
-            {isCommitted ? 'COMMITTED' : 'PENDING'}
+            {isCommitted ? 'Committed' : 'Pending'}
           </span>
         </div>
       </header>
@@ -170,10 +163,9 @@ export default async function DashboardPage() {
             position: 'relative',
             zIndex: 1,
             padding: '0 16px',
-            paddingBottom: 96,
+            paddingBottom: 100,
             display: 'flex',
             flexDirection: 'column',
-            gap: 12,
           }}
         >
 
@@ -183,46 +175,73 @@ export default async function DashboardPage() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              padding: '32px 0 28px',
+              padding: '24px 0 28px',
+              position: 'relative',
             }}
           >
-            {/* Ring + number */}
+            {/* Radial glow */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 260,
+                height: 260,
+                background: 'radial-gradient(circle, rgba(214,178,94,0.12) 0%, transparent 70%)',
+                pointerEvents: 'none',
+              }}
+            />
+
+            {/* Ring */}
             <div
               style={{
                 position: 'relative',
-                width: 200,
-                height: 200,
+                width: 180,
+                height: 180,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <svg
-                width="200"
-                height="200"
-                viewBox="0 0 200 200"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  animation: 'ringPulse 3s ease-in-out infinite',
-                }}
-              >
+              <svg width="180" height="180" viewBox="0 0 180 180" style={{ position: 'absolute', inset: 0 }}>
+                <defs>
+                  <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#D6B25E" />
+                    <stop offset="100%" stopColor="#9E8145" />
+                  </linearGradient>
+                </defs>
+                {/* Track */}
                 <circle
-                  cx="100"
-                  cy="100"
-                  r="88"
+                  cx="90"
+                  cy="90"
+                  r="78"
                   fill="none"
-                  stroke="#C9A45C"
-                  strokeWidth="1.5"
+                  stroke="rgba(255,255,255,0.05)"
+                  strokeWidth="3"
+                />
+                {/* Fill arc — progress based on score/1000 */}
+                <circle
+                  cx="90"
+                  cy="90"
+                  r="78"
+                  fill="none"
+                  stroke="url(#ringGrad)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 78}`}
+                  strokeDashoffset={`${2 * Math.PI * 78 * (1 - Math.min(vanguardScore, 1000) / 1000)}`}
+                  transform="rotate(-90 90 90)"
                 />
               </svg>
               <span
                 style={{
-                  color: '#F5F2EA',
-                  fontSize: 96,
+                  color: '#F4F1E8',
+                  fontSize: 88,
                   fontWeight: 700,
                   lineHeight: 1,
-                  fontFamily: 'var(--font-mono), monospace',
+                  ...MONO,
                   position: 'relative',
                   zIndex: 1,
                 }}
@@ -233,121 +252,173 @@ export default async function DashboardPage() {
 
             <p
               style={{
-                color: '#8D8794',
+                color: '#9CA3AF',
                 fontSize: 10,
-                letterSpacing: '0.2em',
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                marginTop: 12,
-                marginBottom: 8,
+                marginTop: 14,
+                marginBottom: 10,
               }}
             >
-              DAYS UNDER COMMAND
+              Days Under Command
             </p>
-            <p
+
+            <div
               style={{
-                color: isCommitted ? '#4ADE80' : '#C9A45C',
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                marginBottom: 6,
+                display: 'inline-flex',
+                alignItems: 'center',
+                background: isCommitted ? 'rgba(214,178,94,0.1)' : 'rgba(214,178,94,0.06)',
+                border: `1px solid ${isCommitted ? 'rgba(214,178,94,0.3)' : 'rgba(214,178,94,0.15)'}`,
+                borderRadius: 20,
+                padding: '4px 12px',
+                marginBottom: 10,
               }}
             >
-              {isCommitted ? 'COMMITTED' : 'UNTESTED'}
-            </p>
-            <p
-              style={{
-                color: '#8D8794',
-                fontSize: 11,
-                letterSpacing: '0.05em',
-              }}
-            >
-              SCORE: {vanguardScore} / 1000
+              <span
+                style={{
+                  color: '#D6B25E',
+                  fontSize: 11,
+                  fontWeight: 600,
+                }}
+              >
+                {isCommitted ? 'Committed' : 'Untested'}
+              </span>
+            </div>
+
+            <p style={{ color: '#9CA3AF', fontSize: 12 }}>
+              Score:{' '}
+              <span style={{ ...MONO, color: '#9CA3AF' }}>{vanguardScore}</span>
+              {' '}/ 1000
             </p>
           </div>
 
-          {/* ── QUICK ACTION ROW ── */}
+          {/* ── STAT CARDS ROW ── */}
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'space-around',
-              alignItems: 'flex-start',
-              padding: '0 4px',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr 1fr',
+              gap: 8,
+              marginBottom: 12,
             }}
           >
             {[
-              { label: 'COMMIT',  href: '/journal',  icon: ICONS.commit  },
-              { label: 'JOURNAL', href: '/journal',  icon: ICONS.journal },
-              { label: 'RECKON',  href: '/journal',  icon: ICONS.reckon  },
-              { label: 'PROFILE', href: '/profile',  icon: ICONS.profile },
-            ].map(({ label, href, icon }) => (
+              { label: 'Vanguard Score', value: vanguardScore },
+              { label: 'Streak', value: streak },
+              { label: 'Best Streak', value: bestStreak },
+            ].map(({ label, value }) => (
+              <div
+                key={label}
+                style={{
+                  background: '#1C1C22',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  borderRadius: 16,
+                  padding: '12px 10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                }}
+              >
+                <span style={{ color: '#F4F1E8', fontSize: 22, fontWeight: 700, ...MONO }}>
+                  {value}
+                </span>
+                <span style={{ color: '#9CA3AF', fontSize: 11, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* ── QUICK ACTIONS 2×2 ── */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 8,
+              marginBottom: 12,
+            }}
+          >
+            {[
+              {
+                label: 'Commit Entry',
+                sub: 'Daily command',
+                href: '/journal',
+                icon: ICONS.commit,
+                primary: true,
+              },
+              {
+                label: 'Journal',
+                sub: 'Write & reflect',
+                href: '/journal',
+                icon: ICONS.journal,
+                primary: false,
+              },
+              {
+                label: '60s Reckon',
+                sub: 'Quick check-in',
+                href: '/journal',
+                icon: ICONS.reckon,
+                primary: false,
+              },
+              {
+                label: 'Profile',
+                sub: 'Settings & stats',
+                href: '/profile',
+                icon: ICONS.profile,
+                primary: false,
+              },
+            ].map(({ label, sub, href, icon, primary }) => (
               <Link
                 key={label}
                 href={href}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 8,
+                  gap: 10,
+                  background: '#1C1C22',
+                  border: `1px solid ${primary ? 'rgba(214,178,94,0.25)' : 'rgba(255,255,255,0.07)'}`,
+                  borderRadius: 20,
+                  padding: '16px',
                   textDecoration: 'none',
-                  minWidth: 56,
                 }}
               >
-                <div
-                  style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: '50%',
-                    background: '#16121B',
-                    border: '1px solid #2A2233',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#8D8794">
-                    <path d={icon} />
-                  </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill={primary ? '#D6B25E' : '#9CA3AF'}>
+                  <path d={icon} />
+                </svg>
+                <div>
+                  <p style={{ color: '#F4F1E8', fontSize: 13, fontWeight: 500, marginBottom: 2 }}>
+                    {label}
+                  </p>
+                  <p style={{ color: '#9CA3AF', fontSize: 11 }}>
+                    {sub}
+                  </p>
                 </div>
-                <span
-                  style={{
-                    color: '#8D8794',
-                    fontSize: 8,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    fontFamily: 'var(--font-mono), monospace',
-                  }}
-                >
-                  {label}
-                </span>
               </Link>
             ))}
           </div>
 
           {/* ── TODAY'S COMMAND ── */}
           <div style={CARD}>
-            <p style={CARD_LABEL}>TODAY&apos;S COMMAND</p>
+            <p style={CARD_TITLE}>Today&apos;s Command</p>
 
             {isCommitted ? (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                  <span style={{ color: '#4ADE80', fontSize: 16, flexShrink: 0 }}>✓</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
+                  <span style={{ color: '#4ADE80', fontSize: 20, flexShrink: 0, lineHeight: 1 }}>✓</span>
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ color: '#4ADE80', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', marginBottom: 3 }}>
-                      COMMITTED
+                    <p style={{ color: '#4ADE80', fontSize: 16, fontWeight: 700, marginBottom: 4 }}>
+                      Committed
                     </p>
                     {todayEntry?.morning_intention && (
                       <p
                         style={{
-                          color: '#8D8794',
-                          fontSize: 11,
+                          color: '#9CA3AF',
+                          fontSize: 13,
                           overflow: 'hidden',
                           whiteSpace: 'nowrap',
                           textOverflow: 'ellipsis',
-                          fontFamily: 'var(--font-mono), monospace',
                         }}
                       >
-                        {todayEntry.morning_intention.slice(0, 40)}
+                        {todayEntry.morning_intention.slice(0, 48)}
                       </p>
                     )}
                   </div>
@@ -355,9 +426,9 @@ export default async function DashboardPage() {
                 <Link
                   href="/journal"
                   style={{
-                    color: '#8F7440',
-                    fontSize: 10,
-                    letterSpacing: '0.05em',
+                    color: '#9E8145',
+                    fontSize: 12,
+                    fontWeight: 500,
                     textDecoration: 'none',
                     flexShrink: 0,
                   }}
@@ -366,41 +437,42 @@ export default async function DashboardPage() {
                 </Link>
               </div>
             ) : (
-              <Link
-                href="/journal"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: 52,
-                  background: '#C9A45C',
-                  borderRadius: 12,
-                  color: '#050506',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  textDecoration: 'none',
-                  fontFamily: 'var(--font-mono), monospace',
-                }}
-              >
-                [ COMMIT TODAY ]
-              </Link>
+              <>
+                <p style={{ color: '#9CA3AF', fontSize: 13, marginBottom: 14, lineHeight: 1.5 }}>
+                  No entry yet today. Set your intention and commit to the standard.
+                </p>
+                <Link
+                  href="/journal"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 52,
+                    background: 'linear-gradient(135deg, #D6B25E, #9E8145)',
+                    borderRadius: 14,
+                    color: '#09090B',
+                    fontSize: 15,
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Commit Today
+                </Link>
+              </>
             )}
           </div>
 
           {/* ── IDENTITY CONTRACT ── */}
-          <div style={CARD}>
-            <p style={CARD_LABEL}>IDENTITY CONTRACT</p>
+          <div style={{ ...CARD, borderLeft: '2px solid rgba(214,178,94,0.35)' }}>
+            <p style={CARD_TITLE}>Identity Contract</p>
 
             {profile?.identity_statement?.trim() ? (
               <p
                 style={{
-                  color: '#F5F2EA',
-                  fontSize: 14,
+                  color: '#F4F1E8',
+                  fontSize: 16,
                   lineHeight: 1.6,
                   fontStyle: 'italic',
-                  fontFamily: 'var(--font-mono), monospace',
                 }}
               >
                 &ldquo;{profile.identity_statement}&rdquo;
@@ -414,51 +486,41 @@ export default async function DashboardPage() {
                   justifyContent: 'center',
                   height: 52,
                   background: 'transparent',
-                  border: '1px solid #C9A45C',
-                  borderRadius: 12,
-                  color: '#C9A45C',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
+                  border: '1px solid rgba(214,178,94,0.35)',
+                  borderRadius: 14,
+                  color: '#D6B25E',
+                  fontSize: 15,
+                  fontWeight: 600,
                   textDecoration: 'none',
-                  fontFamily: 'var(--font-mono), monospace',
                 }}
               >
-                [ SIGN CONTRACT ]
+                Sign Contract
               </Link>
             )}
           </div>
 
-          {/* ── 14-DAY STREAK TRAIL ── */}
+          {/* ── 14-DAY TRAIL ── */}
           <div style={CARD}>
-            <p
-              style={{
-                color: '#8D8794',
-                fontSize: 9,
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                fontFamily: 'var(--font-mono), monospace',
-                marginBottom: 12,
-              }}
-            >
-              14-DAY TRAIL
-            </p>
+            <p style={CARD_TITLE}>14-Day Trail</p>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6 }}>
               {trail14.map(({ dateStr, isToday, hasEntry, isFuture }) => (
                 <div
                   key={dateStr}
                   title={dateStr}
                   style={{
-                    width: 12,
-                    height: 12,
+                    width: 11,
+                    height: 11,
                     borderRadius: '50%',
-                    background: hasEntry ? '#8B5CF6' : isToday ? 'transparent' : '#2A2233',
-                    border: isToday ? '1px solid #8B5CF6' : 'none',
-                    boxShadow: hasEntry ? '0 0 6px rgba(139,92,246,0.6)' : 'none',
+                    background: hasEntry
+                      ? '#8B5CF6'
+                      : isToday
+                      ? 'transparent'
+                      : 'rgba(255,255,255,0.08)',
+                    border: isToday ? '1.5px solid #8B5CF6' : 'none',
+                    boxShadow: hasEntry ? '0 0 8px rgba(139,92,246,0.5)' : 'none',
                     opacity: isFuture ? 0.2 : 1,
-                    animation: isToday ? 'dotPulse 3s ease-in-out infinite' : 'none',
+                    animation: isToday ? 'trailPulse 2.5s ease-in-out infinite' : 'none',
                     flexShrink: 0,
                   }}
                 />
