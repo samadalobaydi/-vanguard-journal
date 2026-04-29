@@ -33,7 +33,7 @@ export default function BottomNav() {
     <nav
       style={{
         position: 'fixed',
-        bottom: 24,
+        bottom: 'max(24px, env(safe-area-inset-bottom))',
         left: '50%',
         transform: 'translateX(-50%)',
         width: 'calc(100% - 48px)',
@@ -48,6 +48,7 @@ export default function BottomNav() {
         justifyContent: 'space-around',
         alignItems: 'center',
         padding: '10px 20px',
+        paddingBottom: 'max(10px, env(safe-area-inset-bottom))',
         zIndex: 100,
       }}
     >

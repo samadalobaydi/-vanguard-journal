@@ -13,7 +13,7 @@ const CARD: React.CSSProperties = {
   border: '1px solid rgba(255,255,255,0.08)',
   boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
   padding: '18px',
-  marginBottom: 12,
+  marginBottom: 16,
 }
 
 const CARD_TITLE: React.CSSProperties = {
@@ -163,8 +163,8 @@ export default async function DashboardPage() {
           style={{
             position: 'relative',
             zIndex: 1,
-            padding: '0 16px',
-            paddingBottom: 100,
+            padding: '20px 16px 0',
+            paddingBottom: 120,
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -180,7 +180,21 @@ export default async function DashboardPage() {
               position: 'relative',
             }}
           >
-            {/* Radial glow */}
+            {/* Outer soft glow */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 360,
+                height: 360,
+                background: 'radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)',
+                pointerEvents: 'none',
+              }}
+            />
+            {/* Inner glow */}
             <div
               aria-hidden="true"
               style={{
@@ -255,7 +269,7 @@ export default async function DashboardPage() {
             <p
               style={{
                 color: '#A1A1AA',
-                fontSize: 10,
+                fontSize: 11,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 marginTop: 14,
@@ -294,7 +308,7 @@ export default async function DashboardPage() {
               display: 'grid',
               gridTemplateColumns: '1fr 1fr 1fr',
               gap: 8,
-              marginBottom: 12,
+              marginBottom: 16,
             }}
           >
             {[
@@ -330,7 +344,7 @@ export default async function DashboardPage() {
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               gap: 8,
-              marginBottom: 12,
+              marginBottom: 16,
             }}
           >
             {[
