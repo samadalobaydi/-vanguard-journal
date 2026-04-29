@@ -6,7 +6,7 @@
 // SUPABASE TODO: Tables — daily_mission_sets, daily_missions (see spec)
 
 import { useState, useEffect } from 'react'
-import { ListChecks } from 'lucide-react'
+import { ListChecks, Plus } from 'lucide-react'
 
 const MONO: React.CSSProperties = { fontFamily: 'var(--font-mono), monospace' }
 const SYS: React.CSSProperties  = { fontFamily: 'system-ui, -apple-system, sans-serif' }
@@ -15,16 +15,14 @@ interface MissionOption {
   id: string
   title: string
   detail: string
-  isCustom?: boolean
 }
 
-const BASE_MISSIONS: MissionOption[] = [
-  { id: 'deep_work',   title: 'Deep Work Session', detail: '1 hour focus session' },
-  { id: 'training',    title: 'Training',           detail: 'Set in Training card' },
-  { id: 'read',        title: 'Read 10 Pages',      detail: 'Build wisdom' },
-  { id: 'no_scroll',   title: 'No Scrolling',       detail: 'Protect attention' },
-  { id: 'recovery',    title: 'Recovery',            detail: 'Sleep / stretch / reset' },
-  { id: 'custom',      title: 'Custom',              detail: '',                  isCustom: true },
+const PRESET_MISSIONS: MissionOption[] = [
+  { id: 'deep_work',  title: 'Deep Work Session', detail: '1 hour focus session' },
+  { id: 'training',   title: 'Training',           detail: 'Set in Training card' },
+  { id: 'read',       title: 'Read 10 Pages',      detail: 'Build wisdom' },
+  { id: 'no_scroll',  title: 'No Scrolling',       detail: 'Protect attention' },
+  { id: 'recovery',   title: 'Recovery',            detail: 'Sleep / stretch / reset' },
 ]
 
 interface LockedMission {
@@ -39,20 +37,24 @@ interface Props {
 }
 
 export default function DailyMissionsCard({ onModalChange, trainingType }: Props) {
-  const [modalOpen,         setModalOpen]         = useState(false)
-  const [selectedIds,       setSelectedIds]        = useState<string[]>([])
-  const [customText,        setCustomText]         = useState('')
-  const [lockedMissions,    setLockedMissions]     = useState<LockedMission[]>([])
-  const [completedIds,      setCompletedIds]       = useState<string[]>([])
-  const [editMode,          setEditMode]           = useState(false)
-  const [todayDate,         setTodayDate]          = useState<string | null>(null)
+  const [modalOpen,        setModalOpen]        = useState(false)
+  const [selectedIds,      setSelectedIds]       = useState<string[]>([])
+  const [customMissions,   setCustomMissions]    = useState<MissionOption[]>([])
+  const [showCustomInput,  setShowCustomInput]   = useState(false)
+  const [customInputText,  setCustomInputText]   = useState('')
+  const [lockedMissions,   setLockedMissions]    = useState<LockedMission[]>([])
+  const [completedIds,     setCompletedIds]      = useState<string[]>([])
+  const [editMode,         setEditMode]          = useState(false)
+  const [todayDate,        setTodayDate]         = useState<string | null>(null)
 
   // Reset if stored date isn't today
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]
     if (todayDate && todayDate !== today) {
       setSelectedIds([])
-      setCustomText('')
+      setCustomMissions([])
+      setShowCustomInput(false)
+      setCustomInputText('')
       setLockedMissions([])
       setCompletedIds([])
       setEditMode(false)
@@ -63,13 +65,15 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
   const missionsLocked = lockedMissions.length > 0 && !editMode
   const allDone = missionsLocked && completedIds.length === lockedMissions.length
 
-  // Build display options with training detail injected
-  const missionOptions: MissionOption[] = BASE_MISSIONS.map((m) => {
-    if (m.id === 'training' && trainingType) {
-      return { ...m, detail: trainingType }
-    }
-    return m
-  })
+  // Inject dynamic training detail
+  const presetOptions: MissionOption[] = PRESET_MISSIONS.map((m) =>
+    m.id === 'training' && trainingType ? { ...m, detail: trainingType } : m
+  )
+
+  // All available options = presets + any added custom missions
+  const allOptions: MissionOption[] = [...presetOptions, ...customMissions]
+
+  const atLimit = selectedIds.length >= 5
 
   function openModal() {
     setModalOpen(true)
@@ -78,6 +82,8 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
 
   function closeModal() {
     setModalOpen(false)
+    setShowCustomInput(false)
+    setCustomInputText('')
     if (editMode) setEditMode(false)
     onModalChange(false)
   }
@@ -90,20 +96,30 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
     })
   }
 
+  function addCustomMission() {
+    const name = customInputText.trim()
+    if (!name) return
+    const id = `custom_${Date.now()}`
+    const newMission: MissionOption = { id, title: name, detail: '' }
+    setCustomMissions((prev) => [...prev, newMission])
+    setSelectedIds((prev) => [...prev, id])
+    setCustomInputText('')
+    setShowCustomInput(false)
+  }
+
   function lockMissions() {
     if (selectedIds.length === 0) return
     const today = new Date().toISOString().split('T')[0]
     const locked: LockedMission[] = selectedIds.map((id) => {
-      const opt = missionOptions.find((m) => m.id === id)!
-      if (id === 'custom') {
-        return { id, title: customText.trim() || 'Custom', detail: '' }
-      }
+      const opt = allOptions.find((m) => m.id === id)!
       return { id, title: opt.title, detail: opt.detail }
     })
     setLockedMissions(locked)
     setCompletedIds([])
     setTodayDate(today)
     setEditMode(false)
+    setShowCustomInput(false)
+    setCustomInputText('')
     setModalOpen(false)
     onModalChange(false)
     // SUPABASE TODO: On Lock Missions, insert daily_mission_set + daily_missions rows
@@ -117,15 +133,16 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
   }
 
   function enterEditMode() {
-    // Pre-select current locked missions
     setSelectedIds(lockedMissions.map((m) => m.id))
-    if (lockedMissions.find((m) => m.id === 'custom')) {
-      setCustomText(lockedMissions.find((m) => m.id === 'custom')?.title || '')
-    }
+    // Restore any custom missions from locked set
+    const restoredCustom = lockedMissions
+      .filter((m) => m.id.startsWith('custom_'))
+      .map((m) => ({ id: m.id, title: m.title, detail: m.detail }))
+    setCustomMissions(restoredCustom)
     setEditMode(true)
   }
 
-  // Card display values
+  // Card display
   const completedCount = completedIds.length
   const totalCount     = lockedMissions.length
 
@@ -133,13 +150,13 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
     ? 'Done'
     : lockedMissions.length > 0
     ? `${completedCount}/${totalCount}`
-    : `0/3`
+    : 'Unset'
 
   const displaySub = allDone
     ? 'All missions completed'
     : lockedMissions.length > 0
     ? 'Missions locked in'
-    : 'Lock in today\'s tasks'
+    : 'Select 1–5 missions'
 
   const firstMission = lockedMissions[0]?.title ?? null
 
@@ -278,7 +295,7 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
             </div>
 
             {/* ── SELECTION MODE ── */}
-            {(!missionsLocked) && (
+            {!missionsLocked && (
               <>
                 <p style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 8, ...SYS }}>
                   Choose what must be completed today.
@@ -287,71 +304,120 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
                   Select 1–5 missions
                 </p>
 
+                {/* Preset missions */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {missionOptions.map((mission) => {
+                  {allOptions.map((mission) => {
                     const sel = selectedIds.includes(mission.id)
                     return (
-                      <div key={mission.id}>
-                        <div
-                          onClick={() => toggleSelect(mission.id)}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 12,
-                            background: sel ? 'rgba(139,92,246,0.06)' : '#1C1C20',
-                            border: `1px solid ${sel ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.07)'}`,
-                            borderRadius: 14,
-                            padding: '12px 14px',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {/* Checkbox */}
-                          <div style={{
-                            width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
-                            background: sel ? '#8B5CF6' : 'transparent',
-                            border: `1.5px solid ${sel ? '#8B5CF6' : 'rgba(255,255,255,0.15)'}`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          }}>
-                            {sel && (
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                                <path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                            )}
-                          </div>
-                          {/* Text */}
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <p style={{ color: '#F8FAFC', fontSize: 14, fontWeight: 500, marginBottom: 2, ...SYS }}>
-                              {mission.title}
-                            </p>
-                            {!mission.isCustom && (
-                              <p style={{ color: '#71717A', fontSize: 11, ...SYS }}>{mission.detail}</p>
-                            )}
-                          </div>
+                      <div
+                        key={mission.id}
+                        onClick={() => toggleSelect(mission.id)}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 12,
+                          background: sel ? 'rgba(139,92,246,0.06)' : '#1C1C20',
+                          border: `1px solid ${sel ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.07)'}`,
+                          borderRadius: 14,
+                          padding: '12px 14px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {/* Checkbox */}
+                        <div style={{
+                          width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                          background: sel ? '#8B5CF6' : 'transparent',
+                          border: `1.5px solid ${sel ? '#8B5CF6' : 'rgba(255,255,255,0.15)'}`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          {sel && (
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                              <path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
                         </div>
-                        {/* Inline custom text input */}
-                        {mission.isCustom && sel && (
-                          <input
-                            type="text"
-                            placeholder="Enter mission name"
-                            value={customText}
-                            onChange={(e) => setCustomText(e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                              width: '100%',
-                              marginTop: 6,
-                              background: '#1C1C20',
-                              border: '1px solid rgba(139,92,246,0.25)',
-                              borderRadius: 10,
-                              padding: '9px 12px',
-                              color: '#F8FAFC',
-                              fontSize: 13,
-                              outline: 'none',
-                              boxSizing: 'border-box',
-                              ...SYS,
-                            }}
-                          />
-                        )}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ color: '#F8FAFC', fontSize: 14, fontWeight: 500, marginBottom: mission.detail ? 2 : 0, ...SYS }}>
+                            {mission.title}
+                          </p>
+                          {mission.detail && (
+                            <p style={{ color: '#71717A', fontSize: 11, ...SYS }}>{mission.detail}</p>
+                          )}
+                        </div>
                       </div>
                     )
                   })}
+
+                  {/* Add Custom Mission button — hidden at limit */}
+                  {!atLimit && (
+                    <div>
+                      <div
+                        onClick={() => setShowCustomInput((v) => !v)}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 12,
+                          background: 'transparent',
+                          border: '1px dashed rgba(139,92,246,0.25)',
+                          borderRadius: 14,
+                          padding: '12px 14px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <div style={{
+                          width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                          background: 'rgba(139,92,246,0.08)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <Plus size={18} color="#8B5CF6" />
+                        </div>
+                        <div>
+                          <p style={{ color: '#8B5CF6', fontSize: 14, fontWeight: 500, marginBottom: 2, ...SYS }}>
+                            Add Custom Mission
+                          </p>
+                          <p style={{ color: '#71717A', fontSize: 11, ...SYS }}>Create your own task</p>
+                        </div>
+                      </div>
+
+                      {/* Inline input — expands below when tapped */}
+                      {showCustomInput && (
+                        <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
+                          <input
+                            type="text"
+                            placeholder="Mission name"
+                            value={customInputText}
+                            onChange={(e) => setCustomInputText(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') addCustomMission() }}
+                            autoFocus
+                            style={{
+                              flex: 1,
+                              background: '#1C1C20',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                              borderRadius: 10,
+                              padding: '10px 12px',
+                              color: '#F8FAFC',
+                              fontSize: 13,
+                              outline: 'none',
+                              ...SYS,
+                            }}
+                          />
+                          <button
+                            onClick={addCustomMission}
+                            style={{
+                              background: 'rgba(139,92,246,0.15)',
+                              border: '1px solid rgba(139,92,246,0.3)',
+                              borderRadius: 8,
+                              padding: '6px 14px',
+                              color: '#8B5CF6',
+                              fontSize: 13,
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              ...SYS,
+                            }}
+                          >
+                            Add Mission
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <button
@@ -400,7 +466,6 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
                           cursor: 'pointer',
                         }}
                       >
-                        {/* Checkbox */}
                         <div style={{
                           width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
                           background: done ? '#8B5CF6' : 'transparent',
@@ -416,7 +481,7 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{
                             color: done ? '#71717A' : '#F8FAFC',
-                            fontSize: 14, fontWeight: 500, marginBottom: 2,
+                            fontSize: 14, fontWeight: 500, marginBottom: mission.detail ? 2 : 0,
                             textDecoration: done ? 'line-through' : 'none',
                             ...SYS,
                           }}>
