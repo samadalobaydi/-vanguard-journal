@@ -5,8 +5,7 @@
 // SUPABASE TODO: Table — id, user_id, date, training_type, focus, exercises, custom_notes, completed, created_at
 
 import { useState, useEffect } from 'react'
-
-const DUMBBELL_PATH = 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 5.57 2 7.71 3.43 9.14 2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22 14.86 20.57 16.29 22 18.43 19.86 19.86 18.43 22 16.29 20.57 14.86z'
+import { Dumbbell } from 'lucide-react'
 
 const MONO: React.CSSProperties = { fontFamily: 'var(--font-mono), monospace' }
 const SYS: React.CSSProperties  = { fontFamily: 'system-ui, -apple-system, sans-serif' }
@@ -105,9 +104,7 @@ export default function TrainingCard({ onModalChange }: Props) {
             background: sessionSet ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="#6366F1">
-              <path d={DUMBBELL_PATH} />
-            </svg>
+            <Dumbbell size={17} color="#6366F1" />
           </div>
           <div style={{ minWidth: 0 }}>
             <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Training</p>
