@@ -121,7 +121,6 @@ export default function TrainingCard({ onModalChange }: Props) {
           </div>
         </div>
       </div>
-      </div>
 
       {/* ── BOTTOM SHEET MODAL ── */}
       {modalOpen && (
