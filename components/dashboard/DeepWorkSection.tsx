@@ -2,15 +2,20 @@
 
 import { useState } from 'react'
 import DeepWorkCard from './DeepWorkCard'
-import BottomNav from '@/components/BottomNav'
 
-export default function DeepWorkSection() {
-  const [deepWorkModalOpen, setDeepWorkModalOpen] = useState(false)
+// BottomNav is managed by DashboardActionCards to avoid duplicate nav instances.
 
-  return (
-    <>
-      <DeepWorkCard onModalChange={setDeepWorkModalOpen} />
-      <BottomNav hidden={deepWorkModalOpen} />
-    </>
-  )
+interface Props {
+  onModalChange: (isOpen: boolean) => void
+}
+
+export default function DeepWorkSection({ onModalChange }: Props) {
+  const [open, setOpen] = useState(false)
+
+  function handle(isOpen: boolean) {
+    setOpen(isOpen)
+    onModalChange(isOpen)
+  }
+
+  return <DeepWorkCard onModalChange={handle} />
 }

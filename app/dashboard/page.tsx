@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { calculateVanguardScore, getStreakData } from '@/lib/vanguard-score'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
-import DeepWorkSection from '@/components/dashboard/DeepWorkSection'
+import DashboardActionCards from '@/components/dashboard/DashboardActionCards'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,12 +28,6 @@ const MONO: React.CSSProperties = {
   fontFamily: 'var(--font-mono), monospace',
 }
 
-const ICONS = {
-  commit:  'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
-  journal: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
-  reckon:  'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z',
-  profile: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',
-}
 
 function getRank(score: number) {
   if (score >= 800) return 'ELITE'
@@ -445,55 +439,8 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* ── QUICK ACTIONS 2×2 ── */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 8,
-              marginBottom: 16,
-            }}
-          >
-            {/* Deep Work timer replaces Commit Entry */}
-            <DeepWorkSection />
-
-            {[
-              { label: 'Journal',    sub: 'Write & reflect', href: '/journal', icon: ICONS.journal },
-              { label: '60s Reckon', sub: 'Quick check-in',  href: '/journal', icon: ICONS.reckon  },
-              { label: 'Profile',    sub: 'Settings & stats',href: '/profile', icon: ICONS.profile },
-            ].map(({ label, sub, href, icon }) => (
-              <Link
-                key={label}
-                href={href}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10,
-                  background: '#1C1C20',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 20,
-                  padding: '16px',
-                  textDecoration: 'none',
-                }}
-              >
-                <div
-                  style={{
-                    width: 40, height: 40, borderRadius: 12,
-                    background: 'rgba(99,102,241,0.1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#6366F1">
-                    <path d={icon} />
-                  </svg>
-                </div>
-                <div>
-                  <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 500, marginBottom: 2 }}>{label}</p>
-                  <p style={{ color: '#A1A1AA', fontSize: 11 }}>{sub}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {/* ── QUICK ACTIONS 2×2 + BOTTOM NAV ── */}
+          <DashboardActionCards />
 
           {/* ── TODAY'S COMMAND ── */}
           <div style={{ ...CARD, borderLeft: '2px solid rgba(139,92,246,0.5)' }}>
