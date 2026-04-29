@@ -47,6 +47,11 @@ body {
 
 textarea { resize: vertical; }
 
+/* Hide bottom nav when a modal is open */
+body[data-modal-open] .bottom-nav {
+  display: none;
+}
+
 @layer utilities {
   .text-accent { color: var(--accent); }
   .border-accent-muted { border-color: rgba(139,92,246,0.2); }

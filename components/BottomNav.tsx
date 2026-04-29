@@ -31,6 +31,7 @@ export default function BottomNav() {
 
   return (
     <nav
+      className="bottom-nav"
       style={{
         position: 'fixed',
         bottom: 'max(24px, env(safe-area-inset-bottom))',
