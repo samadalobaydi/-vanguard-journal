@@ -37,8 +37,8 @@ export default function BottomNav() {
         left: '50%',
         transform: 'translateX(-50%)',
         width: 'min(390px, 100vw)',
-        background: 'rgba(8,0,15,0.97)',
-        borderTop: '1px solid rgba(168,85,247,0.1)',
+        background: 'rgba(5,5,6,0.97)',
+        borderTop: '1px solid #2A2233',
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
@@ -59,7 +59,7 @@ export default function BottomNav() {
               alignItems: 'center',
               gap: 4,
               textDecoration: 'none',
-              color: active ? '#A855F7' : 'rgba(255,255,255,0.2)',
+              color: active ? '#C9A45C' : '#8D8794',
               padding: '4px 12px',
             }}
           >

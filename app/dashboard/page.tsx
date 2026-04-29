@@ -7,24 +7,23 @@ import DashboardInterceptor from '@/components/DashboardInterceptor'
 
 export const dynamic = 'force-dynamic'
 
-// SVG icon paths
 const ICONS = {
-  commit: 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
+  commit:  'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
   journal: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
-  reckon: 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z',
+  reckon:  'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z',
   profile: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',
 }
 
 const CARD: React.CSSProperties = {
   borderRadius: 20,
-  background: 'linear-gradient(145deg, #120028, #080015)',
-  border: '1px solid rgba(168,85,247,0.15)',
+  background: '#111014',
+  border: '1px solid #2A2233',
   padding: '16px',
   overflow: 'hidden',
 }
 
 const CARD_LABEL: React.CSSProperties = {
-  color: 'rgba(168,85,247,0.55)',
+  color: '#8F7440',
   fontSize: 9,
   letterSpacing: '0.2em',
   textTransform: 'uppercase',
@@ -87,7 +86,7 @@ export default async function DashboardPage() {
   return (
     <div
       style={{
-        background: '#08000f',
+        background: '#050506',
         minHeight: '100vh',
         fontFamily: 'var(--font-mono), monospace',
         position: 'relative',
@@ -96,12 +95,12 @@ export default async function DashboardPage() {
     >
       <style>{`
         @keyframes ringPulse {
-          0%, 100% { transform: scale(0.96); opacity: 0.3; filter: drop-shadow(0 0 6px #A855F7); }
-          50%       { transform: scale(1.04); opacity: 0.9; filter: drop-shadow(0 0 22px #A855F7) drop-shadow(0 0 40px rgba(168,85,247,0.4)); }
+          0%, 100% { transform: scale(0.96); opacity: 0.35; filter: drop-shadow(0 0 6px #8F7440); }
+          50%       { transform: scale(1.04); opacity: 0.9;  filter: drop-shadow(0 0 22px #8F7440) drop-shadow(0 0 40px rgba(143,116,64,0.35)); }
         }
         @keyframes dotPulse {
-          0%, 100% { box-shadow: 0 0 4px rgba(168,85,247,0.5); }
-          50%       { box-shadow: 0 0 10px #A855F7, 0 0 20px rgba(168,85,247,0.35); }
+          0%, 100% { box-shadow: 0 0 4px rgba(139,92,246,0.5); }
+          50%       { box-shadow: 0 0 10px #8B5CF6, 0 0 20px rgba(139,92,246,0.35); }
         }
       `}</style>
 
@@ -132,7 +131,8 @@ export default async function DashboardPage() {
       >
         <span
           style={{
-            color: 'rgba(168,85,247,0.3)',
+            color: '#8F7440',
+            opacity: 0.6,
             fontSize: 10,
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
@@ -147,15 +147,13 @@ export default async function DashboardPage() {
               width: 7,
               height: 7,
               borderRadius: '50%',
-              background: isCommitted ? '#4ade80' : '#fbbf24',
-              boxShadow: isCommitted
-                ? '0 0 5px rgba(74,222,128,0.7)'
-                : '0 0 5px rgba(251,191,36,0.7)',
+              background: isCommitted ? '#4ADE80' : '#8D8794',
+              boxShadow: isCommitted ? '0 0 5px rgba(74,222,128,0.6)' : 'none',
             }}
           />
           <span
             style={{
-              color: isCommitted ? 'rgba(74,222,128,0.7)' : 'rgba(251,191,36,0.7)',
+              color: isCommitted ? '#C9A45C' : '#8D8794',
               fontSize: 10,
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
@@ -189,8 +187,16 @@ export default async function DashboardPage() {
             }}
           >
             {/* Ring + number */}
-            <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {/* Pulsing glow ring */}
+            <div
+              style={{
+                position: 'relative',
+                width: 200,
+                height: 200,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <svg
                 width="200"
                 height="200"
@@ -206,14 +212,13 @@ export default async function DashboardPage() {
                   cy="100"
                   r="88"
                   fill="none"
-                  stroke="#A855F7"
+                  stroke="#C9A45C"
                   strokeWidth="1.5"
                 />
               </svg>
-              {/* Streak number */}
               <span
                 style={{
-                  color: '#ffffff',
+                  color: '#F5F2EA',
                   fontSize: 96,
                   fontWeight: 700,
                   lineHeight: 1,
@@ -226,10 +231,9 @@ export default async function DashboardPage() {
               </span>
             </div>
 
-            {/* Labels */}
             <p
               style={{
-                color: 'rgba(168,85,247,0.5)',
+                color: '#8D8794',
                 fontSize: 10,
                 letterSpacing: '0.2em',
                 textTransform: 'uppercase',
@@ -241,7 +245,7 @@ export default async function DashboardPage() {
             </p>
             <p
               style={{
-                color: isCommitted ? '#4ade80' : '#fbbf24',
+                color: isCommitted ? '#4ADE80' : '#C9A45C',
                 fontSize: 11,
                 fontWeight: 700,
                 letterSpacing: '0.15em',
@@ -253,7 +257,7 @@ export default async function DashboardPage() {
             </p>
             <p
               style={{
-                color: 'rgba(255,255,255,0.4)',
+                color: '#8D8794',
                 fontSize: 11,
                 letterSpacing: '0.05em',
               }}
@@ -294,20 +298,20 @@ export default async function DashboardPage() {
                     width: 56,
                     height: 56,
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #1a0533, #0d0020)',
-                    border: '1px solid rgba(168,85,247,0.3)',
+                    background: '#16121B',
+                    border: '1px solid #2A2233',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
                 >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(168,85,247,0.8)">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#8D8794">
                     <path d={icon} />
                   </svg>
                 </div>
                 <span
                   style={{
-                    color: 'rgba(255,255,255,0.5)',
+                    color: '#8D8794',
                     fontSize: 8,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
@@ -327,15 +331,15 @@ export default async function DashboardPage() {
             {isCommitted ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                  <span style={{ color: '#4ade80', fontSize: 16, flexShrink: 0 }}>✓</span>
+                  <span style={{ color: '#4ADE80', fontSize: 16, flexShrink: 0 }}>✓</span>
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ color: '#4ade80', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', marginBottom: 3 }}>
+                    <p style={{ color: '#4ADE80', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', marginBottom: 3 }}>
                       COMMITTED
                     </p>
                     {todayEntry?.morning_intention && (
                       <p
                         style={{
-                          color: 'rgba(255,255,255,0.35)',
+                          color: '#8D8794',
                           fontSize: 11,
                           overflow: 'hidden',
                           whiteSpace: 'nowrap',
@@ -351,7 +355,7 @@ export default async function DashboardPage() {
                 <Link
                   href="/journal"
                   style={{
-                    color: 'rgba(168,85,247,0.55)',
+                    color: '#8F7440',
                     fontSize: 10,
                     letterSpacing: '0.05em',
                     textDecoration: 'none',
@@ -369,9 +373,9 @@ export default async function DashboardPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   height: 52,
-                  background: '#A855F7',
+                  background: '#C9A45C',
                   borderRadius: 12,
-                  color: '#000000',
+                  color: '#050506',
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: '0.15em',
@@ -392,7 +396,7 @@ export default async function DashboardPage() {
             {profile?.identity_statement?.trim() ? (
               <p
                 style={{
-                  color: 'rgba(255,255,255,0.65)',
+                  color: '#F5F2EA',
                   fontSize: 14,
                   lineHeight: 1.6,
                   fontStyle: 'italic',
@@ -409,10 +413,10 @@ export default async function DashboardPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   height: 52,
-                  background: 'rgba(168,85,247,0.1)',
-                  border: '1px solid rgba(168,85,247,0.3)',
+                  background: 'transparent',
+                  border: '1px solid #C9A45C',
                   borderRadius: 12,
-                  color: '#A855F7',
+                  color: '#C9A45C',
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: '0.15em',
@@ -428,7 +432,18 @@ export default async function DashboardPage() {
 
           {/* ── 14-DAY STREAK TRAIL ── */}
           <div style={CARD}>
-            <p style={CARD_LABEL}>14-DAY TRAIL</p>
+            <p
+              style={{
+                color: '#8D8794',
+                fontSize: 9,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                fontFamily: 'var(--font-mono), monospace',
+                marginBottom: 12,
+              }}
+            >
+              14-DAY TRAIL
+            </p>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               {trail14.map(({ dateStr, isToday, hasEntry, isFuture }) => (
@@ -439,17 +454,9 @@ export default async function DashboardPage() {
                     width: 12,
                     height: 12,
                     borderRadius: '50%',
-                    background: hasEntry
-                      ? '#A855F7'
-                      : 'rgba(168,85,247,0.12)',
-                    border: isToday
-                      ? '1px solid #A855F7'
-                      : hasEntry
-                        ? 'none'
-                        : '1px solid rgba(168,85,247,0.2)',
-                    boxShadow: hasEntry && !isToday
-                      ? '0 0 6px #A855F7'
-                      : 'none',
+                    background: hasEntry ? '#8B5CF6' : isToday ? 'transparent' : '#2A2233',
+                    border: isToday ? '1px solid #8B5CF6' : 'none',
+                    boxShadow: hasEntry ? '0 0 6px rgba(139,92,246,0.6)' : 'none',
                     opacity: isFuture ? 0.2 : 1,
                     animation: isToday ? 'dotPulse 3s ease-in-out infinite' : 'none',
                     flexShrink: 0,
