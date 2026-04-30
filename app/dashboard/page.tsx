@@ -180,7 +180,7 @@ export default async function DashboardPage() {
             fontWeight: 600,
           }}
         >
-          Vanguard
+          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
         </span>
 
         <div
