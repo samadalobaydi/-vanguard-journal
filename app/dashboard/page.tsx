@@ -173,7 +173,7 @@ export default async function DashboardPage() {
           padding: '12px 16px',
         }}
       >
-        <Image src="/vanguard-logo.png" alt="Vanguard" width={40} height={40} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+        <Image src="/vanguard-logo.png" alt="Vanguard" width={52} height={52} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
 
         <div
           style={{
