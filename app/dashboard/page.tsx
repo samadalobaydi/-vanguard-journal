@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { calculateVanguardScore, getStreakData } from '@/lib/vanguard-score'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
@@ -180,7 +181,7 @@ export default async function DashboardPage() {
             fontWeight: 600,
           }}
         >
-          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
+          <Image src="/vanguard-logo.png" alt="Vanguard" height={32} width={120} style={{ width: 'auto', objectFit: 'contain' }} />
         </span>
 
         <div
