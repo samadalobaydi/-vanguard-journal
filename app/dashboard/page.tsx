@@ -173,16 +173,7 @@ export default async function DashboardPage() {
           padding: '12px 16px',
         }}
       >
-        <span
-          style={{
-            color: '#6366F1',
-            opacity: 0.7,
-            fontSize: 14,
-            fontWeight: 600,
-          }}
-        >
-          <Image src="/vanguard-logo.png" alt="Vanguard" height={32} width={120} style={{ width: 'auto', objectFit: 'contain' }} />
-        </span>
+        <Image src="/vanguard-logo.png" alt="Vanguard" height={24} width={24} />
 
         <div
           style={{
