@@ -6,7 +6,7 @@ import DeepWorkCard from './DeepWorkCard'
 import TrainingCard from './TrainingCard'
 import DailyMissionsCard from './DailyMissionsCard'
 import ReckonCard from './ReckonCard'
-import CommitTodayModal from './CommitTodayModal'
+import TodaysCommandCard from './TodaysCommandCard'
 
 export default function DashboardActionCards() {
   const [deepWorkOpen,      setDeepWorkOpen]      = useState(false)
@@ -35,7 +35,7 @@ export default function DashboardActionCards() {
       </div>
 
       {/* Today's Command card + modal */}
-      <CommitTodayModal onModalChange={setCommitModalOpen} />
+      <TodaysCommandCard onModalChange={setCommitModalOpen} />
 
       {/* Single BottomNav — hidden when any modal is open */}
       <BottomNav hidden={anyModalOpen} />
