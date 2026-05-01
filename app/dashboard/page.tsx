@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Flame } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calculateVanguardScore, getStreakData } from '@/lib/vanguard-score'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
@@ -77,6 +78,7 @@ export default async function DashboardPage() {
   const isCommitted = !!todayEntry
   const isSigned = !!profile?.identity_statement?.trim()
   const rank = getRank(vanguardScore)
+  const username = user.email ? user.email.split('@')[0] : 'Recruit'
 
   // 14-day trail data
   const entrySet = new Set(entries.map((e) => e.entry_date))
@@ -175,21 +177,10 @@ export default async function DashboardPage() {
       >
         <Image src="/vanguard-logo.png" alt="Vanguard" width={52} height={52} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
 
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            background: isCommitted ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.05)',
-            border: `1px solid ${isCommitted ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.1)'}`,
-            borderRadius: 20,
-            padding: '4px 10px',
-          }}
-        >
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: isCommitted ? '#8B5CF6' : '#71717A' }} />
-          <span style={{ color: isCommitted ? '#8B5CF6' : '#A1A1AA', fontSize: 12, fontWeight: 500 }}>
-            {isCommitted ? 'Committed' : 'Pending'}
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Flame size={16} style={{ color: '#8B5CF6', filter: 'drop-shadow(0 0 4px rgba(139,92,246,0.6))' }} />
+          <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: 14, fontWeight: 700, color: '#F8FAFC' }}>{streak}</span>
+          <span style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: 13, fontWeight: 500, color: '#A1A1AA' }}>{username}</span>
         </div>
       </header>
 
