@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 const RESIST_STANDARDS = [
   'No porn',
@@ -22,6 +23,17 @@ const EXECUTE_STANDARDS = [
 
 const SYS: React.CSSProperties = { fontFamily: 'system-ui, -apple-system, sans-serif' }
 
+export interface Standard {
+  id: string
+  label: string
+  category: 'resist' | 'execute' | 'custom'
+  completed: boolean
+}
+
+function labelToId(label: string): string {
+  return label.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+}
+
 interface Props {
   isOpen: boolean
   onClose: () => void
@@ -31,7 +43,8 @@ interface Props {
   onAddCustom: (s: string) => void
   note: string
   onNoteChange: (v: string) => void
-  onCommit: () => void
+  onCommit: (standards: Standard[], note: string) => void
+  userId: string | null
 }
 
 export default function CommitTodayModal({
@@ -39,15 +52,16 @@ export default function CommitTodayModal({
   selectedStandards, onToggleStandard,
   customStandards, onAddCustom,
   note, onNoteChange,
-  onCommit,
+  onCommit, userId,
 }: Props) {
   const [addingCustom, setAddingCustom] = useState(false)
   const [customInput,  setCustomInput]  = useState('')
+  const [saving,       setSaving]       = useState(false)
 
   if (!isOpen) return null
 
   const count      = selectedStandards.length
-  const canCommit  = count > 0
+  const canCommit  = count > 0 && !saving
   const overLimit  = count > 5
 
   const counterText  = count === 0
@@ -69,6 +83,38 @@ export default function CommitTodayModal({
     setAddingCustom(false)
     setCustomInput('')
     onClose()
+  }
+
+  async function handleCommitClick() {
+    if (!canCommit || !userId) return
+    setSaving(true)
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const standards: Standard[] = selectedStandards.map(label => ({
+        id: labelToId(label),
+        label,
+        category: (RESIST_STANDARDS.includes(label) ? 'resist'
+          : EXECUTE_STANDARDS.includes(label) ? 'execute'
+          : 'custom') as Standard['category'],
+        completed: false,
+      }))
+
+      const supabase = createClient()
+      await supabase.from('daily_commands').upsert({
+        user_id: userId,
+        command_date: today,
+        standards,
+        note,
+        completed_count: 0,
+        total_count: standards.length,
+        is_complete: false,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,command_date' })
+
+      onCommit(standards, note)
+    } finally {
+      setSaving(false)
+    }
   }
 
   function StandardRow({ label }: { label: string }) {
@@ -265,7 +311,7 @@ export default function CommitTodayModal({
 
           {/* Commit button */}
           <button
-            onClick={canCommit ? onCommit : undefined}
+            onClick={handleCommitClick}
             disabled={!canCommit}
             style={{
               width: '100%', height: 50,
@@ -278,7 +324,7 @@ export default function CommitTodayModal({
               ...SYS,
             }}
           >
-            Commit Standards
+            {saving ? 'Saving…' : 'Commit Standards'}
           </button>
         </div>
       </div>

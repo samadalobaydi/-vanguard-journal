@@ -1,11 +1,8 @@
 'use client'
 
-// SUPABASE TODO: upsert daily_commits on commit
-// SUPABASE TODO: update completed_standards on tick
-// SUPABASE TODO: Table — id, user_id, date, standards[], note, completed_standards[], created_at
-
 import { useState, useEffect } from 'react'
-import CommitTodayModal from './CommitTodayModal'
+import { createClient } from '@/lib/supabase/client'
+import CommitTodayModal, { type Standard } from './CommitTodayModal'
 
 const SYS: React.CSSProperties = { fontFamily: 'system-ui, -apple-system, sans-serif' }
 
@@ -26,13 +23,42 @@ interface Props {
 }
 
 export default function TodaysCommandCard({ onModalChange }: Props) {
-  const [modalOpen,          setModalOpen]          = useState(false)
-  const [committed,          setCommitted]          = useState(false)
-  const [selectedStandards,  setSelectedStandards]  = useState<string[]>([])
-  const [customStandards,    setCustomStandards]    = useState<string[]>([])
-  const [note,               setNote]               = useState('')
-  const [completedStandards, setCompletedStandards] = useState<string[]>([])
-  const [todayDate,          setTodayDate]          = useState(todayStr)
+  const [modalOpen,      setModalOpen]      = useState(false)
+  const [userId,         setUserId]         = useState<string | null>(null)
+  const [committed,      setCommitted]      = useState(false)
+  const [standards,      setStandards]      = useState<Standard[]>([])
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([])
+  const [customLabels,   setCustomLabels]   = useState<string[]>([])
+  const [note,           setNote]           = useState('')
+  const [todayDate,      setTodayDate]      = useState(todayStr)
+
+  // Fetch today's command on mount
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      setUserId(user.id)
+
+      const today = todayStr()
+      const { data } = await supabase
+        .from('daily_commands')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('command_date', today)
+        .single()
+
+      if (data) {
+        const stds: Standard[] = data.standards ?? []
+        setStandards(stds)
+        setSelectedLabels(stds.map((s: Standard) => s.label))
+        setCustomLabels(stds.filter((s: Standard) => s.category === 'custom').map((s: Standard) => s.label))
+        setNote(data.note ?? '')
+        setCommitted(true)
+      }
+    }
+    load()
+  }, [])
 
   // Reset on new day
   useEffect(() => {
@@ -40,20 +66,20 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
     if (current !== todayDate) {
       setTodayDate(current)
       setCommitted(false)
-      setSelectedStandards([])
-      setCustomStandards([])
+      setStandards([])
+      setSelectedLabels([])
+      setCustomLabels([])
       setNote('')
-      setCompletedStandards([])
     }
   })
 
-  const total       = selectedStandards.length
-  const doneCount   = selectedStandards.filter(s => completedStandards.includes(s)).length
+  const total       = standards.length
+  const doneCount   = standards.filter(s => s.completed).length
   const allDone     = committed && total > 0 && doneCount === total
   const progressPct = total > 0 ? (doneCount / total) * 100 : 0
 
-  const visibleStandards = selectedStandards.slice(0, 5)
-  const hiddenCount      = selectedStandards.length > 5 ? selectedStandards.length - 5 : 0
+  const visibleStandards = standards.slice(0, 5)
+  const hiddenCount      = standards.length > 5 ? standards.length - 5 : 0
 
   function openModal() {
     setModalOpen(true)
@@ -65,26 +91,44 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
     onModalChange(false)
   }
 
-  function toggleStandard(s: string) {
-    setSelectedStandards(prev =>
-      prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]
+  function toggleStandard(label: string) {
+    setSelectedLabels(prev =>
+      prev.includes(label) ? prev.filter(x => x !== label) : [...prev, label]
     )
   }
 
-  function addCustom(s: string) {
-    setCustomStandards(prev => [...prev, s])
-    setSelectedStandards(prev => [...prev, s])
+  function addCustom(label: string) {
+    setCustomLabels(prev => [...prev, label])
+    setSelectedLabels(prev => [...prev, label])
   }
 
-  function handleCommit() {
+  function handleCommit(newStandards: Standard[], newNote: string) {
+    setStandards(newStandards)
+    setSelectedLabels(newStandards.map(s => s.label))
+    setCustomLabels(newStandards.filter(s => s.category === 'custom').map(s => s.label))
+    setNote(newNote)
     setCommitted(true)
     closeModal()
   }
 
-  function toggleCompleted(s: string) {
-    setCompletedStandards(prev =>
-      prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]
+  async function toggleCompleted(label: string) {
+    if (!userId) return
+    const updated = standards.map(s =>
+      s.label === label ? { ...s, completed: !s.completed } : s
     )
+    setStandards(updated)
+
+    const supabase = createClient()
+    await supabase.from('daily_commands').upsert({
+      user_id: userId,
+      command_date: todayDate,
+      standards: updated,
+      note,
+      completed_count: updated.filter(s => s.completed).length,
+      total_count: updated.length,
+      is_complete: updated.every(s => s.completed),
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,command_date' })
   }
 
   return (
@@ -109,7 +153,7 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
               borderRadius: 20, padding: '2px 8px',
             }}>
               <span style={{ color: '#8B5CF6', fontSize: 10, fontWeight: 600, ...SYS }}>
-                {selectedStandards.length} standard{selectedStandards.length !== 1 ? 's' : ''}
+                {standards.length} standard{standards.length !== 1 ? 's' : ''}
               </span>
             </div>
           )}
@@ -176,12 +220,11 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
             {/* Standards list */}
             <div>
               {visibleStandards.map((s, i) => {
-                const done    = completedStandards.includes(s)
-                const isLast  = i === visibleStandards.length - 1 && hiddenCount === 0
+                const isLast = i === visibleStandards.length - 1 && hiddenCount === 0
                 return (
                   <div
-                    key={s}
-                    onClick={() => toggleCompleted(s)}
+                    key={s.label}
+                    onClick={() => toggleCompleted(s.label)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10,
                       padding: '6px 0',
@@ -191,23 +234,23 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
                   >
                     <div style={{
                       width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-                      border: done ? 'none' : '1.5px solid rgba(255,255,255,0.2)',
-                      background: done ? '#8B5CF6' : 'transparent',
+                      border: s.completed ? 'none' : '1.5px solid rgba(255,255,255,0.2)',
+                      background: s.completed ? '#8B5CF6' : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      {done && (
+                      {s.completed && (
                         <svg width="10" height="10" viewBox="0 0 12 12">
                           <path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                         </svg>
                       )}
                     </div>
                     <span style={{
-                      color: done ? '#71717A' : '#F8FAFC',
+                      color: s.completed ? '#71717A' : '#F8FAFC',
                       fontSize: 13,
-                      textDecoration: done ? 'line-through' : 'none',
+                      textDecoration: s.completed ? 'line-through' : 'none',
                       ...SYS,
                     }}>
-                      {s}
+                      {s.label}
                     </span>
                   </div>
                 )
@@ -239,13 +282,14 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
       <CommitTodayModal
         isOpen={modalOpen}
         onClose={closeModal}
-        selectedStandards={selectedStandards}
+        selectedStandards={selectedLabels}
         onToggleStandard={toggleStandard}
-        customStandards={customStandards}
+        customStandards={customLabels}
         onAddCustom={addCustom}
         note={note}
         onNoteChange={setNote}
         onCommit={handleCommit}
+        userId={userId}
       />
     </>
   )
