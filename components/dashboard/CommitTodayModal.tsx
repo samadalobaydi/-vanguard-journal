@@ -122,6 +122,7 @@ export default function CommitTodayModal({
           width: 'min(390px, 100vw)',
           maxHeight: '85vh',
           overflowY: 'auto',
+          display: 'flex', flexDirection: 'column',
           background: 'linear-gradient(145deg, #2A2A30, #1B1B20)',
           borderRadius: '24px 24px 0 0',
           borderTop: '1px solid rgba(255,255,255,0.08)',
@@ -131,7 +132,7 @@ export default function CommitTodayModal({
         onClick={e => e.stopPropagation()}
       >
         {/* Scrollable content */}
-        <div style={{ paddingBottom: 120 }}>
+        <div style={{ paddingBottom: 140 }}>
           {/* Drag handle */}
           <div style={{ width: 36, height: 4, background: 'rgba(255,255,255,0.12)', borderRadius: 2, margin: '0 auto 16px' }} />
 
@@ -237,8 +238,11 @@ export default function CommitTodayModal({
         {/* Sticky footer */}
         <div style={{
           position: 'sticky', bottom: 0,
-          background: 'linear-gradient(0deg, #1B1B20 80%, transparent)',
-          padding: '12px 0 max(24px, env(safe-area-inset-bottom))',
+          background: '#1C1C22',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+          padding: '12px 0 0',
+          marginTop: 'auto',
+          zIndex: 10,
         }}>
           {/* Counter */}
           <p style={{
@@ -267,9 +271,9 @@ export default function CommitTodayModal({
               background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
               border: 'none', borderRadius: 16,
               color: '#fff', fontSize: 15, fontWeight: 700,
-              cursor: canCommit ? 'pointer' : 'default',
+              cursor: canCommit ? 'pointer' : 'not-allowed',
               boxShadow: canCommit ? '0 4px 20px rgba(99,102,241,0.3)' : 'none',
-              opacity: canCommit ? 1 : 0.4,
+              opacity: canCommit ? 1 : 0.35,
               ...SYS,
             }}
           >
