@@ -118,7 +118,7 @@ export default function ReckonCard({ onModalChange }: Props) {
             fontSize: 20, fontWeight: 700, lineHeight: 1,
             ...MONO,
           }}>
-            {reckonComplete ? 'Done' : 'Ready'}
+            {reckonComplete ? 'Done' : 'Start'}
           </span>
           <svg width="32" height="32" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
             <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(139,92,246,0.2)" strokeWidth="2" />
