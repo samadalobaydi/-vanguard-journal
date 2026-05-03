@@ -46,8 +46,11 @@ export default function CommitTodayModal({
 
   if (!isOpen) return null
 
-  const canCommit    = selectedStandards.length > 0
-  const overSelected = selectedStandards.length > 5
+  const count       = selectedStandards.length
+  const canCommit   = count > 0
+  const overSelected = count > 5
+
+  const counterColor = overSelected ? '#D946EF' : count >= 3 ? '#8B5CF6' : '#71717A'
 
   function handleAddCustom() {
     const trimmed = customInput.trim()
@@ -142,17 +145,32 @@ export default function CommitTodayModal({
           </button>
         </div>
 
-        <p style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 20, ...SYS }}>
+        <p style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 6, ...SYS }}>
           Choose the standards you will hold today.
         </p>
 
+        {/* Selection counter */}
+        <p style={{ color: counterColor, fontSize: 12, fontWeight: 600, marginBottom: overSelected ? 4 : 20, marginTop: 0, ...SYS }}>
+          {count} / 5 recommended
+        </p>
+
+        {/* Over-selection warning */}
+        {overSelected && (
+          <p style={{ color: '#D946EF', fontSize: 11, fontStyle: 'italic', marginTop: 0, marginBottom: 20, ...SYS }}>
+            Too many standards weakens execution. Choose what matters.
+          </p>
+        )}
+
         {/* RESIST section */}
-        <p style={{ color: '#71717A', fontSize: 10, letterSpacing: '0.12em', marginBottom: 4, ...SYS }}>RESIST</p>
-        <p style={{ color: '#71717A', fontSize: 11, marginBottom: 10, ...SYS }}>Vices and distractions to avoid.</p>
+        <p style={{ color: '#71717A', fontSize: 10, letterSpacing: '0.14em', marginBottom: 4, ...SYS }}>RESIST</p>
+        <p style={{ color: '#71717A', fontSize: 11, marginBottom: 10, ...SYS }}>Vices to eliminate.</p>
         {RESIST_STANDARDS.map(s => <StandardRow key={s} label={s} />)}
 
+        {/* Section separator */}
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '12px 0' }} />
+
         {/* EXECUTE section */}
-        <p style={{ color: '#71717A', fontSize: 10, letterSpacing: '0.12em', marginTop: 16, marginBottom: 4, ...SYS }}>EXECUTE</p>
+        <p style={{ color: '#71717A', fontSize: 10, letterSpacing: '0.14em', marginBottom: 4, ...SYS }}>EXECUTE</p>
         <p style={{ color: '#71717A', fontSize: 11, marginBottom: 10, ...SYS }}>Actions that move life forward.</p>
         {EXECUTE_STANDARDS.map(s => <StandardRow key={s} label={s} />)}
 
@@ -202,13 +220,6 @@ export default function CommitTodayModal({
               Add
             </button>
           </div>
-        )}
-
-        {/* Over-selection warning */}
-        {overSelected && (
-          <p style={{ color: '#D946EF', fontSize: 11, fontStyle: 'italic', marginTop: 8, ...SYS }}>
-            Too many standards weakens execution. Choose what matters.
-          </p>
         )}
 
         {/* Optional note */}

@@ -47,8 +47,13 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
     }
   })
 
-  const allDone = committed && selectedStandards.length > 0 &&
-                  selectedStandards.every(s => completedStandards.includes(s))
+  const total       = selectedStandards.length
+  const doneCount   = selectedStandards.filter(s => completedStandards.includes(s)).length
+  const allDone     = committed && total > 0 && doneCount === total
+  const progressPct = total > 0 ? (doneCount / total) * 100 : 0
+
+  const visibleStandards = selectedStandards.slice(0, 5)
+  const hiddenCount      = selectedStandards.length > 5 ? selectedStandards.length - 5 : 0
 
   function openModal() {
     setModalOpen(true)
@@ -87,12 +92,10 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
       {/* ── TODAY'S COMMAND CARD ── */}
       <div style={{
         ...CARD,
-        borderLeft: '2px solid rgba(139,92,246,0.5)',
-        ...(allDone && {
-          border: '1px solid rgba(139,92,246,0.3)',
-          borderLeft: '2px solid rgba(139,92,246,0.5)',
-          boxShadow: '0 0 20px rgba(139,92,246,0.1), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
-        }),
+        ...(allDone
+          ? { border: '1px solid rgba(139,92,246,0.25)', boxShadow: '0 0 20px rgba(139,92,246,0.1), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)' }
+          : { borderLeft: '2px solid rgba(139,92,246,0.5)' }
+        ),
       }}>
         {/* Title row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
@@ -136,27 +139,64 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
         ) : (
           /* ── COMMITTED ── */
           <>
-            <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 8, ...SYS }}>
+            <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 2, marginTop: 0, ...SYS }}>
               Standards locked.
             </p>
 
-            <div style={{ marginBottom: 4 }}>
-              {selectedStandards.map(s => {
-                const done = completedStandards.includes(s)
+            <p style={{
+              color: allDone ? '#8B5CF6' : '#71717A',
+              fontSize: 11, fontStyle: 'italic',
+              marginTop: 0, marginBottom: 10,
+              ...SYS,
+            }}>
+              {allDone ? 'The standard is held.' : 'Hold the line before midnight.'}
+            </p>
+
+            {/* Progress counter */}
+            <p style={{ fontSize: 12, margin: '0 0 6px', ...SYS }}>
+              <span style={{ color: '#8B5CF6', fontWeight: 700 }}>{doneCount}</span>
+              <span style={{ color: '#71717A' }}> / {total} held</span>
+            </p>
+
+            {/* Progress bar */}
+            <div style={{
+              height: 3, borderRadius: 2,
+              background: 'rgba(255,255,255,0.06)',
+              marginBottom: 12, overflow: 'hidden',
+            }}>
+              <div style={{
+                height: '100%',
+                width: `${progressPct}%`,
+                background: 'linear-gradient(90deg, #6366F1, #8B5CF6)',
+                borderRadius: 2,
+                transition: 'width 0.3s ease',
+              }} />
+            </div>
+
+            {/* Standards list */}
+            <div>
+              {visibleStandards.map((s, i) => {
+                const done    = completedStandards.includes(s)
+                const isLast  = i === visibleStandards.length - 1 && hiddenCount === 0
                 return (
                   <div
                     key={s}
                     onClick={() => toggleCompleted(s)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, cursor: 'pointer' }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '6px 0',
+                      borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.04)',
+                      cursor: 'pointer',
+                    }}
                   >
                     <div style={{
-                      width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                      width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
                       border: done ? 'none' : '1.5px solid rgba(255,255,255,0.2)',
                       background: done ? '#8B5CF6' : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       {done && (
-                        <svg width="12" height="12" viewBox="0 0 12 12">
+                        <svg width="10" height="10" viewBox="0 0 12 12">
                           <path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                         </svg>
                       )}
@@ -172,17 +212,16 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
                   </div>
                 )
               })}
+              {hiddenCount > 0 && (
+                <div style={{ padding: '6px 0', color: '#71717A', fontSize: 11, ...SYS }}>
+                  +{hiddenCount} more
+                </div>
+              )}
             </div>
 
             {note.trim() && (
               <p style={{ color: '#71717A', fontSize: 12, fontStyle: 'italic', marginTop: 8, lineHeight: 1.5, ...SYS }}>
                 {note}
-              </p>
-            )}
-
-            {allDone && (
-              <p style={{ color: '#8B5CF6', fontSize: 11, fontWeight: 600, marginTop: 8, ...SYS }}>
-                The standard is held.
               </p>
             )}
 
