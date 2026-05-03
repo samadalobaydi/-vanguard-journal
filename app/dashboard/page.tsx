@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Flame } from 'lucide-react'
+import { Flame, Pencil } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calculateVanguardScore, getStreakData } from '@/lib/vanguard-score'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
@@ -124,6 +124,15 @@ export default async function DashboardPage() {
   const scoreProgress = Math.min(vanguardScore, 1000) / 1000
   const scoreOffsetStart = scoreHalfCirc
   const scoreOffsetEnd = scoreHalfCirc * (1 - scoreProgress)
+
+  // 14-day cycle status
+  const cycleStatus = consistencyPct <= 35
+    ? { label: 'Current cycle: Unstable',   color: '#D946EF' }
+    : consistencyPct <= 70
+    ? { label: 'Current cycle: Building',   color: '#A1A1AA' }
+    : consistencyPct <= 90
+    ? { label: 'Current cycle: Locked In',  color: '#8B5CF6' }
+    : { label: 'Current cycle: Relentless', color: '#4ade80' }
 
   // Streak ring constants
   const ringR = 78
@@ -445,17 +454,22 @@ export default async function DashboardPage() {
                 <span style={{ color: '#A1A1AA', fontSize: 13, fontWeight: 600 }}>Identity Contract</span>
               </div>
 
-              {isSigned ? (
-                <div style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 20, padding: '2px 8px' }}>
-                  <span style={{ color: '#8B5CF6', fontSize: 10, fontWeight: 600 }}>Contract Active</span>
-                </div>
-              ) : (
-                <span style={{ color: '#71717A', fontSize: 11 }}>Not Signed</span>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {isSigned ? (
+                  <div style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 20, padding: '2px 8px' }}>
+                    <span style={{ color: '#8B5CF6', fontSize: 10, fontWeight: 600 }}>Contract Active</span>
+                  </div>
+                ) : (
+                  <span style={{ color: '#71717A', fontSize: 11 }}>Not Signed</span>
+                )}
+                <Link href="/profile" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <Pencil size={14} color="#8B5CF6" />
+                </Link>
+              </div>
             </div>
 
             {isSigned ? (
-              <p style={{ color: '#F8FAFC', fontSize: 16, lineHeight: 1.6, fontStyle: 'italic' }}>
+              <p style={{ color: '#F8FAFC', fontSize: 16, lineHeight: 1.6, fontStyle: 'italic', wordBreak: 'break-word', whiteSpace: 'normal', overflow: 'visible' }}>
                 &ldquo;{profile!.identity_statement}&rdquo;
               </p>
             ) : (
@@ -495,7 +509,7 @@ export default async function DashboardPage() {
                       : isToday
                       ? 'rgba(139,92,246,0.15)'
                       : 'rgba(255,255,255,0.06)',
-                    border: isToday ? '1px solid #8B5CF6' : 'none',
+                    border: isToday ? '1.5px solid #8B5CF6' : 'none',
                     boxShadow: hasEntry ? '0 0 6px rgba(139,92,246,0.35)' : 'none',
                     opacity: isFuture ? 0.2 : 1,
                     animation: isToday && !hasEntry ? 'trailPulse 2.5s ease-in-out infinite' : 'none',
@@ -505,8 +519,11 @@ export default async function DashboardPage() {
               ))}
             </div>
 
-            <p style={{ color: '#71717A', fontSize: 11, marginTop: 10 }}>
-              {loggedCount} of {totalDays} days logged
+            <p style={{ color: '#A1A1AA', fontSize: 11, marginTop: 6 }}>
+              {loggedCount} / 14 days held
+            </p>
+            <p style={{ color: cycleStatus.color, fontSize: 11, fontStyle: 'italic', marginTop: 4 }}>
+              {cycleStatus.label}
             </p>
           </div>
 
