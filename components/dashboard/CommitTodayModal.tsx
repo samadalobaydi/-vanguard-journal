@@ -132,7 +132,7 @@ export default function CommitTodayModal({
         onClick={e => e.stopPropagation()}
       >
         {/* Scrollable content */}
-        <div style={{ paddingBottom: 140 }}>
+        <div style={{ paddingBottom: 200 }}>
           {/* Drag handle */}
           <div style={{ width: 36, height: 4, background: 'rgba(255,255,255,0.12)', borderRadius: 2, margin: '0 auto 16px' }} />
 
@@ -241,6 +241,7 @@ export default function CommitTodayModal({
           background: '#1C1C22',
           borderTop: '1px solid rgba(255,255,255,0.08)',
           padding: '12px 0 0',
+          paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
           marginTop: 'auto',
           zIndex: 10,
         }}>
