@@ -69,7 +69,7 @@ export default function BottomNav({ hidden }: Props) {
               alignItems: 'center',
               gap: 4,
               textDecoration: 'none',
-              color: active ? '#3DDE6E' : '#555555',
+              color: active ? '#8B5CF6' : '#555555',
               padding: '4px 8px',
             }}
           >
