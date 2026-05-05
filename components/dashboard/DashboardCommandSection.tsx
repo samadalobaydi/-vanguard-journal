@@ -200,7 +200,7 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
             {/* Track */}
             <circle
               cx="42" cy="42" r={ringR} fill="none"
-              stroke={committed && total > 0 ? 'rgba(139,92,246,0.15)' : '#2A2A2A'}
+              stroke={committed && total > 0 ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.15)'}
               strokeWidth="4"
             />
             {/* Fill arc — only when there's progress */}
@@ -257,10 +257,10 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
         </svg>
       </div>
 
-      {/* ── STANDARDS LIST ── */}
-      <div style={{ ...CARD }}>
-        {committed && total > 0 ? (
-          standards.map((s, i) => {
+      {/* ── STANDARDS LIST — only render when standards exist ── */}
+      {committed && total > 0 && (
+        <div style={{ ...CARD }}>
+          {standards.map((s, i) => {
             const isLast   = i === standards.length - 1
             const catLabel = s.category === 'resist' ? 'Resist' : s.category === 'execute' ? 'Execute' : 'Custom'
             return (
@@ -310,13 +310,9 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
                 </span>
               </div>
             )
-          })
-        ) : (
-          <p style={{ color: MUTED, fontSize: 13, margin: 0, ...SYS }}>
-            No standards set. Commit before the day decides for you.
-          </p>
-        )}
-      </div>
+          })}
+        </div>
+      )}
 
       {/* ── MODAL ── */}
       <CommitTodayModal

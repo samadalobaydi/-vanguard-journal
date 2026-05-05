@@ -99,8 +99,8 @@ export default async function DashboardPage() {
           display: 'flex', alignItems: 'center', gap: 6,
           background: SURF, borderRadius: 20, padding: '6px 12px',
         }}>
-          <Flame size={14} color={GREEN} />
-          <span style={{ ...MONO, color: GREEN, fontSize: 14, fontWeight: 700 }}>{streak}</span>
+          <Flame size={14} color="#8B5CF6" />
+          <span style={{ ...MONO, color: '#8B5CF6', fontSize: 14, fontWeight: 700 }}>{streak}</span>
           <span style={{ color: MUTED, fontSize: 11 }}>streak</span>
         </div>
 
@@ -127,7 +127,7 @@ export default async function DashboardPage() {
           <DashboardActionCards />
 
           {/* ── IDENTITY CONTRACT ── */}
-          <div style={{ ...CARD, borderLeft: `3px solid ${GREEN}` }}>
+          <div style={{ ...CARD, borderLeft: '3px solid rgba(139,92,246,0.25)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
