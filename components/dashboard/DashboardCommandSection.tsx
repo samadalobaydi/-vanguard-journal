@@ -78,10 +78,13 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
     }
   })
 
-  const total      = standards.length
-  const doneCount  = standards.filter(s => s.completed).length
-  const allDone    = committed && total > 0 && doneCount === total
+  const total       = standards.length
+  const doneCount   = standards.filter(s => s.completed).length
+  const allDone     = committed && total > 0 && doneCount === total
   const progressPct = total > 0 ? doneCount / total : 0
+  const overloaded  = total > 5
+  const visibleStds = standards.slice(0, 5)
+  const hiddenCount = Math.max(0, total - 5)
 
   // Ring geometry
   const ringR      = 36
@@ -155,12 +158,17 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
               : 'No standards locked'
             }
           </p>
-          <p style={{ color: MUTED, fontSize: 12, marginBottom: 14, ...SYS }}>
+          <p style={{ color: MUTED, fontSize: 12, marginBottom: overloaded ? 4 : 14, ...SYS }}>
             {committed && total > 0
               ? 'Hold the line before midnight.'
               : "Choose today's standards."
             }
           </p>
+          {committed && overloaded && (
+            <p style={{ color: '#6B6B6B', fontSize: 11, fontStyle: 'italic', marginBottom: 14, ...SYS }}>
+              Focus is weakened. Review your load.
+            </p>
+          )}
 
           {committed && total > 0 ? (
             <>
@@ -260,8 +268,8 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
       {/* ── STANDARDS LIST — only render when standards exist ── */}
       {committed && total > 0 && (
         <div style={{ ...CARD }}>
-          {standards.map((s, i) => {
-            const isLast   = i === standards.length - 1
+          {visibleStds.map((s, i) => {
+            const isLast   = i === visibleStds.length - 1 && hiddenCount === 0
             const catLabel = s.category === 'resist' ? 'Resist' : s.category === 'execute' ? 'Execute' : 'Custom'
             return (
               <div
@@ -274,23 +282,25 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
                   cursor: 'pointer',
                 }}
               >
-                {/* Checkbox */}
+                {/* Checkbox — green outline + check icon only, no solid fill */}
                 <div style={{
                   width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-                  border: s.completed ? 'none' : '1.5px solid rgba(255,255,255,0.2)',
-                  background: s.completed ? GREEN : 'transparent',
+                  border: s.completed
+                    ? '1.5px solid rgba(61,222,110,0.4)'
+                    : '1.5px solid rgba(255,255,255,0.2)',
+                  background: 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {s.completed && (
                     <svg width="10" height="10" viewBox="0 0 12 12">
-                      <path d="M2 6l3 3 5-5" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                      <path d="M2 6l3 3 5-5" stroke={GREEN} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                     </svg>
                   )}
                 </div>
                 {/* Name */}
                 <span style={{
                   flex: 1,
-                  color: s.completed ? MUTED : TEXT,
+                  color: s.completed ? '#555' : TEXT,
                   fontSize: 13, fontWeight: 500,
                   textDecoration: s.completed ? 'line-through' : 'none',
                   ...SYS,
@@ -298,10 +308,10 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
                   {s.label}
                 </span>
                 {/* Category */}
-                <span style={{ color: '#444', fontSize: 10, marginRight: 6, ...SYS }}>{catLabel}</span>
+                <span style={{ color: '#3A3A3A', fontSize: 10, marginRight: 6, ...SYS }}>{catLabel}</span>
                 {/* Status */}
                 <span style={{
-                  color: s.completed ? GREEN : MUTED,
+                  color: s.completed ? GREEN : '#555',
                   fontSize: 10, fontWeight: 600,
                   minWidth: 42, textAlign: 'right',
                   ...SYS,
@@ -311,6 +321,20 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
               </div>
             )
           })}
+          {hiddenCount > 0 && (
+            <div style={{ paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              <button
+                onClick={openModal}
+                style={{
+                  background: 'none', border: 'none',
+                  color: MUTED, fontSize: 11, cursor: 'pointer', padding: 0,
+                  ...SYS,
+                }}
+              >
+                +{hiddenCount} more standard{hiddenCount !== 1 ? 's' : ''}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
