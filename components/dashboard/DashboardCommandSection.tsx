@@ -300,7 +300,7 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
                 {/* Name */}
                 <span style={{
                   flex: 1,
-                  color: s.completed ? '#555' : TEXT,
+                  color: s.completed ? '#777' : TEXT,
                   fontSize: 13, fontWeight: 500,
                   textDecoration: s.completed ? 'line-through' : 'none',
                   ...SYS,
@@ -327,11 +327,13 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
                 onClick={openModal}
                 style={{
                   background: 'none', border: 'none',
-                  color: MUTED, fontSize: 11, cursor: 'pointer', padding: 0,
+                  color: VIOLET, fontSize: 11, cursor: 'pointer', padding: 0,
+                  display: 'flex', alignItems: 'center', gap: 3,
                   ...SYS,
                 }}
               >
                 +{hiddenCount} more standard{hiddenCount !== 1 ? 's' : ''}
+                <span style={{ fontSize: 12, lineHeight: 1 }}>›</span>
               </button>
             </div>
           )}

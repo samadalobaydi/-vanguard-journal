@@ -302,10 +302,10 @@ export default function CommitTodayModal({
           {/* Over-limit warning */}
           {overLimit && (
             <p style={{
-              color: '#D946EF', fontSize: 10, fontStyle: 'italic',
-              textAlign: 'center', margin: '0 0 6px', ...SYS,
+              color: '#A0A0A0', fontSize: 11, fontStyle: 'italic',
+              textAlign: 'center', margin: '0 0 8px', ...SYS,
             }}>
-              Too many standards weakens execution.
+              Focus is weakened. Review your load.
             </p>
           )}
 
@@ -324,7 +324,7 @@ export default function CommitTodayModal({
               ...SYS,
             }}
           >
-            {saving ? 'Saving…' : 'Commit Standards'}
+            {saving ? 'Saving…' : overLimit ? 'Commit Anyway' : 'Commit Standards'}
           </button>
         </div>
       </div>

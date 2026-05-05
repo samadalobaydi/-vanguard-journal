@@ -25,7 +25,7 @@ export default function DashboardActionCards() {
       {/* Secondary tool cards */}
       <p style={{
         color: '#444', fontSize: 10, letterSpacing: '0.12em',
-        marginTop: 4, marginBottom: 8,
+        marginTop: 24, marginBottom: 8,
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}>
         TOOLS
