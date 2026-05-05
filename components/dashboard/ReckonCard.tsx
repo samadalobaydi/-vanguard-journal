@@ -17,14 +17,23 @@ type Flow = 'intro' | 'running' | 'complete'
 
 interface Props {
   onModalChange: (isOpen: boolean) => void
+  triggerOpen?: number
 }
 
-export default function ReckonCard({ onModalChange }: Props) {
+export default function ReckonCard({ onModalChange, triggerOpen }: Props) {
   const [modalOpen,      setModalOpen]      = useState(false)
   const [flow,           setFlow]           = useState<Flow>('intro')
   const [remaining,      setRemaining]      = useState(60)
   const [reckonComplete, setReckonComplete] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // Open modal when triggered externally (e.g. Reset Protocol banner)
+  useEffect(() => {
+    if (!triggerOpen) return
+    if (reckonComplete) return
+    setModalOpen(true)
+    onModalChange(true)
+  }, [triggerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (flow === 'running') {

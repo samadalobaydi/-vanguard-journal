@@ -14,13 +14,19 @@ export default function DashboardActionCards() {
   const [dailyMissionsOpen, setDailyMissionsOpen] = useState(false)
   const [reckonOpen,        setReckonOpen]        = useState(false)
   const [commitModalOpen,   setCommitModalOpen]   = useState(false)
+  const [reckonTrigger,     setReckonTrigger]     = useState(0)
 
   const anyModalOpen = deepWorkOpen || trainingOpen || dailyMissionsOpen || reckonOpen || commitModalOpen
+
+  function triggerReckon() {
+    setReckonTrigger(n => n + 1)
+    setReckonOpen(true)
+  }
 
   return (
     <>
       {/* Today's Command hero + Focus Reset banner + standards rows */}
-      <DashboardCommandSection onModalChange={setCommitModalOpen} />
+      <DashboardCommandSection onModalChange={setCommitModalOpen} onOpenReckon={triggerReckon} />
 
       {/* Secondary tool cards */}
       <p style={{
@@ -38,7 +44,7 @@ export default function DashboardActionCards() {
       }}>
         <DeepWorkCard      onModalChange={setDeepWorkOpen} />
         <TrainingCard      onModalChange={setTrainingOpen} />
-        <ReckonCard        onModalChange={setReckonOpen} />
+        <ReckonCard        onModalChange={setReckonOpen} triggerOpen={reckonTrigger} />
         <DailyMissionsCard onModalChange={setDailyMissionsOpen} />
       </div>
 

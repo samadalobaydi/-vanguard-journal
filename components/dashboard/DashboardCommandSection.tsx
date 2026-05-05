@@ -26,9 +26,10 @@ function todayStr() {
 
 interface Props {
   onModalChange: (isOpen: boolean) => void
+  onOpenReckon?: () => void
 }
 
-export default function DashboardCommandSection({ onModalChange }: Props) {
+export default function DashboardCommandSection({ onModalChange, onOpenReckon }: Props) {
   const [modalOpen,      setModalOpen]      = useState(false)
   const [userId,         setUserId]         = useState<string | null>(null)
   const [committed,      setCommitted]      = useState(false)
@@ -241,11 +242,15 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
         </div>
       </div>
 
-      {/* ── FOCUS RESET BANNER ── */}
-      <div style={{
-        ...CARD,
-        display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px',
-      }}>
+      {/* ── RESET PROTOCOL BANNER ── */}
+      <div
+        onClick={onOpenReckon}
+        style={{
+          ...CARD,
+          display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px',
+          cursor: 'pointer',
+        }}
+      >
         <div style={{
           width: 36, height: 36, borderRadius: 10, flexShrink: 0,
           background: 'rgba(139,92,246,0.1)',
@@ -260,7 +265,7 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
           <p style={{ color: MUTED, fontSize: 11, ...SYS }}>60 seconds. Breathe. Reset. Commit.</p>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke={MUTED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          stroke={VIOLET} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 18l6-6-6-6" />
         </svg>
       </div>
