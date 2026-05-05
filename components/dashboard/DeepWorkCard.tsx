@@ -151,7 +151,7 @@ export default function DeepWorkCard({ onModalChange }: Props) {
 
             {/* Bottom row: value + decorative arc */}
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-              <span style={{ color: '#F8FAFC', fontSize: 26, fontWeight: 700, lineHeight: 1, ...MONO }}>1h</span>
+              <span style={{ color: '#F8FAFC', fontSize: 20, fontWeight: 700, lineHeight: 1, ...MONO }}>1h</span>
               <svg width="40" height="40" viewBox="0 0 40 40" style={{ opacity: 0.6, flexShrink: 0 }}>
                 {/* Track */}
                 <circle cx="20" cy="20" r="16" fill="none"
@@ -189,7 +189,7 @@ export default function DeepWorkCard({ onModalChange }: Props) {
                 <p style={{ color: '#8B5CF6', fontSize: 11 }}>Session running</p>
               </div>
             </div>
-            <span style={{ color: '#F8FAFC', fontSize: 26, fontWeight: 700, lineHeight: 1, ...MONO }}>
+            <span style={{ color: '#F8FAFC', fontSize: 20, fontWeight: 700, lineHeight: 1, ...MONO }}>
               {formatTime(remaining)}
             </span>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -227,7 +227,7 @@ export default function DeepWorkCard({ onModalChange }: Props) {
                 <p style={{ color: '#A1A1AA', fontSize: 11 }}>Session completed today</p>
               </div>
             </div>
-            <span style={{ color: '#8B5CF6', fontSize: 26, fontWeight: 700, lineHeight: 1, ...MONO }}>
+            <span style={{ color: '#8B5CF6', fontSize: 20, fontWeight: 700, lineHeight: 1, ...MONO }}>
               {formatDuration(sessionMins)}
             </span>
           </>

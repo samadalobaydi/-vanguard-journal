@@ -166,7 +166,7 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
           </p>
           {committed && overloaded && (
             <p style={{ color: '#6B6B6B', fontSize: 11, fontStyle: 'italic', marginBottom: 14, ...SYS }}>
-              Focus is weakened. Review your load.
+              Too many standards. Reduce the load.
             </p>
           )}
 
@@ -256,7 +256,7 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
           </svg>
         </div>
         <div style={{ flex: 1 }}>
-          <p style={{ color: TEXT, fontSize: 13, fontWeight: 600, marginBottom: 2, ...SYS }}>Focus Reset</p>
+          <p style={{ color: TEXT, fontSize: 13, fontWeight: 600, marginBottom: 2, ...SYS }}>Reset Protocol</p>
           <p style={{ color: MUTED, fontSize: 11, ...SYS }}>60 seconds. Breathe. Reset. Commit.</p>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -302,7 +302,6 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
                   flex: 1,
                   color: s.completed ? '#777' : TEXT,
                   fontSize: 13, fontWeight: 500,
-                  textDecoration: s.completed ? 'line-through' : 'none',
                   ...SYS,
                 }}>
                   {s.label}

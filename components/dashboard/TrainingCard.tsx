@@ -121,7 +121,7 @@ export default function TrainingCard({ onModalChange }: Props) {
 
         {/* Bottom row: value + decorative dumbbell watermark */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <span style={{ color: '#F8FAFC', fontSize: 26, fontWeight: 700, lineHeight: 1, ...MONO }}>
+          <span style={{ color: '#F8FAFC', fontSize: 20, fontWeight: 700, lineHeight: 1, ...MONO }}>
             {displayValue}
           </span>
           <Dumbbell size={28} color="rgba(99,102,241,0.15)" style={{ flexShrink: 0 }} />

@@ -210,7 +210,7 @@ export default function DailyMissionsCard({ onModalChange, trainingType }: Props
         {/* Bottom row: value + decorative watermark */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
-            <span style={{ color: valueColor, fontSize: 26, fontWeight: 700, lineHeight: 1, ...MONO }}>
+            <span style={{ color: valueColor, fontSize: 20, fontWeight: 700, lineHeight: 1, ...MONO }}>
               {displayValue}
             </span>
             {lockedMissions.length > 0 && !allDone && firstMission && (
