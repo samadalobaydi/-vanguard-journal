@@ -127,7 +127,7 @@ export default async function DashboardPage() {
           <DashboardActionCards />
 
           {/* ── IDENTITY CONTRACT ── */}
-          <div style={{ ...CARD, borderLeft: '3px solid rgba(139,92,246,0.25)' }}>
+          <div style={{ ...CARD, border: '1px solid rgba(139,92,246,0.2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
