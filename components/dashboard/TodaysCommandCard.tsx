@@ -245,9 +245,8 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
                       )}
                     </div>
                     <span style={{
-                      color: s.completed ? '#71717A' : '#F8FAFC',
+                      color: s.completed ? '#A0A0A0' : '#F8FAFC',
                       fontSize: 13,
-                      textDecoration: s.completed ? 'line-through' : 'none',
                       ...SYS,
                     }}>
                       {s.label}

@@ -300,7 +300,7 @@ export default function DashboardCommandSection({ onModalChange }: Props) {
                 {/* Name */}
                 <span style={{
                   flex: 1,
-                  color: s.completed ? '#777' : TEXT,
+                  color: s.completed ? '#A0A0A0' : TEXT,
                   fontSize: 13, fontWeight: 500,
                   ...SYS,
                 }}>
