@@ -161,7 +161,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
           </p>
           <p style={{ color: MUTED, fontSize: 12, marginBottom: overloaded ? 4 : 14, ...SYS }}>
             {committed && total > 0
-              ? "Hold today's standards. Build the man."
+              ? "Hold today's standards. Strengthen the record."
               : "Choose today's standards."
             }
           </p>
