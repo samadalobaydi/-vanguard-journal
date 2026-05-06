@@ -320,7 +320,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
                   minWidth: 42, textAlign: 'right',
                   ...SYS,
                 }}>
-                  {s.completed ? 'Held' : 'Pending'}
+                  {s.completed ? 'Held' : 'Unheld'}
                 </span>
               </div>
             )
