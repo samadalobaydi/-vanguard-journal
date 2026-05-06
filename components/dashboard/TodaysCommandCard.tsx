@@ -271,7 +271,7 @@ export default function TodaysCommandCard({ onModalChange }: Props) {
               onClick={openModal}
               style={{ background: 'none', border: 'none', color: '#8B5CF6', fontSize: 11, cursor: 'pointer', padding: 0, marginTop: 10, ...SYS }}
             >
-              Review Standards
+              Review Command
             </button>
           </>
         )}

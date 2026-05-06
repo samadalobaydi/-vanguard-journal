@@ -186,7 +186,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
                   color: VIOLET, fontSize: 11, cursor: 'pointer', padding: 0, ...SYS,
                 }}
               >
-                Review Standards
+                Review Command
               </button>
             </>
           ) : (
