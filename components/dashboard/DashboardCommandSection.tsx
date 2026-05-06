@@ -262,7 +262,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
         </div>
         <div style={{ flex: 1 }}>
           <p style={{ color: TEXT, fontSize: 13, fontWeight: 600, marginBottom: 2, ...SYS }}>Reset Protocol</p>
-          <p style={{ color: MUTED, fontSize: 11, ...SYS }}>60 seconds. Breathe. Reset. Commit.</p>
+          <p style={{ color: MUTED, fontSize: 11, ...SYS }}>60 seconds. Regain command.</p>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke={VIOLET} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
