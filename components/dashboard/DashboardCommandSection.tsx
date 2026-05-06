@@ -272,6 +272,11 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
 
       {/* ── STANDARDS LIST — only render when standards exist ── */}
       {committed && total > 0 && (
+        <p style={{ color: MUTED, fontSize: 11, fontStyle: 'italic', marginBottom: 6, marginTop: -4, ...SYS }}>
+          Resist what weakens you. Execute what builds you.
+        </p>
+      )}
+      {committed && total > 0 && (
         <div style={{ ...CARD }}>
           {visibleStds.map((s, i) => {
             const isLast   = i === visibleStds.length - 1 && hiddenCount === 0
