@@ -198,7 +198,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
                 cursor: 'pointer', padding: '8px 18px', ...SYS,
               }}
             >
-              Commit Today
+              Set Today's Standards
             </button>
           )}
         </div>
