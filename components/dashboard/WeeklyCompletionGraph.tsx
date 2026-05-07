@@ -1,6 +1,9 @@
 'use client'
 
-const DUMMY = [
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+
+const FALLBACK = [
   { label: 'Mon', pct: 0,    isToday: false },
   { label: 'Tue', pct: 0.45, isToday: false },
   { label: 'Wed', pct: 1.00, isToday: false },
@@ -9,6 +12,12 @@ const DUMMY = [
   { label: 'Sat', pct: 0.80, isToday: false },
   { label: 'Sun', pct: 0.30, isToday: true  },
 ]
+
+interface Day {
+  label:   string
+  pct:     number
+  isToday: boolean
+}
 
 const PAD  = 20
 const STEP = (300 - PAD * 2) / 6
@@ -34,7 +43,57 @@ function ctrl(pts: { x: number; y: number }[], i: number) {
 }
 
 export default function WeeklyCompletionGraph() {
-  const pts = DUMMY.map((d, i) => ({ x: xOf(i), y: yOf(d.pct) }))
+  const [days, setDays] = useState<Day[]>(FALLBACK)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        const now      = new Date()
+        const todayStr = now.toISOString().split('T')[0]
+        const dates    = Array.from({ length: 7 }, (_, i) => {
+          const d = new Date(now)
+          d.setDate(now.getDate() - 6 + i)
+          return d.toISOString().split('T')[0]
+        })
+
+        const { data, error } = await supabase
+          .from('daily_commands')
+          .select('command_date, completed_count, total_count')
+          .eq('user_id', user.id)
+          .gte('command_date', dates[0])
+          .lte('command_date', todayStr)
+
+        if (error) return
+
+        const map = new Map<string, { completed: number; total: number }>()
+        for (const row of data ?? []) {
+          map.set(row.command_date, {
+            completed: row.completed_count ?? 0,
+            total:     row.total_count     ?? 0,
+          })
+        }
+
+        setDays(dates.map(dateStr => {
+          const d   = new Date(dateStr + 'T12:00:00')
+          const row = map.get(dateStr)
+          return {
+            label:   d.toLocaleDateString('en-US', { weekday: 'short' }),
+            pct:     row && row.total > 0 ? row.completed / row.total : 0,
+            isToday: dateStr === todayStr,
+          }
+        }))
+      } catch {
+        // keep fallback data
+      }
+    }
+    load()
+  }, [])
+
+  const pts = days.map((d, i) => ({ x: xOf(i), y: yOf(d.pct) }))
 
   let curvePath = `M ${pts[0].x} ${pts[0].y}`
   for (let i = 0; i < 6; i++) {
@@ -48,7 +107,7 @@ export default function WeeklyCompletionGraph() {
     <div style={{
       background: '#272727', borderRadius: 16,
       padding: '14px 16px 10px', marginBottom: 12,
-      border: '2px solid red',
+      border: '1px solid rgba(255,255,255,0.06)',
     }}>
       <p style={{
         color: '#666', fontSize: 10, fontWeight: 600,
@@ -78,8 +137,8 @@ export default function WeeklyCompletionGraph() {
         />
 
         {pts.map((pt, i) => {
-          const isToday = DUMMY[i].isToday
-          const hasData = DUMMY[i].pct > 0
+          const isToday = days[i].isToday
+          const hasData = days[i].pct > 0
           return (
             <g key={i}>
               {isToday && (
@@ -95,7 +154,7 @@ export default function WeeklyCompletionGraph() {
           )
         })}
 
-        {DUMMY.map((day, i) => (
+        {days.map((day, i) => (
           <text
             key={i}
             x={xOf(i)} y={LBL}
