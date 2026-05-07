@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Flame, Pencil } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getStreakData } from '@/lib/vanguard-score'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
@@ -94,17 +94,12 @@ export default async function DashboardPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '16px 16px 8px',
       }}>
-        {/* Streak pill */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          background: SURF, borderRadius: 20, padding: '6px 12px',
-        }}>
-          <Flame size={14} color="#8B5CF6" />
-          <span style={{ ...MONO, color: '#8B5CF6', fontSize: 14, fontWeight: 700 }}>{streak}</span>
-          <span style={{ color: MUTED, fontSize: 11 }}>streak</span>
+        {/* Left: Vanguard logo */}
+        <div style={{ width: 72 }}>
+          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 32, width: 'auto' }} />
         </div>
 
-        {/* TODAY nav pill */}
+        {/* Centre: TODAY nav pill */}
         <div style={{
           background: SURF, borderRadius: 20, padding: '6px 16px',
           display: 'flex', alignItems: 'center', gap: 10,
@@ -114,9 +109,10 @@ export default async function DashboardPage() {
           <span style={{ color: MUTED, fontSize: 12 }}>›</span>
         </div>
 
-        {/* Username */}
-        <div style={{ width: 72, textAlign: 'right' }}>
-          <span style={{ color: MUTED, fontSize: 11 }}>{username}</span>
+        {/* Right: flame + streak */}
+        <div style={{ width: 72, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+          <span style={{ fontSize: 14 }}>🔥</span>
+          <span style={{ ...MONO, color: '#8B5CF6', fontSize: 14, fontWeight: 700 }}>{streak}</span>
         </div>
       </header>
 
