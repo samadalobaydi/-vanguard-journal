@@ -96,7 +96,7 @@ export default async function DashboardPage() {
       }}>
         {/* Left: Vanguard logo */}
         <div style={{ width: 72 }}>
-          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 32, width: 'auto' }} />
+          <img src="/vanguard-logo.png" alt="Vanguard" style={{ height: 40, width: 'auto', minWidth: 40 }} />
         </div>
 
         {/* Centre: TODAY nav pill */}
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
 
         {/* Right: flame + streak */}
         <div style={{ width: 72, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
-          <span style={{ fontSize: 14 }}>🔥</span>
+          <span style={{ fontSize: 14, filter: 'hue-rotate(200deg) saturate(2)' }}>🔥</span>
           <span style={{ ...MONO, color: '#8B5CF6', fontSize: 14, fontWeight: 700 }}>{streak}</span>
         </div>
       </header>

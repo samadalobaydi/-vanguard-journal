@@ -92,7 +92,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
   const ringR      = 36
   const ringCirc   = 2 * Math.PI * ringR
   const ringOffset = ringCirc * (1 - progressPct)
-  const ringColor  = allDone ? GREEN : VIOLET
+  const ringColor  = VIOLET
 
   function openModal(mode: 'commit' | 'review' = 'commit') {
     setModalMode(mode)
@@ -176,7 +176,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
           {committed && total > 0 ? (
             <>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginBottom: 10 }}>
-                <span style={{ ...MONO, color: allDone ? GREEN : VIOLET, fontSize: 22, fontWeight: 700 }}>
+                <span style={{ ...MONO, color: VIOLET, fontSize: 22, fontWeight: 700 }}>
                   {doneCount}
                 </span>
                 <span style={{ color: MUTED, fontSize: 11 }}>/ {total} held</span>
@@ -232,7 +232,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
           }}>
             {committed && total > 0 ? (
               <>
-                <span style={{ ...MONO, color: allDone ? GREEN : VIOLET, fontSize: 20, fontWeight: 700, lineHeight: 1 }}>
+                <span style={{ ...MONO, color: VIOLET, fontSize: 20, fontWeight: 700, lineHeight: 1 }}>
                   {doneCount}
                 </span>
                 <span style={{ color: MUTED, fontSize: 9, marginTop: 2 }}>/ {total}</span>
