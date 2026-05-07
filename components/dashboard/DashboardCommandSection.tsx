@@ -270,6 +270,51 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
         </svg>
       </div>
 
+      {/* ── GUIDANCE CARD — only when no standards locked ── */}
+      {total === 0 && (
+        <div style={{
+          ...CARD,
+          border: '1px solid rgba(139,92,246,0.18)',
+          padding: '16px 18px',
+        }}>
+          <p style={{ color: TEXT, fontSize: 13, fontWeight: 700, marginBottom: 4, ...SYS }}>
+            Start with 3 standards.
+          </p>
+          <p style={{ color: MUTED, fontSize: 11, marginBottom: 14, lineHeight: 1.5, ...SYS }}>
+            Choose one to resist. Choose two to execute.
+          </p>
+          {[
+            { cat: 'Resist',  label: 'No doom scrolling' },
+            { cat: 'Execute', label: 'Train'             },
+            { cat: 'Execute', label: 'Deep work'         },
+          ].map(({ cat, label }) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
+              <span style={{
+                fontSize: 9, fontWeight: 700, letterSpacing: '0.08em',
+                color: cat === 'Resist' ? '#E87C6B' : VIOLET,
+                minWidth: 44, ...SYS,
+              }}>
+                {cat.toUpperCase()}
+              </span>
+              <span style={{ color: '#555', fontSize: 12, ...SYS }}>{label}</span>
+            </div>
+          ))}
+          <button
+            onClick={openModal}
+            style={{
+              marginTop: 6, width: '100%', height: 40,
+              background: 'rgba(139,92,246,0.12)',
+              border: '1px solid rgba(139,92,246,0.3)',
+              borderRadius: 10,
+              color: VIOLET, fontSize: 13, fontWeight: 600,
+              cursor: 'pointer', ...SYS,
+            }}
+          >
+            Set Today&apos;s Standards
+          </button>
+        </div>
+      )}
+
       {/* ── STANDARDS LIST — only render when standards exist ── */}
       {committed && total > 0 && (
         <p style={{ color: MUTED, fontSize: 11, fontStyle: 'italic', marginBottom: 6, marginTop: -4, ...SYS }}>
