@@ -37,6 +37,9 @@ function labelToId(label: string): string {
 interface Props {
   isOpen: boolean
   onClose: () => void
+  mode?: 'commit' | 'review'
+  standards?: Standard[]
+  onToggleCompleted?: (label: string) => void
   selectedStandards: string[]
   onToggleStandard: (s: string) => void
   customStandards: string[]
@@ -49,6 +52,9 @@ interface Props {
 
 export default function CommitTodayModal({
   isOpen, onClose,
+  mode = 'commit',
+  standards: committedStandards,
+  onToggleCompleted,
   selectedStandards, onToggleStandard,
   customStandards, onAddCustom,
   note, onNoteChange,
@@ -184,7 +190,9 @@ export default function CommitTodayModal({
 
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <p style={{ color: '#F8FAFC', fontSize: 18, fontWeight: 700, margin: 0, ...SYS }}>Commit Today</p>
+            <p style={{ color: '#F8FAFC', fontSize: 18, fontWeight: 700, margin: 0, ...SYS }}>
+              {mode === 'review' ? "Today's Command" : 'Commit Today'}
+            </p>
             <button
               onClick={handleClose}
               style={{
@@ -199,86 +207,131 @@ export default function CommitTodayModal({
             </button>
           </div>
 
-          <p style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 20, ...SYS }}>
-            Choose the standards you will hold today.
-          </p>
-
-          {/* RESIST section */}
-          <p style={{ color: '#71717A', fontSize: 10, letterSpacing: '0.14em', marginBottom: 4, ...SYS }}>RESIST</p>
-          <p style={{ color: '#71717A', fontSize: 11, marginBottom: 10, ...SYS }}>Vices to resist.</p>
-          {RESIST_STANDARDS.map(s => <StandardRow key={s} label={s} />)}
-
-          {/* Section separator */}
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '12px 0' }} />
-
-          {/* EXECUTE section */}
-          <p style={{ color: '#71717A', fontSize: 10, letterSpacing: '0.14em', marginBottom: 4, ...SYS }}>EXECUTE</p>
-          <p style={{ color: '#71717A', fontSize: 11, marginBottom: 10, ...SYS }}>Standards to execute.</p>
-          {EXECUTE_STANDARDS.map(s => <StandardRow key={s} label={s} />)}
-
-          {/* Custom standards */}
-          {customStandards.map(s => <StandardRow key={s} label={s} />)}
-
-          {/* Add custom */}
-          {customStandards.length < 3 && !addingCustom && (
-            <div
-              onClick={() => setAddingCustom(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                border: '1.5px dashed rgba(139,92,246,0.25)',
-                borderRadius: 12, padding: '9px 14px', marginBottom: 7,
-                cursor: 'pointer',
-              }}
-            >
-              <span style={{ color: '#8B5CF6', fontSize: 16, lineHeight: 1 }}>+</span>
-              <span style={{ color: '#8B5CF6', fontSize: 14, ...SYS }}>Add custom standard</span>
+          {mode === 'review' ? (
+            /* ── REVIEW MODE: read-only standards list ── */
+            <div style={{ marginTop: 12 }}>
+              {(committedStandards ?? []).map(s => {
+                const catLabel = s.category === 'resist' ? 'Resist' : s.category === 'execute' ? 'Execute' : 'Custom'
+                return (
+                  <div
+                    key={s.label}
+                    onClick={() => onToggleCompleted?.(s.label)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      background: '#1C1C20',
+                      border: '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: 12, padding: '10px 14px', marginBottom: 7,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{
+                      width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                      border: s.completed ? '1.5px solid rgba(61,222,110,0.4)' : '1.5px solid rgba(255,255,255,0.2)',
+                      background: 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {s.completed && (
+                        <svg width="12" height="12" viewBox="0 0 12 12">
+                          <path d="M2 6l3 3 5-5" stroke="#3DDE6E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                        </svg>
+                      )}
+                    </div>
+                    <span style={{ flex: 1, color: s.completed ? '#A0A0A0' : '#F8FAFC', fontSize: 14, fontWeight: 500, ...SYS }}>
+                      {s.label}
+                    </span>
+                    <span style={{ color: '#3A3A3A', fontSize: 10, marginRight: 6, ...SYS }}>{catLabel}</span>
+                    <span style={{ color: s.completed ? '#3DDE6E' : '#555', fontSize: 11, fontWeight: 600, minWidth: 40, textAlign: 'right', ...SYS }}>
+                      {s.completed ? 'Held' : 'Unheld'}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
-          )}
-          {addingCustom && (
-            <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-              <input
-                autoFocus
-                type="text"
-                value={customInput}
-                onChange={e => setCustomInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleAddCustom()}
-                placeholder="Custom standard..."
+          ) : (
+            /* ── COMMIT MODE: standard selection UI ── */
+            <>
+              <p style={{ color: '#A1A1AA', fontSize: 13, marginBottom: 20, ...SYS }}>
+                Choose the standards you will hold today.
+              </p>
+
+              {/* RESIST section */}
+              <p style={{ color: '#71717A', fontSize: 10, letterSpacing: '0.14em', marginBottom: 4, ...SYS }}>RESIST</p>
+              <p style={{ color: '#71717A', fontSize: 11, marginBottom: 10, ...SYS }}>Vices to resist.</p>
+              {RESIST_STANDARDS.map(s => <StandardRow key={s} label={s} />)}
+
+              {/* Section separator */}
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '12px 0' }} />
+
+              {/* EXECUTE section */}
+              <p style={{ color: '#71717A', fontSize: 10, letterSpacing: '0.14em', marginBottom: 4, ...SYS }}>EXECUTE</p>
+              <p style={{ color: '#71717A', fontSize: 11, marginBottom: 10, ...SYS }}>Standards to execute.</p>
+              {EXECUTE_STANDARDS.map(s => <StandardRow key={s} label={s} />)}
+
+              {/* Custom standards */}
+              {customStandards.map(s => <StandardRow key={s} label={s} />)}
+
+              {/* Add custom */}
+              {customStandards.length < 3 && !addingCustom && (
+                <div
+                  onClick={() => setAddingCustom(true)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    border: '1.5px dashed rgba(139,92,246,0.25)',
+                    borderRadius: 12, padding: '9px 14px', marginBottom: 7,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{ color: '#8B5CF6', fontSize: 16, lineHeight: 1 }}>+</span>
+                  <span style={{ color: '#8B5CF6', fontSize: 14, ...SYS }}>Add custom standard</span>
+                </div>
+              )}
+              {addingCustom && (
+                <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                  <input
+                    autoFocus
+                    type="text"
+                    value={customInput}
+                    onChange={e => setCustomInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleAddCustom()}
+                    placeholder="Custom standard..."
+                    style={{
+                      flex: 1, background: '#1C1C20',
+                      border: '1px solid rgba(139,92,246,0.3)',
+                      borderRadius: 10, color: '#F8FAFC', fontSize: 14,
+                      padding: '10px 12px', outline: 'none', ...SYS,
+                    }}
+                  />
+                  <button
+                    onClick={handleAddCustom}
+                    style={{
+                      background: 'rgba(139,92,246,0.15)',
+                      border: '1px solid rgba(139,92,246,0.3)',
+                      borderRadius: 10, color: '#8B5CF6', fontSize: 14, fontWeight: 600,
+                      padding: '0 14px', cursor: 'pointer', ...SYS,
+                    }}
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+
+              {/* Optional note */}
+              <p style={{ color: '#A1A1AA', fontSize: 12, marginTop: 16, marginBottom: 6, ...SYS }}>
+                Add a note or intention (optional)
+              </p>
+              <textarea
+                rows={3}
+                value={note}
+                onChange={e => onNoteChange(e.target.value)}
                 style={{
-                  flex: 1, background: '#1C1C20',
-                  border: '1px solid rgba(139,92,246,0.3)',
-                  borderRadius: 10, color: '#F8FAFC', fontSize: 14,
-                  padding: '10px 12px', outline: 'none', ...SYS,
+                  width: '100%', boxSizing: 'border-box',
+                  background: '#1C1C20', border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 12, padding: '12px', color: '#F8FAFC', fontSize: 13,
+                  outline: 'none', resize: 'vertical', ...SYS,
                 }}
               />
-              <button
-                onClick={handleAddCustom}
-                style={{
-                  background: 'rgba(139,92,246,0.15)',
-                  border: '1px solid rgba(139,92,246,0.3)',
-                  borderRadius: 10, color: '#8B5CF6', fontSize: 14, fontWeight: 600,
-                  padding: '0 14px', cursor: 'pointer', ...SYS,
-                }}
-              >
-                Add
-              </button>
-            </div>
+            </>
           )}
-
-          {/* Optional note */}
-          <p style={{ color: '#A1A1AA', fontSize: 12, marginTop: 16, marginBottom: 6, ...SYS }}>
-            Add a note or intention (optional)
-          </p>
-          <textarea
-            rows={3}
-            value={note}
-            onChange={e => onNoteChange(e.target.value)}
-            style={{
-              width: '100%', boxSizing: 'border-box',
-              background: '#1C1C20', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 12, padding: '12px', color: '#F8FAFC', fontSize: 13,
-              outline: 'none', resize: 'vertical', ...SYS,
-            }}
-          />
         </div>
 
         {/* Sticky footer */}
@@ -291,41 +344,60 @@ export default function CommitTodayModal({
           marginTop: 'auto',
           zIndex: 10,
         }}>
-          {/* Counter */}
-          <p style={{
-            color: counterColor, fontSize: 11, fontWeight: 600,
-            textAlign: 'center', margin: '0 0 8px', ...SYS,
-          }}>
-            {counterText}
-          </p>
+          {mode === 'review' ? (
+            <button
+              onClick={handleClose}
+              style={{
+                width: '100%', height: 50,
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 16,
+                color: '#F8FAFC', fontSize: 15, fontWeight: 600,
+                cursor: 'pointer',
+                ...SYS,
+              }}
+            >
+              Close
+            </button>
+          ) : (
+            <>
+              {/* Counter */}
+              <p style={{
+                color: counterColor, fontSize: 11, fontWeight: 600,
+                textAlign: 'center', margin: '0 0 8px', ...SYS,
+              }}>
+                {counterText}
+              </p>
 
-          {/* Over-limit warning */}
-          {overLimit && (
-            <p style={{
-              color: '#A0A0A0', fontSize: 11, fontStyle: 'italic',
-              textAlign: 'center', margin: '0 0 8px', ...SYS,
-            }}>
-              Focus is weakened. Review your load.
-            </p>
+              {/* Over-limit warning */}
+              {overLimit && (
+                <p style={{
+                  color: '#A0A0A0', fontSize: 11, fontStyle: 'italic',
+                  textAlign: 'center', margin: '0 0 8px', ...SYS,
+                }}>
+                  Focus is weakened. Review your load.
+                </p>
+              )}
+
+              {/* Commit button */}
+              <button
+                onClick={handleCommitClick}
+                disabled={!canCommit}
+                style={{
+                  width: '100%', height: 50,
+                  background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                  border: 'none', borderRadius: 16,
+                  color: '#fff', fontSize: 15, fontWeight: 700,
+                  cursor: canCommit ? 'pointer' : 'not-allowed',
+                  boxShadow: canCommit ? '0 4px 20px rgba(99,102,241,0.3)' : 'none',
+                  opacity: canCommit ? 1 : 0.35,
+                  ...SYS,
+                }}
+              >
+                {saving ? 'Saving…' : overLimit ? 'Commit Anyway' : 'Commit Standards'}
+              </button>
+            </>
           )}
-
-          {/* Commit button */}
-          <button
-            onClick={handleCommitClick}
-            disabled={!canCommit}
-            style={{
-              width: '100%', height: 50,
-              background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-              border: 'none', borderRadius: 16,
-              color: '#fff', fontSize: 15, fontWeight: 700,
-              cursor: canCommit ? 'pointer' : 'not-allowed',
-              boxShadow: canCommit ? '0 4px 20px rgba(99,102,241,0.3)' : 'none',
-              opacity: canCommit ? 1 : 0.35,
-              ...SYS,
-            }}
-          >
-            {saving ? 'Saving…' : overLimit ? 'Commit Anyway' : 'Commit Standards'}
-          </button>
         </div>
       </div>
     </>

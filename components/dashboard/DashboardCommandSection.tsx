@@ -31,6 +31,7 @@ interface Props {
 
 export default function DashboardCommandSection({ onModalChange, onOpenReckon }: Props) {
   const [modalOpen,      setModalOpen]      = useState(false)
+  const [modalMode,      setModalMode]      = useState<'commit' | 'review'>('commit')
   const [userId,         setUserId]         = useState<string | null>(null)
   const [committed,      setCommitted]      = useState(false)
   const [standards,      setStandards]      = useState<Standard[]>([])
@@ -93,7 +94,8 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
   const ringOffset = ringCirc * (1 - progressPct)
   const ringColor  = allDone ? GREEN : VIOLET
 
-  function openModal() {
+  function openModal(mode: 'commit' | 'review' = 'commit') {
+    setModalMode(mode)
     setModalOpen(true)
     onModalChange(true)
   }
@@ -180,7 +182,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
                 <span style={{ color: MUTED, fontSize: 11 }}>/ {total} held</span>
               </div>
               <button
-                onClick={openModal}
+                onClick={() => openModal('review')}
                 style={{
                   background: 'none', border: 'none',
                   color: VIOLET, fontSize: 11, cursor: 'pointer', padding: 0, ...SYS,
@@ -191,7 +193,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
             </>
           ) : (
             <button
-              onClick={openModal}
+              onClick={() => openModal('commit')}
               style={{
                 background: VIOLET, border: 'none',
                 borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 600,
@@ -333,7 +335,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
           {hiddenCount > 0 && (
             <div style={{ paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
               <button
-                onClick={openModal}
+                onClick={() => openModal('review')}
                 style={{
                   background: 'none', border: 'none',
                   color: VIOLET, fontSize: 11, cursor: 'pointer', padding: 0,
@@ -353,6 +355,9 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
       <CommitTodayModal
         isOpen={modalOpen}
         onClose={closeModal}
+        mode={modalMode}
+        standards={standards}
+        onToggleCompleted={toggleCompleted}
         selectedStandards={selectedLabels}
         onToggleStandard={toggleStandard}
         customStandards={customLabels}
