@@ -121,7 +121,7 @@ export default async function DashboardPage() {
       </header>
 
       <DashboardInterceptor isSubscribed={isSubscribed}>
-        <main style={{ padding: '8px 16px 0', paddingBottom: 120, display: 'flex', flexDirection: 'column' }}>
+        <main style={{ padding: '8px 16px 0', paddingBottom: 80, display: 'flex', flexDirection: 'column' }}>
 
           {/* ── DYNAMIC SECTION: hero + tools ── */}
           <DashboardActionCards />
