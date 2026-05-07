@@ -4,20 +4,17 @@ import { useState } from 'react'
 import BottomNav from '@/components/BottomNav'
 import DeepWorkCard from './DeepWorkCard'
 import TrainingCard from './TrainingCard'
-import DailyMissionsCard from './DailyMissionsCard'
 import ReckonCard from './ReckonCard'
 import DashboardCommandSection from './DashboardCommandSection'
-import WeeklyCompletionGraph from './WeeklyCompletionGraph'
 
 export default function DashboardActionCards() {
-  const [deepWorkOpen,      setDeepWorkOpen]      = useState(false)
-  const [trainingOpen,      setTrainingOpen]      = useState(false)
-  const [dailyMissionsOpen, setDailyMissionsOpen] = useState(false)
-  const [reckonOpen,        setReckonOpen]        = useState(false)
-  const [commitModalOpen,   setCommitModalOpen]   = useState(false)
-  const [reckonTrigger,     setReckonTrigger]     = useState(0)
+  const [deepWorkOpen,    setDeepWorkOpen]    = useState(false)
+  const [trainingOpen,    setTrainingOpen]    = useState(false)
+  const [reckonOpen,      setReckonOpen]      = useState(false)
+  const [commitModalOpen, setCommitModalOpen] = useState(false)
+  const [reckonTrigger,   setReckonTrigger]   = useState(0)
 
-  const anyModalOpen = deepWorkOpen || trainingOpen || dailyMissionsOpen || reckonOpen || commitModalOpen
+  const anyModalOpen = deepWorkOpen || trainingOpen || reckonOpen || commitModalOpen
 
   function triggerReckon() {
     setReckonTrigger(n => n + 1)
@@ -26,13 +23,10 @@ export default function DashboardActionCards() {
 
   return (
     <>
-      {/* Today's Command hero + Focus Reset banner + standards rows */}
+      {/* Today's Command hero + Reset Protocol banner + standards rows */}
       <DashboardCommandSection onModalChange={setCommitModalOpen} onOpenReckon={triggerReckon} />
 
-      {/* 7-day completion graph */}
-      <WeeklyCompletionGraph />
-
-      {/* Secondary tool cards */}
+      {/* Secondary tool cards — Deep Work + Training only */}
       <p style={{
         color: '#444', fontSize: 10, letterSpacing: '0.12em',
         marginTop: 12, marginBottom: 8,
@@ -46,10 +40,13 @@ export default function DashboardActionCards() {
         gap: 8,
         marginBottom: 16,
       }}>
-        <DeepWorkCard      onModalChange={setDeepWorkOpen} />
-        <TrainingCard      onModalChange={setTrainingOpen} />
-        <ReckonCard        onModalChange={setReckonOpen} triggerOpen={reckonTrigger} />
-        <DailyMissionsCard onModalChange={setDailyMissionsOpen} />
+        <DeepWorkCard  onModalChange={setDeepWorkOpen} />
+        <TrainingCard  onModalChange={setTrainingOpen} />
+      </div>
+
+      {/* ReckonCard rendered for modal only — triggered by Reset Protocol banner */}
+      <div style={{ display: 'none' }}>
+        <ReckonCard onModalChange={setReckonOpen} triggerOpen={reckonTrigger} />
       </div>
 
       <BottomNav hidden={anyModalOpen} />

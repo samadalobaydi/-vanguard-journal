@@ -114,8 +114,7 @@ export default function DeepWorkCard({ onModalChange }: Props) {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          height: '100%',
+          gap: 4,
           background: 'linear-gradient(145deg, #2A2A30, #1B1B20)',
           border: timerActive
             ? '1px solid rgba(139,92,246,0.35)'
@@ -124,50 +123,28 @@ export default function DeepWorkCard({ onModalChange }: Props) {
             : '1px solid rgba(255,255,255,0.08)',
           boxShadow: timerActive ? '0 0 16px rgba(139,92,246,0.15)' : undefined,
           borderRadius: 20,
-          padding: '14px',
+          padding: '12px',
           cursor: timerActive || timerComplete ? 'default' : 'pointer',
         }}
         onClick={openModal}
       >
         {/* ── IDLE STATE ── */}
         {!timerActive && !timerComplete && (
-          <>
-            {/* Top row: icon + label/sub */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-                background: 'rgba(139,92,246,0.12)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="#8B5CF6">
-                  <path d={CLOCK_PATH} />
-                </svg>
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Deep Work</p>
-                <p style={{ color: '#A1A1AA', fontSize: 11 }}>Start focused session</p>
-              </div>
-            </div>
-
-            {/* Bottom row: value + decorative arc */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-              <span style={{ color: '#F8FAFC', fontSize: 20, fontWeight: 700, lineHeight: 1, ...MONO }}>1h</span>
-              <svg width="40" height="40" viewBox="0 0 40 40" style={{ opacity: 0.6, flexShrink: 0 }}>
-                {/* Track */}
-                <circle cx="20" cy="20" r="16" fill="none"
-                  stroke="rgba(255,255,255,0.06)" strokeWidth="3"
-                  strokeDasharray={`${Math.PI * 16} ${Math.PI * 16}`}
-                  transform="rotate(-180 20 20)"
-                />
-                {/* Fill ~30% */}
-                <circle cx="20" cy="20" r="16" fill="none"
-                  stroke="rgba(99,102,241,0.35)" strokeWidth="3" strokeLinecap="round"
-                  strokeDasharray={`${Math.PI * 16 * 0.3} ${Math.PI * 16 * 2}`}
-                  transform="rotate(-180 20 20)"
-                />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+              background: 'rgba(139,92,246,0.12)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="#8B5CF6">
+                <path d={CLOCK_PATH} />
               </svg>
             </div>
-          </>
+            <div style={{ minWidth: 0 }}>
+              <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Deep Work</p>
+              <p style={{ color: '#A1A1AA', fontSize: 11 }}>Start focused session</p>
+            </div>
+          </div>
         )}
 
         {/* ── ACTIVE STATE ── */}

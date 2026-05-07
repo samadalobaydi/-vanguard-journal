@@ -319,7 +319,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
                   {s.label}
                 </span>
                 {/* Category */}
-                <span style={{ color: '#3A3A3A', fontSize: 10, marginRight: 6, ...SYS }}>{catLabel}</span>
+                <span style={{ color: '#555', fontSize: 11, letterSpacing: '0.08em', marginRight: 6, ...SYS }}>{catLabel}</span>
                 {/* Status */}
                 <span style={{
                   color: s.completed ? GREEN : '#555',

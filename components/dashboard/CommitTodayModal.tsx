@@ -239,7 +239,7 @@ export default function CommitTodayModal({
                     <span style={{ flex: 1, color: s.completed ? '#A0A0A0' : '#F8FAFC', fontSize: 14, fontWeight: 500, ...SYS }}>
                       {s.label}
                     </span>
-                    <span style={{ color: '#3A3A3A', fontSize: 10, marginRight: 6, ...SYS }}>{catLabel}</span>
+                    <span style={{ color: '#555', fontSize: 11, letterSpacing: '0.08em', marginRight: 6, ...SYS }}>{catLabel}</span>
                     <span style={{ color: s.completed ? '#3DDE6E' : '#555', fontSize: 11, fontWeight: 600, minWidth: 40, textAlign: 'right', ...SYS }}>
                       {s.completed ? 'Held' : 'Unheld'}
                     </span>

@@ -88,43 +88,31 @@ export default function TrainingCard({ onModalChange }: Props) {
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          height: '100%',
+          alignItems: 'center',
+          gap: 8,
           background: 'linear-gradient(145deg, #2A2A30, #1B1B20)',
           border: sessionSet ? '1px solid rgba(99,102,241,0.25)' : '1px solid rgba(255,255,255,0.08)',
           borderRadius: 20,
-          padding: '14px',
+          padding: '12px',
           cursor: 'pointer',
         }}
         onClick={openModal}
       >
-        {/* Top row: icon circle + label/sub */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-            background: sessionSet ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Dumbbell size={17} color="#6366F1" />
-          </div>
-          <div style={{ minWidth: 0 }}>
-            <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Training</p>
-            <p style={{
-              color: '#A1A1AA', fontSize: 11,
-              overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-            }}>
-              {displaySub}
-            </p>
-          </div>
+        <div style={{
+          width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+          background: sessionSet ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Dumbbell size={17} color="#6366F1" />
         </div>
-
-        {/* Bottom row: value + decorative dumbbell watermark */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <span style={{ color: '#F8FAFC', fontSize: 20, fontWeight: 700, lineHeight: 1, ...MONO }}>
-            {displayValue}
-          </span>
-          <Dumbbell size={28} color="rgba(99,102,241,0.15)" style={{ flexShrink: 0 }} />
+        <div style={{ minWidth: 0 }}>
+          <p style={{ color: '#F8FAFC', fontSize: 13, fontWeight: 600, marginBottom: 1, ...SYS }}>Training</p>
+          <p style={{
+            color: '#A1A1AA', fontSize: 11,
+            overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+          }}>
+            {displaySub}
+          </p>
         </div>
       </div>
 
