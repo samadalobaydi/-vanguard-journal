@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import CommitTodayModal, { type Standard } from './CommitTodayModal'
-import WeeklyCompletionGraph from './WeeklyCompletionGraph'
 
 const SYS:  React.CSSProperties = { fontFamily: 'system-ui, -apple-system, sans-serif' }
 const MONO: React.CSSProperties = { fontFamily: 'var(--font-mono), monospace' }
@@ -349,9 +348,6 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
           )}
         </div>
       )}
-
-      {/* ── 7-DAY COMPLETION GRAPH — always visible ── */}
-      <WeeklyCompletionGraph />
 
       {/* ── MODAL ── */}
       <CommitTodayModal

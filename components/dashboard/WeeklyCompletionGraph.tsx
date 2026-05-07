@@ -1,135 +1,113 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+const DUMMY = [
+  { label: 'Mon', pct: 0,    isToday: false },
+  { label: 'Tue', pct: 0.45, isToday: false },
+  { label: 'Wed', pct: 1.00, isToday: false },
+  { label: 'Thu', pct: 0.60, isToday: false },
+  { label: 'Fri', pct: 0,    isToday: false },
+  { label: 'Sat', pct: 0.80, isToday: false },
+  { label: 'Sun', pct: 0.30, isToday: true  },
+]
 
-const SYS:    React.CSSProperties = { fontFamily: 'system-ui, -apple-system, sans-serif' }
-const VIOLET  = '#8B5CF6'
-const SURF    = '#272727'
-const MUTED   = '#888888'
-const BAR_H   = 52
+const PAD  = 20
+const STEP = (300 - PAD * 2) / 6
+const TOP  = 12
+const BOT  = 72
+const LBL  = 86
 
-interface DayBar {
-  dateStr: string
-  label:   string
-  pct:     number   // 0–1 if data exists; -1 if no data
-  isToday: boolean
+function xOf(i: number) { return PAD + i * STEP }
+function yOf(pct: number) { return BOT - pct * (BOT - TOP) }
+
+const A = 0.25
+function ctrl(pts: { x: number; y: number }[], i: number) {
+  const p0 = pts[Math.max(i - 1, 0)]
+  const p1 = pts[i]
+  const p2 = pts[i + 1]
+  const p3 = pts[Math.min(i + 2, pts.length - 1)]
+  return {
+    c1x: p1.x + (p2.x - p0.x) * A,
+    c1y: p1.y + (p2.y - p0.y) * A,
+    c2x: p2.x - (p3.x - p1.x) * A,
+    c2y: p2.y - (p3.y - p1.y) * A,
+  }
 }
 
 export default function WeeklyCompletionGraph() {
-  const [bars, setBars] = useState<DayBar[]>([])
+  const pts = DUMMY.map((d, i) => ({ x: xOf(i), y: yOf(d.pct) }))
 
-  useEffect(() => {
-    async function load() {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+  let curvePath = `M ${pts[0].x} ${pts[0].y}`
+  for (let i = 0; i < 6; i++) {
+    const { c1x, c1y, c2x, c2y } = ctrl(pts, i)
+    curvePath += ` C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${pts[i + 1].x.toFixed(2)} ${pts[i + 1].y.toFixed(2)}`
+  }
 
-      const today    = new Date()
-      const todayStr = today.toISOString().split('T')[0]
-
-      const last7 = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date(today)
-        d.setDate(today.getDate() - 6 + i)
-        return d.toISOString().split('T')[0]
-      })
-
-      const { data } = await supabase
-        .from('daily_commands')
-        .select('command_date, completed_count, total_count')
-        .eq('user_id', user.id)
-        .gte('command_date', last7[0])
-        .lte('command_date', todayStr)
-
-      const rowMap = new Map<string, { completed: number; total: number }>()
-      for (const row of data ?? []) {
-        rowMap.set(row.command_date, {
-          completed: row.completed_count ?? 0,
-          total:     row.total_count     ?? 0,
-        })
-      }
-
-      setBars(last7.map(dateStr => {
-        // Use noon to avoid DST edge cases when getting day-of-week
-        const d   = new Date(dateStr + 'T12:00:00')
-        const row = rowMap.get(dateStr)
-        return {
-          dateStr,
-          label:   d.toLocaleDateString('en-US', { weekday: 'short' }),
-          pct:     row ? (row.total > 0 ? row.completed / row.total : 0) : -1,
-          isToday: dateStr === todayStr,
-        }
-      }))
-    }
-    load()
-  }, [])
-
-  if (bars.length === 0) return null
+  const fillPath = curvePath + ` L ${pts[6].x} ${BOT} L ${pts[0].x} ${BOT} Z`
 
   return (
     <div style={{
-      background: SURF,
-      borderRadius: 16,
-      padding: '14px 18px 16px',
-      marginBottom: 12,
+      background: '#272727', borderRadius: 16,
+      padding: '14px 16px 10px', marginBottom: 12,
+      border: '2px solid red',
     }}>
       <p style={{
-        color: MUTED, fontSize: 10, fontWeight: 600,
-        letterSpacing: '0.1em', marginBottom: 12, ...SYS,
+        color: '#666', fontSize: 10, fontWeight: 600,
+        letterSpacing: '0.1em', marginBottom: 8,
+        fontFamily: 'system-ui, -apple-system, sans-serif',
       }}>
         7-DAY COMPLETION
       </p>
 
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5 }}>
-        {bars.map(bar => {
-          const hasData   = bar.pct >= 0
-          const fillPct   = hasData ? bar.pct : 0
-          const fillPx    = Math.round(fillPct * BAR_H)
-          const minFillPx = hasData ? 4 : 0   // show 4px stub when committed but 0% done
+      <svg viewBox="0 0 300 100" width="100%" style={{ display: 'block', overflow: 'visible' }}>
+        <defs>
+          <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="rgba(139,92,246,0.3)" />
+            <stop offset="100%" stopColor="rgba(139,92,246,0)"   />
+          </linearGradient>
+        </defs>
 
+        <path d={fillPath} fill="url(#grad)" />
+
+        <path
+          d={curvePath}
+          fill="none"
+          stroke="#8B5CF6"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        {pts.map((pt, i) => {
+          const isToday = DUMMY[i].isToday
+          const hasData = DUMMY[i].pct > 0
           return (
-            <div key={bar.dateStr} style={{
-              flex: 1,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-            }}>
-              {/* Bar track */}
-              <div style={{
-                position: 'relative',
-                width: '100%',
-                height: BAR_H,
-                borderRadius: 4,
-                background: '#2A2A2A',
-                border: bar.isToday
-                  ? '1.5px solid rgba(139,92,246,0.5)'
-                  : '1.5px solid transparent',
-                overflow: 'hidden',
-                boxSizing: 'border-box',
-              }}>
-                {/* Violet fill — anchored to bottom */}
-                {hasData && (
-                  <div style={{
-                    position: 'absolute',
-                    bottom: 0, left: 0, right: 0,
-                    height: Math.max(fillPx, minFillPx),
-                    background: VIOLET,
-                    opacity: fillPct === 0 ? 0.35 : 1,
-                  }} />
-                )}
-              </div>
-
-              {/* Day label */}
-              <span style={{
-                fontSize: 9,
-                color: bar.isToday ? VIOLET : MUTED,
-                fontWeight: bar.isToday ? 700 : 400,
-                ...SYS,
-              }}>
-                {bar.label}
-              </span>
-            </div>
+            <g key={i}>
+              {isToday && (
+                <circle cx={pt.x} cy={pt.y} r={8}
+                  fill="none" stroke="#8B5CF6" strokeOpacity="0.3" />
+              )}
+              <circle
+                cx={pt.x} cy={pt.y}
+                r={isToday ? 5 : 3}
+                fill={hasData ? '#8B5CF6' : '#333'}
+              />
+            </g>
           )
         })}
-      </div>
+
+        {DUMMY.map((day, i) => (
+          <text
+            key={i}
+            x={xOf(i)} y={LBL}
+            textAnchor="middle"
+            fontSize="8"
+            fill="#666"
+            fontFamily="system-ui, -apple-system, sans-serif"
+          >
+            {day.label}
+          </text>
+        ))}
+      </svg>
     </div>
   )
 }

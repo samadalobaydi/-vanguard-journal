@@ -7,6 +7,7 @@ import TrainingCard from './TrainingCard'
 import DailyMissionsCard from './DailyMissionsCard'
 import ReckonCard from './ReckonCard'
 import DashboardCommandSection from './DashboardCommandSection'
+import WeeklyCompletionGraph from './WeeklyCompletionGraph'
 
 export default function DashboardActionCards() {
   const [deepWorkOpen,      setDeepWorkOpen]      = useState(false)
@@ -27,6 +28,9 @@ export default function DashboardActionCards() {
     <>
       {/* Today's Command hero + Focus Reset banner + standards rows */}
       <DashboardCommandSection onModalChange={setCommitModalOpen} onOpenReckon={triggerReckon} />
+
+      {/* 7-day completion graph */}
+      <WeeklyCompletionGraph />
 
       {/* Secondary tool cards */}
       <p style={{
