@@ -158,13 +158,13 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
           <p style={{ color: TEXT, fontSize: 22, fontWeight: 700, lineHeight: 1.1, marginBottom: 4, ...SYS }}>
             {committed && total > 0
               ? `${total} standard${total !== 1 ? 's' : ''} locked`
-              : 'No standards locked'
+              : 'No command set'
             }
           </p>
           <p style={{ color: MUTED, fontSize: 12, marginBottom: overloaded ? 4 : 14, ...SYS }}>
             {committed && total > 0
               ? "Hold today's standards. Strengthen the record."
-              : "Choose today's standards."
+              : "Set 3 standards before the day takes control."
             }
           </p>
           {committed && overloaded && (
