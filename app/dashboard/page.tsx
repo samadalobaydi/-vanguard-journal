@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getStreakData } from '@/lib/vanguard-score'
 import DashboardInterceptor from '@/components/DashboardInterceptor'
 import DashboardActionCards from '@/components/dashboard/DashboardActionCards'
-import CommandInsightCard from '@/components/dashboard/CommandInsightCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -203,9 +202,6 @@ export default async function DashboardPage() {
               {cycleStatus.label}
             </p>
           </div>
-
-          {/* ── COMMAND INSIGHT — empty state only, client-rendered ── */}
-          <CommandInsightCard />
 
         </main>
       </DashboardInterceptor>

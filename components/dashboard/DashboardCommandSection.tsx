@@ -67,14 +67,6 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
     load()
   }, [])
 
-  // Listen for external open-commit-modal event (e.g. from CommandInsightCard)
-  useEffect(() => {
-    function handler() { openModal('commit') }
-    window.addEventListener('vanguard:open-commit-modal', handler)
-    return () => window.removeEventListener('vanguard:open-commit-modal', handler)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   // Reset state on day change
   useEffect(() => {
     const current = todayStr()
