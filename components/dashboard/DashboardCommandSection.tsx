@@ -272,6 +272,53 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
         </svg>
       </div>
 
+      {/* ── EMPTY STATE: shown only when no standards locked ── */}
+      {!(committed && total > 0) && (
+        <>
+          {/* Today's First Move */}
+          <div style={{ ...CARD, borderLeft: '2px solid rgba(139,92,246,0.3)' }}>
+            <p style={{ color: TEXT, fontSize: 13, fontWeight: 600, marginBottom: 4, ...SYS }}>
+              Today&apos;s First Move
+            </p>
+            <p style={{ color: MUTED, fontSize: 12, lineHeight: 1.5, marginBottom: 12, ...SYS }}>
+              Start with one standard. Do not overbuild the day.
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {['Resist', 'Execute', 'Train'].map(label => (
+                <button
+                  key={label}
+                  onClick={() => openModal('commit')}
+                  style={{
+                    background: 'rgba(139,92,246,0.08)',
+                    border: '1px solid rgba(139,92,246,0.18)',
+                    borderRadius: 20,
+                    color: VIOLET, fontSize: 12, fontWeight: 500,
+                    padding: '5px 12px',
+                    cursor: 'pointer',
+                    ...SYS,
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Reasons I Refuse */}
+          <div style={{ ...CARD }}>
+            <p style={{ color: TEXT, fontSize: 13, fontWeight: 600, marginBottom: 4, ...SYS }}>
+              Reasons I Refuse
+            </p>
+            <p style={{ color: MUTED, fontSize: 12, lineHeight: 1.5, marginBottom: 10, ...SYS }}>
+              Write why you refuse to fall back.
+            </p>
+            <a href="/profile" style={{ color: '#555', fontSize: 11, textDecoration: 'none', ...SYS }}>
+              Add Reason →
+            </a>
+          </div>
+        </>
+      )}
+
       {/* ── STANDARDS LIST — only render when standards exist ── */}
       {committed && total > 0 && (
         <p style={{ color: MUTED, fontSize: 11, fontStyle: 'italic', marginBottom: 6, marginTop: -4, ...SYS }}>

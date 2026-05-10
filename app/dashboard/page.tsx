@@ -152,9 +152,14 @@ export default async function DashboardPage() {
             </div>
 
             {isSigned ? (
-              <p style={{ color: TEXT, fontSize: 14, lineHeight: 1.65, fontStyle: 'italic', wordBreak: 'break-word' }}>
-                &ldquo;{profile!.identity_statement}&rdquo;
-              </p>
+              <>
+                <p style={{ color: TEXT, fontSize: 14, lineHeight: 1.65, fontStyle: 'italic', wordBreak: 'break-word' }}>
+                  &ldquo;{profile!.identity_statement}&rdquo;
+                </p>
+                <p style={{ color: '#3A3A3A', fontSize: 11, marginTop: 8, ...SYS }}>
+                  Today will test this contract.
+                </p>
+              </>
             ) : (
               <div>
                 <p style={{ color: MUTED, fontSize: 12, marginBottom: 10, lineHeight: 1.5 }}>
@@ -170,7 +175,7 @@ export default async function DashboardPage() {
           {/* ── 14-DAY CONSISTENCY ── */}
           <div style={CARD}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <span style={{ color: MUTED, fontSize: 12, fontWeight: 600 }}>14-Day Consistency</span>
+              <span style={{ color: MUTED, fontSize: 12, fontWeight: 600 }}>Cycle Strength</span>
               <span style={{ ...MONO, color: GREEN, fontSize: 15, fontWeight: 700 }}>{consistencyPct}%</span>
             </div>
 
