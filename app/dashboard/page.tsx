@@ -72,12 +72,12 @@ export default async function DashboardPage() {
   const consistencyPct = totalDays > 0 ? Math.round((loggedCount / totalDays) * 100) : 0
 
   const cycleStatus = consistencyPct <= 35
-    ? { label: 'Current cycle: Unstable',   color: '#E54D4D' }
+    ? { label: 'Status: Unstable',   color: '#E54D4D' }
     : consistencyPct <= 70
-    ? { label: 'Current cycle: Building',   color: MUTED }
+    ? { label: 'Status: Building',   color: MUTED }
     : consistencyPct <= 90
-    ? { label: 'Current cycle: Locked In',  color: GREEN }
-    : { label: 'Current cycle: Relentless', color: GREEN }
+    ? { label: 'Status: Locked In',  color: GREEN }
+    : { label: 'Status: Relentless', color: GREEN }
 
   return (
     <div style={{ background: BG, minHeight: '100vh', ...SYS, overflowX: 'hidden' }}>
@@ -175,7 +175,7 @@ export default async function DashboardPage() {
           {/* ── 14-DAY CONSISTENCY ── */}
           <div style={CARD}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <span style={{ color: MUTED, fontSize: 12, fontWeight: 600 }}>Cycle Strength</span>
+              <span style={{ color: MUTED, fontSize: 12, fontWeight: 600 }}>14-Day Record</span>
               <span style={{ ...MONO, color: GREEN, fontSize: 15, fontWeight: 700 }}>{consistencyPct}%</span>
             </div>
 

@@ -191,7 +191,7 @@ export default function CommitTodayModal({
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <p style={{ color: '#F8FAFC', fontSize: 18, fontWeight: 700, margin: 0, ...SYS }}>
-              {mode === 'review' ? "Today's Command" : 'Commit Today'}
+              {mode === 'review' ? "Today's Standards" : 'Commit Today'}
             </p>
             <button
               onClick={handleClose}

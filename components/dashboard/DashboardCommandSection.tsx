@@ -92,7 +92,6 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
   const ringR      = 36
   const ringCirc   = 2 * Math.PI * ringR
   const ringOffset = ringCirc * (1 - progressPct)
-  const ringColor  = VIOLET
 
   function openModal(mode: 'commit' | 'review' = 'commit') {
     setModalMode(mode)
@@ -147,6 +146,13 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
 
   return (
     <>
+      <style>{`
+        @keyframes ringGold {
+          0%, 100% { stroke: #8B5CF6; }
+          50%       { stroke: #C4A55A; }
+        }
+      `}</style>
+
       {/* ── HERO: TODAY'S COMMAND ── */}
       <div style={{
         ...CARD,
@@ -158,13 +164,13 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
           <p style={{ color: TEXT, fontSize: 22, fontWeight: 700, lineHeight: 1.1, marginBottom: 4, ...SYS }}>
             {committed && total > 0
               ? `${total} standard${total !== 1 ? 's' : ''} locked`
-              : 'No command set'
+              : 'No standards set'
             }
           </p>
           <p style={{ color: MUTED, fontSize: 12, marginBottom: overloaded ? 4 : 14, ...SYS }}>
             {committed && total > 0
               ? "Hold today's standards. Strengthen the record."
-              : "Set 3 standards before the day takes control."
+              : "Choose the standards you will hold today."
             }
           </p>
           {committed && overloaded && (
@@ -188,7 +194,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
                   color: VIOLET, fontSize: 11, cursor: 'pointer', padding: 0, ...SYS,
                 }}
               >
-                Review Command
+                Review Standards
               </button>
             </>
           ) : (
@@ -208,21 +214,31 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
         {/* Ring */}
         <div style={{ position: 'relative', width: 84, height: 84, flexShrink: 0 }}>
           <svg width="84" height="84" viewBox="0 0 84 84">
-            {/* Track */}
+            {/* Track — opacity reflects commitment state */}
             <circle
               cx="42" cy="42" r={ringR} fill="none"
-              stroke={committed && total > 0 ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.15)'}
+              stroke={
+                !(committed && total > 0)
+                  ? 'rgba(139,92,246,0.2)'
+                  : doneCount === 0
+                  ? 'rgba(139,92,246,0.6)'
+                  : 'rgba(139,92,246,0.15)'
+              }
               strokeWidth="4"
             />
-            {/* Fill arc — only when there's progress */}
+            {/* Fill arc — visible when at least one standard is held */}
             {committed && total > 0 && doneCount > 0 && (
               <circle
                 cx="42" cy="42" r={ringR}
-                fill="none" stroke={ringColor} strokeWidth="4" strokeLinecap="round"
+                fill="none" strokeWidth="4" strokeLinecap="round"
                 strokeDasharray={ringCirc.toFixed(2)}
                 strokeDashoffset={ringOffset.toFixed(2)}
                 transform="rotate(-90 42 42)"
-                style={{ transition: 'stroke-dashoffset 0.4s ease, stroke 0.3s ease' }}
+                style={{
+                  stroke: '#8B5CF6',
+                  transition: 'stroke-dashoffset 0.4s ease',
+                  animation: allDone ? 'ringGold 2.5s ease-in-out infinite' : undefined,
+                }}
               />
             )}
           </svg>
@@ -264,7 +280,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
         </div>
         <div style={{ flex: 1 }}>
           <p style={{ color: TEXT, fontSize: 13, fontWeight: 600, marginBottom: 2, ...SYS }}>Reset Protocol</p>
-          <p style={{ color: MUTED, fontSize: 11, ...SYS }}>60 seconds. Regain command.</p>
+          <p style={{ color: MUTED, fontSize: 11, ...SYS }}>60 seconds. Take back control.</p>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke={VIOLET} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
