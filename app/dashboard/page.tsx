@@ -72,7 +72,7 @@ export default async function DashboardPage() {
   const consistencyPct = totalDays > 0 ? Math.round((loggedCount / totalDays) * 100) : 0
 
   const cycleStatus = consistencyPct <= 35
-    ? { label: 'Status: Unstable',   color: '#E54D4D' }
+    ? { label: 'Status: Building',   color: MUTED }
     : consistencyPct <= 70
     ? { label: 'Status: Building',   color: MUTED }
     : consistencyPct <= 90
@@ -162,12 +162,12 @@ export default async function DashboardPage() {
               </>
             ) : (
               <div>
-                <p style={{ color: MUTED, fontSize: 12, marginBottom: 10, lineHeight: 1.5 }}>
-                  Define who you are committed to being.
+                <p style={{ color: TEXT, fontSize: 14, lineHeight: 1.65, fontStyle: 'italic', marginBottom: 6 }}>
+                  &ldquo;I keep the promises I make to myself.&rdquo;
                 </p>
-                <Link href="/profile" style={{ color: GREEN, fontSize: 12, fontWeight: 500, textDecoration: 'none' }}>
-                  → Sign in Profile
-                </Link>
+                <p style={{ color: MUTED, fontSize: 12, lineHeight: 1.5 }}>
+                  Today is another chance to prove it.
+                </p>
               </div>
             )}
           </div>

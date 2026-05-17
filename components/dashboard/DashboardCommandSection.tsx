@@ -89,7 +89,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
   const hiddenCount = Math.max(0, total - 5)
 
   // Ring geometry
-  const ringR      = 36
+  const ringR      = 38
   const ringCirc   = 2 * Math.PI * ringR
   const ringOffset = ringCirc * (1 - progressPct)
 
@@ -148,8 +148,8 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
     <>
       <style>{`
         @keyframes ringGold {
-          0%, 100% { stroke: #8B5CF6; }
-          50%       { stroke: #C4A55A; }
+          0%, 100% { stroke: #8B5CF6; filter: drop-shadow(0 0 5px rgba(139,92,246,0.7)); }
+          50%       { stroke: #C4A55A; filter: drop-shadow(0 0 7px rgba(196,165,90,0.5)); }
         }
       `}</style>
 
@@ -158,6 +158,8 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
         ...CARD,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '20px',
+        border: '1px solid rgba(139,92,246,0.12)',
+        boxShadow: '0 0 32px rgba(139,92,246,0.07), 0 4px 20px rgba(0,0,0,0.5)',
       }}>
         {/* Left */}
         <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
@@ -212,16 +214,16 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
         </div>
 
         {/* Ring */}
-        <div style={{ position: 'relative', width: 84, height: 84, flexShrink: 0 }}>
-          <svg width="84" height="84" viewBox="0 0 84 84">
+        <div style={{ position: 'relative', width: 92, height: 92, flexShrink: 0 }}>
+          <svg width="92" height="92" viewBox="0 0 92 92">
             {/* Track — opacity reflects commitment state */}
             <circle
-              cx="42" cy="42" r={ringR} fill="none"
+              cx="46" cy="46" r={ringR} fill="none"
               stroke={
                 !(committed && total > 0)
-                  ? 'rgba(139,92,246,0.2)'
+                  ? 'rgba(139,92,246,0.25)'
                   : doneCount === 0
-                  ? 'rgba(139,92,246,0.6)'
+                  ? 'rgba(139,92,246,0.7)'
                   : 'rgba(139,92,246,0.15)'
               }
               strokeWidth="4"
@@ -229,11 +231,11 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
             {/* Fill arc — visible when at least one standard is held */}
             {committed && total > 0 && doneCount > 0 && (
               <circle
-                cx="42" cy="42" r={ringR}
+                cx="46" cy="46" r={ringR}
                 fill="none" strokeWidth="4" strokeLinecap="round"
                 strokeDasharray={ringCirc.toFixed(2)}
                 strokeDashoffset={ringOffset.toFixed(2)}
-                transform="rotate(-90 42 42)"
+                transform="rotate(-90 46 46)"
                 style={{
                   stroke: '#8B5CF6',
                   transition: 'stroke-dashoffset 0.4s ease',
@@ -279,8 +281,8 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
           </svg>
         </div>
         <div style={{ flex: 1 }}>
-          <p style={{ color: TEXT, fontSize: 13, fontWeight: 600, marginBottom: 2, ...SYS }}>Reset Protocol</p>
-          <p style={{ color: MUTED, fontSize: 11, ...SYS }}>60 seconds. Take back control.</p>
+          <p style={{ color: TEXT, fontSize: 13, fontWeight: 600, marginBottom: 2, ...SYS }}>60-Second Reset</p>
+          <p style={{ color: MUTED, fontSize: 11, ...SYS }}>Pause. Breathe. Take back control.</p>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke={VIOLET} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
