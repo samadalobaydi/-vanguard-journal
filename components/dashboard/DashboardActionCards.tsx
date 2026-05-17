@@ -4,6 +4,7 @@ import { useState } from 'react'
 import BottomNav from '@/components/BottomNav'
 import ReckonCard from './ReckonCard'
 import DashboardCommandSection from './DashboardCommandSection'
+import EndOfDayReview from './EndOfDayReview'
 
 export default function DashboardActionCards() {
   const [reckonOpen,      setReckonOpen]      = useState(false)
@@ -22,7 +23,10 @@ export default function DashboardActionCards() {
       {/* Today's Command hero + Reset Protocol banner + standards rows */}
       <DashboardCommandSection onModalChange={setCommitModalOpen} onOpenReckon={triggerReckon} />
 
-      {/* ReckonCard rendered for modal only — triggered by Reset Protocol banner */}
+      {/* End of Day Review — self-gating, appears when standards exist + conditions met */}
+      <EndOfDayReview />
+
+      {/* ReckonCard rendered for modal only — triggered by 60-Second Reset banner */}
       <div style={{ display: 'none' }}>
         <ReckonCard onModalChange={setReckonOpen} triggerOpen={reckonTrigger} />
       </div>
