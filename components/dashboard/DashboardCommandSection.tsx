@@ -93,6 +93,14 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
   const ringCirc   = 2 * Math.PI * ringR
   const ringOffset = ringCirc * (1 - progressPct)
 
+  // Ring glow — scales with progress; allDone glow handled by ringGold keyframe
+  const ringGlowFilter = allDone || doneCount === 0 ? undefined
+    : progressPct >= 0.66
+    ? 'drop-shadow(0 0 6px rgba(139,92,246,0.7))'
+    : progressPct >= 0.33
+    ? 'drop-shadow(0 0 4px rgba(139,92,246,0.5))'
+    : 'drop-shadow(0 0 2px rgba(139,92,246,0.3))'
+
   function openModal(mode: 'commit' | 'review' = 'commit') {
     setModalMode(mode)
     setModalOpen(true)
@@ -239,6 +247,7 @@ export default function DashboardCommandSection({ onModalChange, onOpenReckon }:
                 style={{
                   stroke: '#8B5CF6',
                   transition: 'stroke-dashoffset 0.4s ease',
+                  filter: ringGlowFilter,
                   animation: allDone ? 'ringGold 2.5s ease-in-out infinite' : undefined,
                 }}
               />
